@@ -85,6 +85,6 @@ def unlimited_resources():
     show()
 
 if __name__ == '__main__':
-    unlimited_resources()
-    #doubled_resources()
+    #unlimited_resources()
+    doubled_resources()
     #standard_run()
