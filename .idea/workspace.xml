@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da94e042-4e3a-4526-9f3d-6bd1485ce66f" name="Changes" comment="Ein Skript welches aktuell 2 Funktionen enthält um den standard run und den mit verdoppelten Ressourcen nachzubilden.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_different_standard_configurations.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_different_standard_configurations.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -143,16 +144,5 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Ein Skript welches aktuell 2 Funktionen enthält um den standard run und den mit verdoppelten Ressourcen nachzubilden." />
     <option name="LAST_COMMIT_MESSAGE" value="Ein Skript welches aktuell 2 Funktionen enthält um den standard run und den mit verdoppelten Ressourcen nachzubilden." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>8</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
