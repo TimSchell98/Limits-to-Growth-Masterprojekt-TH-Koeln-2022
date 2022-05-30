@@ -1,10 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-This file contains functions that each represents one of the runs of the world model that were presented in Limits to Growth
+Created on Fri May 27 14:40:57 2022
 
-
-created by: A.K.
+@author: rubenwillamowski
 """
-
 
 from pyworld3 import world3 as w3
 from pyworld3.utils import plot_world_variables
@@ -60,10 +60,9 @@ RESERVES DOUBLED """
 def unlimited_resources():
     """Originally: Figure 37 WORLD MODEL WITH  UNLIMITED RESSOURCES
     The Key Parameter here seems to be the nruf2, which is described on P.390 of Dynamics of Growth
-    in a finite World (DGFW)
-    The most fitting value for NRUF2 seems to be 0.6"""
+    in a finite World (DGFW) """
 
-    nruf2 = 0.65
+    nruf2 = 0.7
 
     params = {'lines.linewidth': '3'}
     rcParams.update(params)
@@ -82,22 +81,20 @@ def unlimited_resources():
                          [[0, 1], [0, 1e3], [0, 1e3], [0, 16e9], [0, 32]],
                          figsize=(7, 5),
                          grid=1,
-                         title="World Model with unlimited Natural Resources \nParameter: nruf2 = {}".format(nruf2))
+                         title="World Model with unlimited Natural Resources ----- Parameter nruf2 = {}".format(nruf2))
     show()
 
-def unlimited_resources_pollution_control():
-    """Originally: Figure 39 WORLD MODEL WITH UNLIMITED RESSOURCES AND POLLUTION CONTROL
-    The Key Parameter here seems to be the ppgf2, which is described on P.428 of Dynamics of Growth
-    in a finite World (DGFW) """
+def stab_pop():
+    """Originally:
+     Figure 44 WORLD MODEL WITH STABILIZED PUPULATION """
 
-    nruf2 = 0.6
-    ppgf2 = 0.25
+    #zpgt=1970 #possibillity to smoth - not appropriate
 
     params = {'lines.linewidth': '3'}
     rcParams.update(params)
 
     world3 = w3.World3()
-    world3.init_world3_constants(nri=2e12, nruf1=1, nruf2=nruf2, ppgf2=ppgf2, ppgf1=1)
+    world3.init_world3_constants(pet=1975)
     world3.init_world3_variables()
     world3.set_world3_table_functions()
     world3.set_world3_delay_functions()
@@ -110,11 +107,12 @@ def unlimited_resources_pollution_control():
                          [[0, 1], [0, 1e3], [0, 1e3], [0, 16e9], [0, 32]],
                          figsize=(7, 5),
                          grid=1,
-                         title="World Model with unlimited Natural Resources and Pollution Control \nParameter: nruf2 = {}; ppgf2 = {}".format(nruf2, ppgf2))
+                         title="World Model with stabilized population")
     show()
+
 
 if __name__ == '__main__':
     #unlimited_resources()
     #doubled_resources()
     #standard_run()
-    unlimited_resources_pollution_control()
+    stab_pop()
