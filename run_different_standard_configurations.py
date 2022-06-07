@@ -3,7 +3,7 @@
 """
 Created on Fri May 27 14:40:57 2022
 
-@author: rubenwillamowski, alexander kling
+@author: ruben willamowski, alexander kling
 """
 
 from pyworld3 import world3 as w3
@@ -164,7 +164,57 @@ def stab_pop():
                          title="World Model with stabilized population")
     show()
 
+def red_des_comp_fam_size():
+    """DGFW: Figure 7-34 Run 7-24: reduction of the desired completed family size """
 
+    params = {'lines.linewidth': '3'}
+    rcParams.update(params)
+
+    "Reduction of the Desired Completed Family Size DCFS"
+    " zpgt : float, optional - time when desired family size equals 2 children [year]. The default is 4000. "
+
+    world3 = w3.World3()
+    world3.init_world3_constants(zpgt=1975)
+    world3.init_world3_variables()
+    world3.set_world3_table_functions()
+    world3.set_world3_delay_functions()
+    world3.run_world3(fast=True)
+
+    plot_world_variables(world3.time,
+                         [world3.nrfr, world3.iopc, world3.fpc, world3.pop,
+                          world3.ppolx],
+                         ["NRFR", "IOPC", "FPC", "POP", "PPOLX"],
+                         [[0, 1], [0, 1e3], [0, 1e3], [0, 16e9], [0, 32]],
+                         figsize=(7, 5),
+                         grid=1,
+                         title="World Model with reduction of the desired completed family size")
+    show()
+    
+def inc_of_ind_a_serv_cap_lt():
+    """DGFW: Figure 7-35 Run 7-25: increase of industrial and service capital lifetimes """
+    
+    "alic2 : float, optional"
+    "alic, value after time=pyear [years]. The default is 14."
+    
+    params = {'lines.linewidth': '3'}
+    rcParams.update(params)
+
+    world3 = w3.World3()
+    world3.init_world3_constants(alic2=21, alsc2=30)
+    world3.init_world3_variables()
+    world3.set_world3_table_functions()
+    world3.set_world3_delay_functions()
+    world3.run_world3(fast=True)
+
+    plot_world_variables(world3.time,
+                         [world3.nrfr, world3.iopc, world3.fpc, world3.pop,
+                          world3.ppolx],
+                         ["NRFR", "IOPC", "FPC", "POP", "PPOLX"],
+                         [[0, 1], [0, 1e3], [0, 1e3], [0, 16e9], [0, 32]],
+                         figsize=(7, 5),
+                         grid=1,
+                         title="World Model with increase of industrial and service capital lifetimes ")
+    show()
 
 
 if __name__ == '__main__':
@@ -174,3 +224,5 @@ if __name__ == '__main__':
     #unlimited_resources_pollution_control()
     unlimited_resources_pollution_control_increased_land_yield()
     #stab_pop()
+    #red_des_comp_fam_size()
+    #inc_of_ind_a_serv_cap_lt()
