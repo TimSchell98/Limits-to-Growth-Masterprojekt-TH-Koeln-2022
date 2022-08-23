@@ -33,7 +33,7 @@ if szenario == 1:
                      img_background="./img/fig 4-1-1.png",
                      figsize=(7, 5),
                      title="World3 Referenze Run, 2004 Szenario 1")
-
+    
     plot_world_variables(world3.time,
                      [world3.le, world3.fpc, world3.sopc, world3.ciopc],
                      ["LE", "FPC", "SOPC", "CIOPC"],
@@ -41,13 +41,15 @@ if szenario == 1:
                      img_background="./img/fig 4-1-2.png",
                      figsize=(7, 5),
                      title="World3 Referenze Run - Material standard of living, 2004 Szenario 1")
-
+    
+    
     plot_world_variables(world3.time,
                      [world3.ef, world3.hwi],
                      ["EF", "HWI"],
                      [[0, 4.2], [0,1]],
                      img_background="./img/fig 4-1-3.png",
                      figsize=(7, 5), title="World3 Referenze Run - Human Wellfare and Footprint, 2004 Szenario 1")
+    
     print("Szenario 1, referenz run")
     
     """

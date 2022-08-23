@@ -37,7 +37,7 @@ from numpy import arange
 from .population import Population
 from .capital import Capital
 from .agriculture import Agriculture
-from .pollution_update import Pollution
+from .pollution import Pollution
 from .resource import Resource
 
 
