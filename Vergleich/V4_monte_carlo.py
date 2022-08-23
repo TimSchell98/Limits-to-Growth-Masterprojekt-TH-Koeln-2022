@@ -28,7 +28,7 @@ def count_dice (pips_number):
 
 ## Simulation
 #Inputs
-n = 1000             # number of rolls  
+n = 100000             # number of rolls  
 pips = []           # list for dice results
 number_pips = []    # amount of pips diced 
 dice_combinations = np.arange(2,13)
