@@ -1,120 +1,124 @@
-"""
-This file contains functions that each represents one of the runs of the world model that were presented in Limits to Growth
+# -*- coding: utf-8 -*-
 
+import matplotlib.pyplot as plt
 
-created by: A.K.
-"""
-
-
-from pyworld3 import world3 as w3
+from pyworld3 import World3
 from pyworld3.utils import plot_world_variables
-from matplotlib.pyplot import rcParams, show
 
+params = {'lines.linewidth': '3'}
+plt.rcParams.update(params)
 
-def standard_run():
-    params = {'lines.linewidth': '3'}
-    rcParams.update(params)
+"""
+Choose Szenario:
+    1: A Referenz Point
+    2: More Abundant Nonrenewable Resources
+    Mehr hinzufügen
+"""
+szenario = 1
 
-    world3 = w3.World3()
+if szenario == 1:
+
+    world3 = World3(dt = 1)
     world3.init_world3_constants()
     world3.init_world3_variables()
     world3.set_world3_table_functions()
     world3.set_world3_delay_functions()
-    world3.run_world3(fast=True)
+    world3.run_world3(fast=False)
 
     plot_world_variables(world3.time,
-                         [world3.nrfr, world3.iopc, world3.fpc, world3.pop,
-                          world3.ppolx],
-                         ["NRFR", "IOPC", "FPC", "POP", "PPOLX"],
-                         [[0, 1], [0, 1e3], [0, 1e3], [0, 16e9], [0, 32]],
-                         figsize=(7, 5),
-                         grid=1,
-                         title="Limits to Growth standard run")
-    show()
+                     [world3.nrfr, world3.io, world3.f, world3.pop,
+                      world3.ppolx],
+                     ["NRFR", "IO", "F", "POP", "PPOLX"],
+                     [[0, 1.975], [0, 4e12], [0, 6e12], [0, 12e9], [0, 40]],
+                     img_background="./img/fig 4-1-1.png",
+                     figsize=(7, 5),
+                     title="World3 Referenze Run, 2004 Szenario 1")
 
-def doubled_resources():
-    """Originally:
-     Figure 36 WORLD MODEL WITH NATURAL RESOURCE
-RESERVES DOUBLED """
+    plot_world_variables(world3.time,
+                     [world3.le, world3.fpc, world3.sopc, world3.ciopc],
+                     ["LE", "FPC", "SOPC", "CIOPC"],
+                     [[0, 90], [0,1020],[0,970], [0, 250]],
+                     img_background="./img/fig 4-1-2.png",
+                     figsize=(7, 5),
+                     title="World3 Referenze Run - Material standard of living, 2004 Szenario 1")
 
-    params = {'lines.linewidth': '3'}
-    rcParams.update(params)
+    plot_world_variables(world3.time,
+                     [world3.ef, world3.hwi],
+                     ["EF", "HWI"],
+                     [[0, 4.2], [0,1]],
+                     img_background="./img/fig 4-1-3.png",
+                     figsize=(7, 5), title="World3 Referenze Run - Human Wellfare and Footprint, 2004 Szenario 1")
+    print("Szenario 1, referenz run")
+    
+    """
+    for i in range(0,400):
+        print(world3.ai[i])
+    """
 
-    world3 = w3.World3()
+if szenario == 2:
+    world3 = World3(dt = 0.5)
     world3.init_world3_constants(nri=2e12)
     world3.init_world3_variables()
     world3.set_world3_table_functions()
     world3.set_world3_delay_functions()
-    world3.run_world3(fast=True)
+    world3.run_world3(fast=False)
 
     plot_world_variables(world3.time,
-                         [world3.nrfr, world3.iopc, world3.fpc, world3.pop,
-                          world3.ppolx],
-                         ["NRFR", "IOPC", "FPC", "POP", "PPOLX"],
-                         [[0, 1], [0, 1e3], [0, 1e3], [0, 16e9], [0, 32]],
-                         figsize=(7, 5),
-                         grid=1,
-                         title="World Model with Natural Resources doubled")
-    show()
+                     [world3.nrfr, world3.io, world3.f, world3.pop,
+                      world3.ppolx],
+                     ["NRFR", "IO", "F", "POP", "PPOLX"],
+                     [[0, 1.975], [0, 4e12], [0, 6e12], [0, 12e9], [0, 40]],
+                     img_background="./img/fig 4-2-1.jpg",
+                     figsize=(7, 5),
+                     title="World3 More Resources, 2004 Szenario 2")
 
-def unlimited_resources():
-    """Originally: Figure 37 WORLD MODEL WITH  UNLIMITED RESSOURCES
-    The Key Parameter here seems to be the nruf2, which is described on P.390 of Dynamics of Growth
-    in a finite World (DGFW)
-    The most fitting value for NRUF2 seems to be 0.6"""
+    plot_world_variables(world3.time,
+                     [world3.le, world3.fpc, world3.sopc, world3.ciopc],
+                     ["LE", "FPC", "SOPC", "CIOPC"],
+                     [[0, 90], [0,1020],[0,970], [0, 250]],
+                     img_background="./img/fig 4-2-2.jpg",
+                     figsize=(7, 5),
+                     title="World3 More Resources - Material standard of living, 2004 Szenario 2")
 
-    nruf2 = 0.65
-
-    params = {'lines.linewidth': '3'}
-    rcParams.update(params)
-
-    world3 = w3.World3()
-    world3.init_world3_constants(nri=2e12, nruf1=1, nruf2=nruf2)
+    plot_world_variables(world3.time,
+                     [world3.ef, world3.hwi],
+                     ["EF", "HWI"],
+                     [[0, 4.2], [0,1]],
+                     img_background="./img/fig 4-2-3.jpg",
+                     figsize=(7, 5), title="World3 More Resources - Human Wellfare and Footprint, 2004 Szenario 2")
+    
+    print("Szenario 2: More Resources")
+    
+if szenario == 3:
+    world3 = World3(dt = 1,pyear_pp_tech = 2002)
+    world3.init_world3_constants(nri=2e12)
     world3.init_world3_variables()
     world3.set_world3_table_functions()
     world3.set_world3_delay_functions()
-    world3.run_world3(fast=True)
+    world3.run_world3(fast=False)
 
     plot_world_variables(world3.time,
-                         [world3.nrfr, world3.iopc, world3.fpc, world3.pop,
-                          world3.ppolx],
-                         ["NRFR", "IOPC", "FPC", "POP", "PPOLX"],
-                         [[0, 1], [0, 1e3], [0, 1e3], [0, 16e9], [0, 32]],
-                         figsize=(7, 5),
-                         grid=1,
-                         title="World Model with unlimited Natural Resources \nParameter: nruf2 = {}".format(nruf2))
-    show()
-
-def unlimited_resources_pollution_control():
-    """Originally: Figure 39 WORLD MODEL WITH UNLIMITED RESSOURCES AND POLLUTION CONTROL
-    The Key Parameter here seems to be the ppgf2, which is described on P.428 of Dynamics of Growth
-    in a finite World (DGFW) """
-
-    nruf2 = 0.6
-    ppgf2 = 0.25
-
-    params = {'lines.linewidth': '3'}
-    rcParams.update(params)
-
-    world3 = w3.World3()
-    world3.init_world3_constants(nri=2e12, nruf1=1, nruf2=nruf2, ppgf2=ppgf2, ppgf1=1)
-    world3.init_world3_variables()
-    world3.set_world3_table_functions()
-    world3.set_world3_delay_functions()
-    world3.run_world3(fast=True)
+                     [world3.nrfr, world3.io, world3.f, world3.pop,
+                      world3.ppolx],
+                     ["NRFR", "IO", "F", "POP", "PPOLX"],
+                     [[0, 1.975], [0, 4e12], [0, 6e12], [0, 12e9], [0, 40]],
+                     img_background="./img/fig 4-3-1.jpg",
+                     figsize=(7, 5),
+                     title="World3 More Resources and Pollution Control, 2004 Szenario 2")
 
     plot_world_variables(world3.time,
-                         [world3.nrfr, world3.iopc, world3.fpc, world3.pop,
-                          world3.ppolx],
-                         ["NRFR", "IOPC", "FPC", "POP", "PPOLX"],
-                         [[0, 1], [0, 1e3], [0, 1e3], [0, 16e9], [0, 32]],
-                         figsize=(7, 5),
-                         grid=1,
-                         title="World Model with unlimited Natural Resources and Pollution Control \nParameter: nruf2 = {}; ppgf2 = {}".format(nruf2, ppgf2))
-    show()
+                     [world3.le, world3.fpc, world3.sopc, world3.ciopc],
+                     ["LE", "FPC", "SOPC", "CIOPC"],
+                     [[0, 90], [0,1020],[0,970], [0, 250]],
+                     img_background="./img/fig 4-3-2.jpg",
+                     figsize=(7, 5),
+                     title="World3 More Resources and Pollution Control - Material standard of living, 2004 Szenario 2")
 
-if __name__ == '__main__':
-    #unlimited_resources()
-    #doubled_resources()
-    #standard_run()
-    unlimited_resources_pollution_control()
+    plot_world_variables(world3.time,
+                     [world3.ef, world3.hwi],
+                     ["EF", "HWI"],
+                     [[0, 4.2], [0,1]],
+                     img_background="./img/fig 4-3-3.jpg",
+                     figsize=(7, 5), title="World3 More Resources and Pollution Control - Human Wellfare and Footprint, 2004 Szenario 2")
+    
+    print("Szenario 3: More Resources and Pollution Control")
