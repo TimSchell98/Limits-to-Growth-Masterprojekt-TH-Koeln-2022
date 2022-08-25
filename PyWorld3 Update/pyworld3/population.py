@@ -1020,7 +1020,7 @@ class Population:
         From step k requires: aiopc
         """
         
-        self.gdpc[k] = self.gdpc_f(self.aiopc[k])
+        self.gdpc[k] = self.gdpc_f(self.iopc[k])
     
     @requires (["gdpi"],["gdpc"])    
     def _update_gdpi (self, k):
