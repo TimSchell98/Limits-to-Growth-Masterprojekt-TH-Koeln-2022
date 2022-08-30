@@ -4,9 +4,9 @@ MODULE_PATH = "C:/Users/Tim Schell/Documents/GitHub/pyworld3/pyworld3"
 MODULE_NAME = "pyworld3"
 
 
-spec = importlib.util.spec_from_file_location(MODULE_NAME, MODULE_PATH)
-modulevar = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(modulevar)
+#spec = importlib.util.spec_from_file_location(MODULE_NAME, MODULE_PATH)
+#modulevar = importlib.util.module_from_spec(spec)
+#spec.loader.exec_module(modulevar)
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -227,5 +227,5 @@ print(res1)
     # eigenständige parameter selektierung (was vorhanden) - Zeile: 
     # vergleichsvariablen zusammenfassen - Zeile:
 #4.0 als 'standard'
-
+#kommentare anfang checken!
 
