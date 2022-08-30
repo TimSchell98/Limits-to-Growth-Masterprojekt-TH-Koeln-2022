@@ -532,9 +532,11 @@ class Agriculture:
         # loop 2
         self._update_cai(0)
         self._update_alai(0)
+        self._update_ai(0)
         # loop 6
         self._update_falm(0)
         self._update_fr(0)
+        self._update_pfr(0)
         # back to loop 2
         self._update_aiph(0)
         self._update_lymc(0)
@@ -928,6 +930,7 @@ class Agriculture:
         """
         From step k=0 requires: FR, else nothing
         """
+
         self.pfr[k] = self.smooth_fr(k, self.fspd, 1) #2004 update, added init Val
         
     #2004 update, added:

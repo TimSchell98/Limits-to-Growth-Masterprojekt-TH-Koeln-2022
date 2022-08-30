@@ -37,9 +37,6 @@ params = {'lines.linewidth': '3'}
 plt.rcParams.update(params)
 """
 
-#ausgelagerte initierung für die verbesserung der Laufzeit
-world3 = World3(dt = 1)
-
 for i in range(0,sim_anzahl):
     print("\nSimulation" , end =": ")
     print(i+1)
@@ -48,6 +45,7 @@ for i in range(0,sim_anzahl):
     print("s")
 
     #simulation durchführen
+    world3 = World3(dt = 1, year_max= 2023)
     world3.init_world3_constants(dcfsn = dcfsn_f(i, sim_anzahl))
     world3.init_world3_variables()
     world3.set_world3_table_functions()
@@ -66,7 +64,7 @@ for i in range(0,sim_anzahl):
     """
     
     #alle Werte der Vergleichsvariablen in Excel schrieben
-    for y in range(0,200):
+    for y in range(0,123):
         pop.write(y+1, i+1, world3.pop[y])
         d.write(y+1, i+1, world3.d[y])
         b.write(y+1, i+1, world3.b[y])

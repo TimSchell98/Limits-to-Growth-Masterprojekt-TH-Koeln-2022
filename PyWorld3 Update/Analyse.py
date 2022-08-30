@@ -15,7 +15,7 @@ pop_data_big = pd.read_csv('Data_population.csv')
 pop_data = pop_data_big.iloc[0:1, 19:]              # Data from 1970 - 2021
 pop_data = np.transpose(pop_data.values.tolist())
 
-#berechnen der eingangsparameter "sprünge"
+#Einteilen des Simulationsrasters
 sim_anzahl = 11
 start_val = 3
 end_val = 4

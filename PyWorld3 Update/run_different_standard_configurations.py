@@ -18,7 +18,7 @@ szenario = 1
 
 if szenario == 1:
 
-    world3 = World3(dt = 1)
+    world3 = World3(dt = 0.5)
     world3.init_world3_constants()
     world3.init_world3_variables()
     world3.set_world3_table_functions()
@@ -54,7 +54,7 @@ if szenario == 1:
     
     """
     for i in range(0,400):
-        print(world3.ai[i])
+        print(world3.luf[i])
     """
 
 if szenario == 2:

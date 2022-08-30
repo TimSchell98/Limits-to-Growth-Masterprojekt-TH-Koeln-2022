@@ -1,3 +1,13 @@
+import importlib.util
+
+MODULE_PATH = "C:/Users/Tim Schell/Documents/GitHub/pyworld3/pyworld3"
+MODULE_NAME = "pyworld3"
+
+
+spec = importlib.util.spec_from_file_location(MODULE_NAME, MODULE_PATH)
+modulevar = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(modulevar)
+
 import matplotlib.pyplot as plt
 import numpy as np
 from xlwt import Workbook
@@ -9,7 +19,16 @@ import time
 startTime = time.time()
 
 "Analyse Einstelungen"
-#berechnen der eingangsparameter "sprünge"
+#berechnen der eingangsparameter "Spruenge"
+
+"Data decleration"
+## Import Observed Data
+# Population
+pop_data_big = pd.read_csv('Data_population.csv')
+pop_data = pop_data_big.iloc[0:1, 19:]              # Data from 1970 - 2021
+pop_data = np.transpose(pop_data.values.tolist())
+
+#Einteilen des Simulationsrasters
 sim_anzahl = 11
 start_val = 3
 end_val = 5
@@ -88,6 +107,7 @@ def one_constant():
     #Ergebnis-Matrix in Schleife berechnen
     #erste Zeile
     world3 = World3(dt = sim_time_step, year_max=year_max)
+    world3 = World3(dt = sim_time_step, year_max = year_max)
     world3.init_world3_constants()
     world3.init_world3_variables()
     world3.set_world3_table_functions()
