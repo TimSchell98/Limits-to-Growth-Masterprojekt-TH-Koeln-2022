@@ -1,0 +1,1 @@
+from PyWorld3_Update.pyworld3 import World3
