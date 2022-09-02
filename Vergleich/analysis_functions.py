@@ -59,26 +59,13 @@ def calculate_metrics(model_data, empirical_data, row_name='default', calculatio
 
 def initialize_empirical_data():
     "Data - measured"
-    ## Import Observed Data
-    # Population
-    pop_data_big = pd.read_csv('Data_population.csv')
-    pop_data = pop_data_big.iloc[0:1, 4:]  # Data from 1970 - 2021
-    pop_data = np.transpose(pop_data.values.tolist())
-    # arable Land
-    al_data_big = pd.read_csv('Data_arable_land1.csv')
-    al_data = al_data_big.iloc[270]  # Data from 1961 - 2018
-    al_data = al_data.str.split(";", expand=True)
-    al_data = al_data.iloc[0:1, 5:63]
-    al_data = np.transpose(al_data.values.tolist())
-    # create one DataFrame
-    year_data = np.arange(s.year_min, s.year_max1)
-    measured_data = np.zeros((s.period, 3))
-    measured_data[:, 0] = year_data
-    measured_data[60:122, 1:2] = pop_data
-    measured_data[61:119, 2:3] = al_data
+    measured_data = pd.read_csv('emperical_data.csv', names= ['data'])
+    measured_data = measured_data['data'].str.split(";", expand=True)
+    measured_data = measured_data.iloc[:,0:4]
+    measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
+    empirical_data = measured_data.replace(0, np.nan)
 
-    measured_data = pd.DataFrame(data=measured_data, columns=['year', s.pop_name, s.al_name]).replace(0, np.nan)
-    return measured_data
+    return empirical_data
 
 def prepare_data_for_metric_calc(model_data:pd.DataFrame, empirical_data:pd.DataFrame, variable):
 
