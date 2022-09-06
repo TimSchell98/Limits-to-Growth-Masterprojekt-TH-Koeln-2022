@@ -59,10 +59,10 @@ def calculate_metrics(model_data, empirical_data, row_name='default', calculatio
 
 def initialize_empirical_data():
     "Data - measured"
-    measured_data = pd.read_csv('emperical_data.csv', names= ['data'])
-    measured_data = measured_data['data'].str.split(";", expand=True)
+    measured_data = pd.read_csv('empirical_data.csv', sep=';')
+    #measured_data = measured_data['data'].str.split(";", expand=True)
     measured_data = measured_data.iloc[:,0:4]
-    measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
+    #measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
     empirical_data = measured_data.replace(0, np.nan)
 
     return empirical_data
