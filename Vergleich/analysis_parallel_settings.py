@@ -1,7 +1,7 @@
 import pandas as pd
 
 #Einteilen des Simulationsrasters
-sim_anzahl = 2
+sim_anzahl = 10
 dcfsn_start_val = 3
 dcfsn_end_val = 5
 dcfsn_delta = (dcfsn_end_val-dcfsn_start_val)/(sim_anzahl-1)

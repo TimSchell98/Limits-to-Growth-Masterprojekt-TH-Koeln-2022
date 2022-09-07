@@ -41,7 +41,6 @@ if __name__ == '__main__':
     run_parallel = True
     mp.freeze_support()
 
-
     # - - - Run Simulation - - -
     if not run_parallel:
         for i in range(0, s.sim_anzahl):
@@ -61,11 +60,14 @@ if __name__ == '__main__':
             df_results = pd.concat([df_results, results[i]], axis=1)
     print(df_results)
 
-
     # - - - Metric calculation - -
     empirical_data = af.initialize_empirical_data()
-
     model_data, empirical_data_slice = af.prepare_data_for_metric_calc(df_results, empirical_data, s.pop_name)
-    metric = af.calculate_metrics(model_data['AL_{}'.format(1)], empirical_data_slice, '1')
-    print(metric)
+    metrics = pd.DataFrame()
+    for i in range(s.sim_anzahl):
+        metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 'dcfsn',
+                                             s.dcfsn_start_val+i*s.dcfsn_delta)
+        metrics = pd.concat([metrics, metric_result])
+
+    print(metrics)
     #results = pool.map(af.calculate_metrics(model_data['AL_{}'.format(i)]))

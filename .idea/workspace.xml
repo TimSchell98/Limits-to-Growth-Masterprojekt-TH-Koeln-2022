@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="da94e042-4e3a-4526-9f3d-6bd1485ce66f" name="Changes" comment="Ein Skript welches aktuell 2 Funktionen enthält um den standard run und den mit verdoppelten Ressourcen nachzubilden.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_different_standard_configurations.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_different_standard_configurations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Vergleich/analysis_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vergleich/analysis_functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Vergleich/analysis_parallel.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vergleich/analysis_parallel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Vergleich/analysis_parallel_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vergleich/analysis_parallel_settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +43,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
   </component>
-  <component name="RunManager" selected="Python.run_different_standard_configurations">
+  <component name="RunManager" selected="Python.analysis_parallel">
     <configuration name="LtG_MP" type="PythonConfigurationType" factoryName="Python">
       <module name="Limits-to-Growth-Masterprojekt-TH-Koeln-2022" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -76,6 +78,48 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/S01_stable_pop.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="analysis_functions" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Limits-to-Growth-Masterprojekt-TH-Koeln-2022" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Vergleich" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Vergleich/analysis_functions.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="analysis_parallel" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Limits-to-Growth-Masterprojekt-TH-Koeln-2022" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Vergleich" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Vergleich/analysis_parallel.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -128,6 +172,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.analysis_parallel" />
+        <item itemvalue="Python.analysis_functions" />
         <item itemvalue="Python.run_different_standard_configurations" />
         <item itemvalue="Python.S01_stable_pop" />
       </list>
@@ -166,5 +212,31 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Ein Skript welches aktuell 2 Funktionen enthält um den standard run und den mit verdoppelten Ressourcen nachzubilden." />
     <option name="LAST_COMMIT_MESSAGE" value="Ein Skript welches aktuell 2 Funktionen enthält um den standard run und den mit verdoppelten Ressourcen nachzubilden." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Vergleich/analysis_functions.py</url>
+          <line>105</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Vergleich/analysis_functions.py</url>
+          <line>107</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Vergleich/analysis_parallel.py</url>
+          <line>67</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Vergleich/analysis_functions.py</url>
+          <line>63</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
