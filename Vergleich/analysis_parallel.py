@@ -66,7 +66,7 @@ if __name__ == '__main__':
     metrics = pd.DataFrame()
     for i in range(s.sim_anzahl):
         metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 'dcfsn',
-                                             s.dcfsn_start_val+i*s.dcfsn_delta)
+                                             s.parameter_var_list.iloc[i,0])
         metrics = pd.concat([metrics, metric_result])
 
     print(metrics)

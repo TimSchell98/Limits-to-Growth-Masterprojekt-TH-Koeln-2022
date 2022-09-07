@@ -47,6 +47,7 @@ parameter_var_list = pd.DataFrame(data=parameter_var_list)
 pop_name = 'Population'
 pop_y_min = 1970
 pop_y_max = 2018
+#index_pop_last = measured_data['population'].index.get_loc(measured_data['population'].last_valid_index())
 
 # Arable Land
 al_name = 'Arable_Land'
