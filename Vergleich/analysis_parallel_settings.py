@@ -12,21 +12,16 @@ period  = year_max1 - year_min # wird es noch benötigt?
 # - Analysis Settings
 calculation_interval = 5
 
-
-
 # - - - - - Parameter Settings 
-#1) desired complete family size normal
+#1) desired complete family size normal - default = 4
 dcfsn_start_val = 3.0
 dcfsn_end_val = 5.0
-dcfsn_delta = (dcfsn_end_val-dcfsn_start_val)/(sim_anzahl-1) 
-dcfsn_var = np.arange(dcfsn_start_val, dcfsn_end_val+0.001, dcfsn_delta)
 
-#2) industrial output per capita desired
+#2) industrial output per capita desired - default = 400
 iopcd_start_val = 300.0
 iopcd_end_val = 500.0
 
-
-#3) processing loss 
+#3) processing loss  - default = 0.1
 pl_start_val = 0.01
 pl_end_val = 0.3
 
@@ -36,7 +31,7 @@ setting_values = {'start_value':[dcfsn_start_val, iopcd_start_val, pl_start_val]
 setting_values = pd.DataFrame( data = setting_values, index = ['dcfsn', 'iopcd', 'pl'])
 setting_values['delta'] = (setting_values['end_value'] - setting_values['start_value'])/(sim_anzahl-1)
 
-# - - Dataframe Parameter list
+# - - Dataframe Parameter list #TODO als Function und verbessern
 parameter_var_list = {'dcfsn': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.001, setting_values.iloc[0,2]),
                       'iopcd': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.001, setting_values.iloc[1,2]),
                       'pl': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.001, setting_values.iloc[2,2])}

@@ -18,7 +18,7 @@ else:
 def run_simulation(i):
     # simulation durchführen
     world3 = World3(dt=s.sim_time_step)
-    world3.init_world3_constants(dcfsn=s.dcfsn_start_val+i*s.dcfsn_delta)
+    world3.init_world3_constants(dcfsn=s.parameter_var_list.iloc[i,0])
     world3.init_world3_variables()
     world3.set_world3_table_functions()
     world3.set_world3_delay_functions()
