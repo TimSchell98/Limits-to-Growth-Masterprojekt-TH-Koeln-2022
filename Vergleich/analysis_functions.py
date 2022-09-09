@@ -56,11 +56,13 @@ def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_int
     return nrmsd
 
 
-def calculate_metrics(model_data, empirical_data, index=0, parameter_name='none', parameter_value=np.nan,
+def calculate_metrics(model_data, empirical_data, index=0, parameter1_name='none', parameter1_value=np.nan, parameter2_name='none', parameter2_value=np.nan, parameter3_name='none', parameter3_value=np.nan,
                       calculation_period=50):
     results = pd.DataFrame(index=[index])
-    if not parameter_name == 'none':
-        results['{}'.format(parameter_name)] = parameter_value
+    if not parameter1_name == 'none' or parameter2_name == 'none' or parameter3_name == 'none':
+        results['{}'.format(parameter1_name)] = parameter1_value
+        results['{}'.format(parameter2_name)] = parameter2_value
+        results['{}'.format(parameter3_name)] = parameter3_value
     results['delta_value[%]'] = calculate_d_value(model_data, empirical_data)
     results['roc[%]'] = calculate_roc(model_data, empirical_data, timestep=s.sim_time_step,
                                       calculation_interval=s.calculation_interval)

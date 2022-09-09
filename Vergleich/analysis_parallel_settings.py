@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # - - - - - Global  Settings
-sim_anzahl = 11
+sim_anzahl = 3
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
 year_max1 = year_max +1
