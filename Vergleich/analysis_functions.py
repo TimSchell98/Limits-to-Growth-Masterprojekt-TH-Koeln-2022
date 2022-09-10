@@ -90,7 +90,75 @@ def prepare_data_for_metric_calc(model_data: pd.DataFrame, empirical_data: pd.Da
     result_empirical = empirical_data[variable][start_row:stop_row]
     return result_model, result_empirical
 
+def improved_limits(metrics):
+    """
+    Find the combination at which the NRMSD is minimal.
+    Cecks if parameter is boundary value, if yes calculate next value as new limit.
+    Calculate new limits.
+    """
+    s.dcfsn_start_val = s.parameter_var_list.iat[0,0]
+    s.dcfsn_end_val = s.parameter_var_list.iat[s.grid_resolution-1,0]
+    s.iopcd_start_val = s.parameter_var_list.iat[0,1]
+    s.iopcd_end_val = s.parameter_var_list.iat[s.grid_resolution-1,1]
+    s.pl_start_val = s.parameter_var_list.iat[0,2]
+    s.pl_end_val = s.parameter_var_list.iat[s.grid_resolution-1,2]
+    
+    NRMSD_index= int(metrics["NRMSD[%]"].idxmin())
 
+    dcfsn_val = s.parameter_var_list.iloc[NRMSD_index-s.grid_resolution*int(NRMSD_index/s.grid_resolution)-1,0]
+    iopcd_val = s.parameter_var_list.iloc[int((NRMSD_index-s.grid_resolution**2*int(NRMSD_index/s.grid_resolution**2))/s.grid_resolution),1]
+    pl_val = s.parameter_var_list.iloc[int(NRMSD_index/s.grid_resolution**2),2]
+    
+    if dcfsn_val == s.dcfsn_start_val and dcfsn_val != s.dcfsn_end_val:
+        dcfsn_start_val = dcfsn_val-((s.dcfsn_end_val-s.dcfsn_start_val)/(s.grid_resolution-1))
+        dcfsn_end_val = s.parameter_var_list.iloc[ (NRMSD_index-s.grid_resolution*int(NRMSD_index/s.grid_resolution)),0]
+        
+    if dcfsn_val == s.dcfsn_end_val and dcfsn_val != s.dcfsn_start_val:
+        dcfsn_end_val = dcfsn_val+((s.dcfsn_end_val-s.dcfsn_start_val)/(s.grid_resolution-1))
+        dcfsn_start_val = s.parameter_var_list.iloc[ (NRMSD_index-s.grid_resolution*int(NRMSD_index/s.grid_resolution))-2,0]
+        
+    if dcfsn_val != s.dcfsn_start_val and dcfsn_val != s.dcfsn_end_val:
+        dcfsn_start_val = s.parameter_var_list.iloc[(NRMSD_index-s.grid_resolution*int(NRMSD_index/s.grid_resolution))-2,0]
+        dcfsn_end_val = s.parameter_var_list.iloc[(NRMSD_index-s.grid_resolution*int(NRMSD_index/s.grid_resolution)),0]
+    
+    if iopcd_val == s.iopcd_start_val and iopcd_val != s.iopcd_end_val:
+        iopcd_start_val = iopcd_val-((s.iopcd_end_val-s.iopcd_start_val)/(s.grid_resolution-1))
+        iopcd_end_val = s.parameter_var_list.iloc[(int((NRMSD_index-s.grid_resolution**2*int(NRMSD_index/s.grid_resolution**2))/s.grid_resolution))+1,1]
+        
+    if iopcd_val == s.iopcd_end_val and iopcd_val != s.iopcd_start_val:
+        
+        iopcd_end_val = iopcd_val+((s.iopcd_end_val-s.iopcd_start_val)/(s.grid_resolution-1))
+        iopcd_start_val = s.parameter_var_list.iloc[(int((NRMSD_index-s.grid_resolution**2*int(NRMSD_index/s.grid_resolution**2))/s.grid_resolution))-1,1]
+        
+    if iopcd_val != s.iopcd_start_val and iopcd_val != s.iopcd_end_val:
+        iopcd_start_val = s.parameter_var_list.iloc[(int((NRMSD_index-s.grid_resolution**2*int(NRMSD_index/s.grid_resolution**2))/s.grid_resolution))-1,1]
+        iopcd_end_val = s.parameter_var_list.iloc[(int((NRMSD_index-s.grid_resolution**2*int(NRMSD_index/s.grid_resolution**2))/s.grid_resolution))+1,1]
+    
+    if pl_val == s.pl_start_val and pl_val != s.pl_end_val:
+        pl_start_val = pl_val-((s.pl_end_val-s.pl_start_val)/(s.grid_resolution-1))
+        pl_end_val = s.parameter_var_list.iloc[(int(NRMSD_index/s.grid_resolution**2))+1,2]
+        
+    if pl_val == s.pl_end_val and pl_val != s.pl_start_val:
+        pl_end_val = pl_val+((s.pl_end_val-s.pl_start_val)/(s.grid_resolution-1))
+        pl_start_val = s.parameter_var_list.iloc[(int(NRMSD_index/s.grid_resolution**2))-1,2]
+        
+    if pl_val != s.pl_start_val and pl_val != s.pl_end_val:
+        pl_start_val = s.parameter_var_list.iloc[(int(NRMSD_index/s.grid_resolution**2))-1,2]
+        pl_end_val = s.parameter_var_list.iloc[(int(NRMSD_index/s.grid_resolution**2))+1,2]
+    
+    setting_values = {'start_value':[dcfsn_start_val, iopcd_start_val, pl_start_val],
+                      'end_value':[dcfsn_end_val, iopcd_end_val, pl_end_val] }
+    setting_values = pd.DataFrame( data = setting_values, index = ['dcfsn', 'iopcd', 'pl'])
+    setting_values['delta'] = (setting_values['end_value'] - setting_values['start_value'])/(s.grid_resolution-1)
+
+    parameter_var_list_improved_val = {'dcfsn': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.001, setting_values.iloc[0,2]),
+                          'iopcd': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.001, setting_values.iloc[1,2]),
+                          'pl': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.001, setting_values.iloc[2,2])}
+
+    parameter_var_list_improved = pd.DataFrame(data=parameter_var_list_improved_val)
+
+    return parameter_var_list_improved
+    
 if __name__ == '__main__':
     # testing roc and d_value calculation
     a = np.arange(10)

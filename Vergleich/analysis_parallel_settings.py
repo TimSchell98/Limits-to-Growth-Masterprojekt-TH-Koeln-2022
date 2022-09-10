@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 
 # - - - - - Global  Settings
-sim_anzahl = 3
+grid_resolution = 6 #number of simulation
+grid_zoom = 4 #number of zooms
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
 year_max1 = year_max +1
@@ -29,7 +30,7 @@ pl_end_val = 0.3
 setting_values = {'start_value':[dcfsn_start_val, iopcd_start_val, pl_start_val],
                   'end_value':[dcfsn_end_val, iopcd_end_val, pl_end_val] }
 setting_values = pd.DataFrame( data = setting_values, index = ['dcfsn', 'iopcd', 'pl'])
-setting_values['delta'] = (setting_values['end_value'] - setting_values['start_value'])/(sim_anzahl-1)
+setting_values['delta'] = (setting_values['end_value'] - setting_values['start_value'])/(grid_resolution-1)
 
 # - - Dataframe Parameter list #TODO als Function und verbessern
 parameter_var_list = {'dcfsn': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.001, setting_values.iloc[0,2]),

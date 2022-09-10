@@ -18,7 +18,7 @@ else:
 def run_simulation(i):
     # simulation durchführen
     world3 = World3(dt=s.sim_time_step)
-    world3.init_world3_constants(dcfsn=s.parameter_var_list.iloc[i-s.sim_anzahl*int(i/s.sim_anzahl),0], iopcd = s.parameter_var_list.iloc[int((i-s.sim_anzahl**2*int(i/s.sim_anzahl**2))/s.sim_anzahl),1], pl = s.parameter_var_list.iloc[int(i/s.sim_anzahl**2),2])
+    world3.init_world3_constants(dcfsn=s.parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0], iopcd = s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1], pl = s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
     world3.init_world3_variables()
     world3.set_world3_table_functions()
     world3.set_world3_delay_functions()
@@ -41,40 +41,50 @@ if __name__ == '__main__':
     run_parallel = True
     mp.freeze_support()
 
+    print('Number of simulations = ' + str(s.grid_resolution**3+s.grid_zoom*s.grid_resolution**3))
+    print('Estimated time = ' + str(round(s.grid_resolution**3*0.71+s.grid_zoom*s.grid_resolution**3*0.71,2)) + ' seconds')
+    print("Starting limits:")
+    print(s.parameter_var_list)
     # - - - Run Simulation - - -
-    if not run_parallel:
-        for i in range(0, s.sim_anzahl**3):
-            print("\nSimulation", end=": ")
-            print(i + 1)
-            print("ETA", end=": ")
-            print(round((s.sim_anzahl - i) * 2.8, 2), end="")
-            print("s")
-            # pool.map(run_simulation)
-            # pool.close()
-            run_simulation(i)
-    else:
-        print('Running in parallel mode')
-        print('Number of Simulations = ' + str(s.sim_anzahl**3))
-        print('Estimated time = ' + str(round(s.sim_anzahl**3*0.71,2)) + ' seconds')
-        
-        df_results = pd.DataFrame()
-        results = pool.map(run_simulation, [i for i in range(0, s.sim_anzahl**3)])
-        for i in range(0, s.sim_anzahl**3):
-            df_results = pd.concat([df_results, results[i]], axis=1)
-    print(df_results)
-
-    # - - - Metric calculation - -
-    empirical_data = af.initialize_empirical_data()
-    model_data, empirical_data_slice = af.prepare_data_for_metric_calc(df_results, empirical_data, s.pop_name)
-    metrics = pd.DataFrame()
-    for i in range(s.sim_anzahl**3):
-        metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 
-                                             'dcfsn',s.parameter_var_list.iloc[i-s.sim_anzahl*int(i/s.sim_anzahl),0],
-                                             'iopcd',s.parameter_var_list.iloc[int((i-s.sim_anzahl**2*int(i/s.sim_anzahl**2))/s.sim_anzahl),1],
-                                             'pl',s.parameter_var_list.iloc[int(i/s.sim_anzahl**2),2])
-        metrics = pd.concat([metrics, metric_result])
-
-    print(metrics)
+    for j in range (0, s.grid_zoom+1):
+        if not run_parallel:
+            for i in range(0, s.grid_resolution**3):
+                print("\nSimulation", end=": ")
+                print(i + 1)
+                print("ETA", end=": ")
+                print(round((s.grid_resolution - i) * 2.8, 2), end="")
+                print("s")
+                # pool.map(run_simulation)
+                # pool.close()
+                run_simulation(i)
+        else:
+            print('Running in parallel mode')
+            df_results = pd.DataFrame()
+            results = pool.map(run_simulation, [i for i in range(0, s.grid_resolution**3)])
+            for i in range(0, s.grid_resolution**3):
+                df_results = pd.concat([df_results, results[i]], axis=1)
+        print(df_results)
+    
+        # - - - Metric calculation - -
+        empirical_data = af.initialize_empirical_data()
+        model_data, empirical_data_slice = af.prepare_data_for_metric_calc(df_results, empirical_data, s.pop_name)
+        metrics = pd.DataFrame()
+        for i in range(s.grid_resolution**3):
+            metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 
+                                                 'dcfsn',s.parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
+                                                 'iopcd',s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
+                                                 'pl',s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
+            metrics = pd.concat([metrics, metric_result])
+    
+        print(metrics)
+        print("Old limits:")
+        print(s.parameter_var_list)
+        s.parameter_var_list=af.improved_limits(metrics)
+        print("Improved limits:")
+        print(s.parameter_var_list)
+    
+    
     #results = pool.map(af.calculate_metrics(model_data['AL_{}'.format(i)]))
+    
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(round(executionTime,2)))
