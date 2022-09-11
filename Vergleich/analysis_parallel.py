@@ -41,12 +41,14 @@ if __name__ == '__main__':
     run_parallel = True
     mp.freeze_support()
 
-    print('Number of simulations = ' + str(s.grid_resolution**3+s.grid_zoom*s.grid_resolution**3))
-    print('Estimated time = ' + str(round(s.grid_resolution**3*0.71+s.grid_zoom*s.grid_resolution**3*0.71,2)) + ' seconds')
     print("Starting limits:")
     print(s.parameter_var_list)
     # - - - Run Simulation - - -
     for j in range (0, s.grid_zoom+1):
+        
+        print('Number of simulations left = ' + str(s.grid_resolution**3+(s.grid_zoom-j)*s.grid_resolution**3))
+        print('Estimated time left = ' + str(round(s.grid_resolution**3*0.71+(s.grid_zoom-j)*s.grid_resolution**3*0.45,2)) + ' seconds')
+        
         if not run_parallel:
             for i in range(0, s.grid_resolution**3):
                 print("\nSimulation", end=": ")
