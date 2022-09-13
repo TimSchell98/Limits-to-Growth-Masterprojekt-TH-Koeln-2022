@@ -77,7 +77,7 @@ if __name__ == '__main__':
                                                  'iopcd',s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
                                                  'pl',s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
             metrics = pd.concat([metrics, metric_result])
-    
+        #to do: insert simulation plot here
         print(metrics)
         print("Old limits:")
         print(s.parameter_var_list)
