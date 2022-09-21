@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 
 # - - - - - Global  Settings
-grid_resolution = 6 #number of simulation
-grid_zoom = 5 #number of zooms
+grid_resolution = 5 #number of simulation
+grid_zoom = 0 #number of zooms
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
 year_max1 = year_max +1
