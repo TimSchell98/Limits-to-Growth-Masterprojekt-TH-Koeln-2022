@@ -171,11 +171,12 @@ def improved_limits(metrics):
     parameter_var_list_improved_val = {'dcfsn': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.000001, setting_values.iloc[0,2]), #wozu sind die +0.0001 nötig?
                           'iopcd': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.000001, setting_values.iloc[1,2]),
                           'pl': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.000001, setting_values.iloc[2,2])}
-    print(parameter_var_list_improved_val)
+
     parameter_var_list_improved = pd.DataFrame()
     parameter_var_list_improved = pd.DataFrame(data=parameter_var_list_improved_val)
     
     return parameter_var_list_improved
+
     
 if __name__ == '__main__':
     # testing roc and d_value calculation
@@ -196,6 +197,8 @@ if __name__ == '__main__':
 
     print(model_sliced, empirical_sliced)
     """
+    
+    #testing improved limits function
     s.grid_resolution = 3
 
     parameter_var_list_val = {'dcfsn':[3, 4, 5],

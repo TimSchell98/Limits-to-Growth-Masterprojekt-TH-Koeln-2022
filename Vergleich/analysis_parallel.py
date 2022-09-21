@@ -24,6 +24,7 @@ def run_simulation(i):
     world3.set_world3_delay_functions()
     world3.run_world3(fast=False)
     
+    #gather simulation data
     simulation_data = pd.DataFrame()
     simulation_data['POP_{}'.format(i)] = world3.pop
     simulation_data['AL_{}'.format(i)] = world3.al
@@ -43,6 +44,7 @@ if __name__ == '__main__':
 
     print("Starting limits:")
     print(s.parameter_var_list)
+    population_list = []
     # - - - Run Simulation - - -
     for j in range (0, s.grid_zoom+1):
         
@@ -61,16 +63,25 @@ if __name__ == '__main__':
                 run_simulation(i)
         else:
             print('Running in parallel mode')
+            
+            #create list for plotting
+            population_list = []
+            for i in range(0,s.grid_resolution**3):
+                population_list.append("POP_" + str(i))
+            
+            #run simulations and safe results
             df_results = pd.DataFrame()
             results = pool.map(run_simulation, [i for i in range(0, s.grid_resolution**3)])
             for i in range(0, s.grid_resolution**3):
                 df_results = pd.concat([df_results, results[i]], axis=1)
         print(df_results)
+        
     
         # - - - Metric calculation - -
         empirical_data = af.initialize_empirical_data()
         model_data, empirical_data_slice = af.prepare_data_for_metric_calc(df_results, empirical_data, s.pop_name)
         metrics = pd.DataFrame()
+
         for i in range(s.grid_resolution**3):
             metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 
                                                  'dcfsn',s.parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
@@ -78,13 +89,18 @@ if __name__ == '__main__':
                                                  'pl',s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
             metrics = pd.concat([metrics, metric_result])
         #to do: insert simulation plot here
+        print("Metrics:")
         print(metrics)
         print("Old limits:")
         print(s.parameter_var_list)
         s.parameter_var_list=af.improved_limits(metrics)
         print("Improved limits:")
         print(s.parameter_var_list)
-    
+        
+        #plot resolution
+        #df_results.plot(legend=0)
+        df_results[population_list].plot(legend=0)
+        empirical_data["Population"].plot(legend=0)
     
     #results = pool.map(af.calculate_metrics(model_data['AL_{}'.format(i)]))
     
