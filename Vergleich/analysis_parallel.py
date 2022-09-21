@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import analysis_functions as af
 import analysis_parallel_settings as s
+import matplotlib.pyplot as plt
 import time
 startTime = time.time()
 # - - -  World 3 import and Version Switching
@@ -74,6 +75,8 @@ if __name__ == '__main__':
             results = pool.map(run_simulation, [i for i in range(0, s.grid_resolution**3)])
             for i in range(0, s.grid_resolution**3):
                 df_results = pd.concat([df_results, results[i]], axis=1)
+        
+        print("df_results")
         print(df_results)
         
     
@@ -88,7 +91,8 @@ if __name__ == '__main__':
                                                  'iopcd',s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
                                                  'pl',s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
             metrics = pd.concat([metrics, metric_result])
-        #to do: insert simulation plot here
+
+        #Improved limits
         print("Metrics:")
         print(metrics)
         print("Old limits:")
@@ -99,8 +103,9 @@ if __name__ == '__main__':
         
         #plot resolution
         #df_results.plot(legend=0)
-        df_results[population_list].plot(legend=0)
-        empirical_data["Population"].plot(legend=0)
+        df_results[population_list].plot(legend=0, color = ["b"], linewidth = 0.5)
+        empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
+        plt.show()
     
     #results = pool.map(af.calculate_metrics(model_data['AL_{}'.format(i)]))
     

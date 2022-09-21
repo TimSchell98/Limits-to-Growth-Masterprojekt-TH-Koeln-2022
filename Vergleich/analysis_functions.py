@@ -74,7 +74,7 @@ def calculate_metrics(model_data, empirical_data, index=0, parameter1_name='none
 
 def initialize_empirical_data():
     "Data - measured"
-    measured_data = pd.read_csv('empirical_data1.csv', sep=',')
+    measured_data = pd.read_csv('empirical_data.csv', sep=',')
     # measured_data = measured_data['data'].str.split(";", expand=True)
     measured_data = measured_data.iloc[:,0:10]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
