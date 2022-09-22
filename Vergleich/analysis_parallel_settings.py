@@ -3,8 +3,8 @@ import numpy as np
 
 # - - - - - Global  Settings
 
-grid_resolution = 4 #number of simulation
-grid_zoom = 1 #number of zooms
+grid_resolution = 9 #number of simulation
+grid_zoom = 4 #number of zooms
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
 year_max1 = year_max +1
@@ -16,27 +16,30 @@ calculation_interval = 5
 
 # - - - - - Parameter Settings 
 #1) desired complete family size normal - default = 4
-dcfsn_start_val = 3.0
-dcfsn_end_val = 5.0
+parameter1_name = "dcfsn"
+parameter1_start_val = 3.0
+parameter1_end_val = 5.0
 
-#2) industrial output per capita desired - default = 400
-iopcd_start_val = 300.0
-iopcd_end_val = 500.0
+#2) fraction res pers mtl - default = 0.02
+parameter2_name = "frpm"
+parameter2_start_val = 0.01
+parameter2_end_val = 0.03
 
 #3) processing loss  - default = 0.1
-pl_start_val = 0.01
-pl_end_val = 0.3
+parameter3_name = "pl"
+parameter3_start_val = 0.01
+parameter3_end_val = 0.3
 
 # - - Dataframe Settings
-setting_values = {'start_value':[dcfsn_start_val, iopcd_start_val, pl_start_val],
-                  'end_value':[dcfsn_end_val, iopcd_end_val, pl_end_val] }
-setting_values = pd.DataFrame( data = setting_values, index = ['dcfsn', 'iopcd', 'pl'])
+setting_values = {'start_value':[parameter1_start_val, parameter2_start_val, parameter3_start_val],
+                  'end_value':[parameter1_end_val, parameter2_end_val, parameter3_end_val] }
+setting_values = pd.DataFrame( data = setting_values, index = ['parameter1', 'parameter2', 'parameter3'])
 setting_values['delta'] = (setting_values['end_value'] - setting_values['start_value'])/(grid_resolution-1)
 
 # - - Dataframe Parameter list #TODO als Function und verbessern
-parameter_var_list = {'dcfsn': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.001, setting_values.iloc[0,2]),
-                      'iopcd': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.001, setting_values.iloc[1,2]),
-                      'pl': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.001, setting_values.iloc[2,2])}
+parameter_var_list = {'parameter1': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.001, setting_values.iloc[0,2]),
+                      'parameter2': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.001, setting_values.iloc[1,2]),
+                      'parameter3': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.001, setting_values.iloc[2,2])}
 parameter_var_list = pd.DataFrame(data=parameter_var_list)
 
 # - - - - - empirical data settings

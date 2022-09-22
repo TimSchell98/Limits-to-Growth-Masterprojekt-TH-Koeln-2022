@@ -17,9 +17,11 @@ else:
 # - - - - - - Function definitions - -
 
 def run_simulation(i):
-    # simulation durchführen
+    #run simulation
     world3 = World3(dt=s.sim_time_step)
-    world3.init_world3_constants(dcfsn=s.parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0], iopcd = s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1], pl = s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
+    world3.init_world3_constants(dcfsn=s.parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
+                                 frpm = s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
+                                 pl = s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
     world3.init_world3_variables()
     world3.set_world3_table_functions()
     world3.set_world3_delay_functions()
@@ -45,7 +47,15 @@ if __name__ == '__main__':
 
     print("Starting limits:")
     print(s.parameter_var_list)
+    print("Parameter1 = " + s.parameter1_name)
+    print("Parameter2 = " + s.parameter2_name)
+    print("Parameter3 = " + s.parameter3_name)
+    
+    #create list for plotting
     population_list = []
+    for i in range(0,s.grid_resolution**3):
+        population_list.append("POP_" + str(i))
+        
     # - - - Run Simulation - - -
     for j in range (0, s.grid_zoom+1):
         
@@ -65,18 +75,13 @@ if __name__ == '__main__':
         else:
             print('Running in parallel mode')
             
-            #create list for plotting
-            population_list = []
-            for i in range(0,s.grid_resolution**3):
-                population_list.append("POP_" + str(i))
-            
             #run simulations and safe results
             df_results = pd.DataFrame()
             results = pool.map(run_simulation, [i for i in range(0, s.grid_resolution**3)])
             for i in range(0, s.grid_resolution**3):
                 df_results = pd.concat([df_results, results[i]], axis=1)
         
-        print("df_results")
+        print("df_results:")
         print(df_results)
         
     
@@ -87,14 +92,17 @@ if __name__ == '__main__':
 
         for i in range(s.grid_resolution**3):
             metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 
-                                                 'dcfsn',s.parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
-                                                 'iopcd',s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
-                                                 'pl',s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
+                                                 'parameter1',s.parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
+                                                 'parameter2',s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
+                                                 'parameter3',s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
             metrics = pd.concat([metrics, metric_result])
 
         #Improved limits
         print("Metrics:")
         print(metrics)
+        print("Parameter1 = " + s.parameter1_name)
+        print("Parameter2 = " + s.parameter2_name)
+        print("Parameter3 = " + s.parameter3_name)
         print("Old limits:")
         print(s.parameter_var_list)
         s.parameter_var_list=af.improved_limits(metrics)

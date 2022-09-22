@@ -97,80 +97,80 @@ def improved_limits(metrics):
     Calculate new limits.
     """
     #set initial limits
-    s.dcfsn_start_val = s.parameter_var_list.iloc[0,0]
-    s.dcfsn_end_val = s.parameter_var_list.iloc[s.grid_resolution-1,0]
-    s.iopcd_start_val = s.parameter_var_list.iloc[0,1]
-    s.iopcd_end_val = s.parameter_var_list.iloc[s.grid_resolution-1,1]
-    s.pl_start_val = s.parameter_var_list.iloc[0,2]
-    s.pl_end_val = s.parameter_var_list.iloc[s.grid_resolution-1,2]
+    s.parameter1_start_val = s.parameter_var_list.iloc[0,0]
+    s.parameter1_end_val = s.parameter_var_list.iloc[s.grid_resolution-1,0]
+    s.parameter2_start_val = s.parameter_var_list.iloc[0,1]
+    s.parameter2_end_val = s.parameter_var_list.iloc[s.grid_resolution-1,1]
+    s.parameter3_start_val = s.parameter_var_list.iloc[0,2]
+    s.parameter3_end_val = s.parameter_var_list.iloc[s.grid_resolution-1,2]
     
     #find index of optimal combination
     NRMSD_index= int(metrics["NRMSD[%]"].idxmin())
     
     #find optimal combination parameter values
-    dcfsn_val = metrics.iloc[NRMSD_index-1,0]
-    iopcd_val = metrics.iloc[NRMSD_index-1,1]
-    pl_val = metrics.iloc[NRMSD_index-1,2]
+    parameter1_val = metrics.iloc[NRMSD_index-1,0]
+    parameter2_val = metrics.iloc[NRMSD_index-1,1]
+    parameter3_val = metrics.iloc[NRMSD_index-1,2]
 
     #find index of parameters, probably a better solution but not found
     for i in range (0,s.grid_resolution):
-        if s.parameter_var_list.iloc[i,0] == dcfsn_val:
-            index_dcfsn = i
+        if s.parameter_var_list.iloc[i,0] == parameter1_val:
+            index_parameter1 = i
 
     for i in range (0,s.grid_resolution):
-        if s.parameter_var_list.iloc[i,1] == iopcd_val:
-            index_iopcd = i
+        if s.parameter_var_list.iloc[i,1] == parameter2_val:
+            index_parameter2 = i
 
     for i in range (0,s.grid_resolution):
-        if s.parameter_var_list.iloc[i,2] == pl_val:
-            index_pl = i
+        if s.parameter_var_list.iloc[i,2] == parameter3_val:
+            index_parameter3 = i
             
     #check if parameter values are boundry values and set new limits
-    if dcfsn_val == s.dcfsn_start_val and dcfsn_val != s.dcfsn_end_val:
-        dcfsn_start_val = dcfsn_val-((s.dcfsn_end_val-s.dcfsn_start_val)/(s.grid_resolution-1))
-        dcfsn_end_val = s.parameter_var_list.iloc[index_dcfsn+1,0]
+    if parameter1_val == s.parameter1_start_val and parameter1_val != s.parameter1_end_val:
+        parameter1_start_val = parameter1_val-((s.parameter1_end_val-s.parameter1_start_val)/(s.grid_resolution-1))
+        parameter1_end_val = s.parameter_var_list.iloc[index_parameter1+1,0]
         
-    if dcfsn_val == s.dcfsn_end_val and dcfsn_val != s.dcfsn_start_val:
-        dcfsn_end_val = dcfsn_val+((s.dcfsn_end_val-s.dcfsn_start_val)/(s.grid_resolution-1))
-        dcfsn_start_val = s.parameter_var_list.iloc[index_dcfsn-1,0]
+    if parameter1_val == s.parameter1_end_val and parameter1_val != s.parameter1_start_val:
+        parameter1_end_val = parameter1_val+((s.parameter1_end_val-s.parameter1_start_val)/(s.grid_resolution-1))
+        parameter1_start_val = s.parameter_var_list.iloc[index_parameter1-1,0]
         
-    if dcfsn_val != s.dcfsn_start_val and dcfsn_val != s.dcfsn_end_val:
-        dcfsn_start_val = s.parameter_var_list.iloc[index_dcfsn-1,0]
-        dcfsn_end_val = s.parameter_var_list.iloc[index_dcfsn+1,0]
+    if parameter1_val != s.parameter1_start_val and parameter1_val != s.parameter1_end_val:
+        parameter1_start_val = s.parameter_var_list.iloc[index_parameter1-1,0]
+        parameter1_end_val = s.parameter_var_list.iloc[index_parameter1+1,0]
     
-    if iopcd_val == s.iopcd_start_val and iopcd_val != s.iopcd_end_val:
-        iopcd_start_val = iopcd_val-((s.iopcd_end_val-s.iopcd_start_val)/(s.grid_resolution-1))
-        iopcd_end_val = s.parameter_var_list.iloc[index_iopcd+1,1]
+    if parameter2_val == s.parameter2_start_val and parameter2_val != s.parameter2_end_val:
+        parameter2_start_val = parameter2_val-((s.parameter2_end_val-s.parameter2_start_val)/(s.grid_resolution-1))
+        parameter2_end_val = s.parameter_var_list.iloc[index_parameter2+1,1]
         
-    if iopcd_val == s.iopcd_end_val and iopcd_val != s.iopcd_start_val:
-        iopcd_end_val = iopcd_val+((s.iopcd_end_val-s.iopcd_start_val)/(s.grid_resolution-1))
-        iopcd_start_val = s.parameter_var_list.iloc[index_iopcd-1,1]
+    if parameter2_val == s.parameter2_end_val and parameter2_val != s.parameter2_start_val:
+        parameter2_end_val = parameter2_val+((s.parameter2_end_val-s.parameter2_start_val)/(s.grid_resolution-1))
+        parameter2_start_val = s.parameter_var_list.iloc[index_parameter2-1,1]
         
-    if iopcd_val != s.iopcd_start_val and iopcd_val != s.iopcd_end_val:
-        iopcd_start_val = s.parameter_var_list.iloc[index_iopcd-1,1]
-        iopcd_end_val = s.parameter_var_list.iloc[index_iopcd+1,1]
+    if parameter2_val != s.parameter2_start_val and parameter2_val != s.parameter2_end_val:
+        parameter2_start_val = s.parameter_var_list.iloc[index_parameter2-1,1]
+        parameter2_end_val = s.parameter_var_list.iloc[index_parameter2+1,1]
     
-    if pl_val == s.pl_start_val and pl_val != s.pl_end_val:
-        pl_start_val = pl_val-((s.pl_end_val-s.pl_start_val)/(s.grid_resolution-1))
-        pl_end_val = s.parameter_var_list.iloc[index_pl+1,2]
+    if parameter3_val == s.parameter3_start_val and parameter3_val != s.parameter3_end_val:
+        parameter3_start_val = parameter3_val-((s.parameter3_end_val-s.parameter3_start_val)/(s.grid_resolution-1))
+        parameter3_end_val = s.parameter_var_list.iloc[index_parameter3+1,2]
         
-    if pl_val == s.pl_end_val and pl_val != s.pl_start_val:
-        pl_end_val = pl_val+((s.pl_end_val-s.pl_start_val)/(s.grid_resolution-1))
-        pl_start_val = s.parameter_var_list.iloc[index_pl-1,2]
+    if parameter3_val == s.parameter3_end_val and parameter3_val != s.parameter3_start_val:
+        parameter3_end_val = parameter3_val+((s.parameter3_end_val-s.parameter3_start_val)/(s.grid_resolution-1))
+        parameter3_start_val = s.parameter_var_list.iloc[index_parameter3-1,2]
         
-    if pl_val != s.pl_start_val and pl_val != s.pl_end_val:
-        pl_start_val = s.parameter_var_list.iloc[index_pl-1,2]
-        pl_end_val = s.parameter_var_list.iloc[index_pl+1,2]
+    if parameter3_val != s.parameter3_start_val and parameter3_val != s.parameter3_end_val:
+        parameter3_start_val = s.parameter_var_list.iloc[index_parameter3-1,2]
+        parameter3_end_val = s.parameter_var_list.iloc[index_parameter3+1,2]
     
     #calculate new parameter dataframe with steps
-    setting_values = {'start_value':[dcfsn_start_val, iopcd_start_val, pl_start_val],
-                      'end_value':[dcfsn_end_val, iopcd_end_val, pl_end_val] }
-    setting_values = pd.DataFrame( data = setting_values, index = ['dcfsn', 'iopcd', 'pl'])
+    setting_values = {'start_value':[parameter1_start_val, parameter2_start_val, parameter3_start_val],
+                      'end_value':[parameter1_end_val, parameter2_end_val, parameter3_end_val] }
+    setting_values = pd.DataFrame( data = setting_values, index = ['parameter1', 'parameter2', 'parameter3'])
     setting_values['delta'] = (setting_values['end_value'] - setting_values['start_value'])/(s.grid_resolution-1)
 
-    parameter_var_list_improved_val = {'dcfsn': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.000001, setting_values.iloc[0,2]), #wozu sind die +0.0001 nötig?
-                          'iopcd': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.000001, setting_values.iloc[1,2]),
-                          'pl': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.000001, setting_values.iloc[2,2])}
+    parameter_var_list_improved_val = {'parameter1': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.000001, setting_values.iloc[0,2]), #wozu sind die +0.0001 nötig?
+                                       'parameter2': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.000001, setting_values.iloc[1,2]),
+                                       'parameter3': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.000001, setting_values.iloc[2,2])}
 
     parameter_var_list_improved = pd.DataFrame()
     parameter_var_list_improved = pd.DataFrame(data=parameter_var_list_improved_val)
@@ -201,17 +201,17 @@ if __name__ == '__main__':
     #testing improved limits function
     s.grid_resolution = 3
 
-    parameter_var_list_val = {'dcfsn':[3, 4, 5],
-                              'iopcd':[30, 40, 50],
-                              'pl':[300, 400, 500],}
+    parameter_var_list_val = {'parameter1':[3, 4, 5],
+                              'parameter2':[30, 40, 50],
+                              'parameter3':[300, 400, 500],}
     
     s.parameter_var_list = pd.DataFrame(data=parameter_var_list_val, index = ['0', '1', '2'])
     print("Parameter_var_list:")
     print(s.parameter_var_list)
     
-    metrics_val = {  'dcfsn':[3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, ],
-                     'iopcd':[30, 30, 30, 40, 40, 40, 50, 50, 50,30, 30, 30, 40, 40, 40, 50, 50, 50, 30, 30, 30, 40, 40, 40, 50, 50, 50],
-                     'pl':[300, 300, 300, 300, 300, 300, 300, 300, 300, 400, 400, 400, 400, 400, 400, 400, 400, 400, 500, 500, 500, 500, 500, 500, 500, 500, 500],
+    metrics_val = {  'parameter1':[3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, ],
+                     'parameter2':[30, 30, 30, 40, 40, 40, 50, 50, 50,30, 30, 30, 40, 40, 40, 50, 50, 50, 30, 30, 30, 40, 40, 40, 50, 50, 50],
+                     'parameter3':[300, 300, 300, 300, 300, 300, 300, 300, 300, 400, 400, 400, 400, 400, 400, 400, 400, 400, 500, 500, 500, 500, 500, 500, 500, 500, 500],
                      'NRMSD[%]':[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]}
 
     metrics = pd.DataFrame(data=metrics_val, index = ['1', '2', '3', "4", "5", "6", "7", "8", "9", "10","11","12","13","14", "15","16","17", "18","19","20","21","22","23","24","25","26","27"])
