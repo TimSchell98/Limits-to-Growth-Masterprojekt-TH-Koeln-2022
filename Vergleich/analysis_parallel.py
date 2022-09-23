@@ -16,12 +16,12 @@ else:
 
 # - - - - - - Function definitions - -
 
-def run_simulation(i):
+def run_simulation(i, parameter_var_list):
     #run simulation
-    world3 = World3(dt=s.sim_time_step)
-    world3.init_world3_constants(dcfsn=s.parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
-                                 frpm = s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
-                                 pl = s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
+    world3 = World3(dt=s.sim_time_step, year_max=2022)
+    world3.init_world3_constants(dcfsn = parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
+                                 frpm = parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
+                                 pl = parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
     world3.init_world3_variables()
     world3.set_world3_table_functions()
     world3.set_world3_delay_functions()
@@ -45,11 +45,16 @@ if __name__ == '__main__':
     run_parallel = True
     mp.freeze_support()
 
+    #create parameter_var_list for this script
+    parameter_var_list = s.parameter_var_list
+
     print("Starting limits:")
-    print(s.parameter_var_list)
+    print(parameter_var_list)
     print("Parameter1 = " + s.parameter1_name)
     print("Parameter2 = " + s.parameter2_name)
     print("Parameter3 = " + s.parameter3_name)
+    
+
     
     #create list for plotting
     population_list = []
@@ -64,11 +69,6 @@ if __name__ == '__main__':
         
         if not run_parallel:
             for i in range(0, s.grid_resolution**3):
-                print("\nSimulation", end=": ")
-                print(i + 1)
-                print("ETA", end=": ")
-                print(round((s.grid_resolution - i) * 2.8, 2), end="")
-                print("s")
                 # pool.map(run_simulation)
                 # pool.close()
                 run_simulation(i)
@@ -77,7 +77,9 @@ if __name__ == '__main__':
             
             #run simulations and safe results
             df_results = pd.DataFrame()
-            results = pool.map(run_simulation, [i for i in range(0, s.grid_resolution**3)])
+            #results = pool.map(run_simulation, [i for i in range(0, s.grid_resolution**3)])
+            results = [pool.apply(run_simulation, args=(i, parameter_var_list)) for i in range(0,s.grid_resolution**3)]
+            
             for i in range(0, s.grid_resolution**3):
                 df_results = pd.concat([df_results, results[i]], axis=1)
         
@@ -92,9 +94,9 @@ if __name__ == '__main__':
 
         for i in range(s.grid_resolution**3):
             metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 
-                                                 'parameter1',s.parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
-                                                 'parameter2',s.parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
-                                                 'parameter3',s.parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
+                                                 'parameter1',parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
+                                                 'parameter2',parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
+                                                 'parameter3',parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
             metrics = pd.concat([metrics, metric_result])
 
         #Improved limits
@@ -104,10 +106,10 @@ if __name__ == '__main__':
         print("Parameter2 = " + s.parameter2_name)
         print("Parameter3 = " + s.parameter3_name)
         print("Old limits:")
-        print(s.parameter_var_list)
-        s.parameter_var_list=af.improved_limits(metrics)
+        print(parameter_var_list)
+        parameter_var_list=af.improved_limits(metrics,parameter_var_list)
         print("Improved limits:")
-        print(s.parameter_var_list)
+        print(parameter_var_list)
         
         #plot resolution
         #df_results.plot(legend=0)
@@ -116,6 +118,7 @@ if __name__ == '__main__':
         plt.show()
     
     #results = pool.map(af.calculate_metrics(model_data['AL_{}'.format(i)]))
-    
+   
+    pool.close()
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(round(executionTime,2)))

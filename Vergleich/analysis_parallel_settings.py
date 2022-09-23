@@ -3,8 +3,8 @@ import numpy as np
 
 # - - - - - Global  Settings
 
-grid_resolution = 9 #number of simulation
-grid_zoom = 4 #number of zooms
+grid_resolution = 5 #number of simulation
+grid_zoom = 2 #number of zooms
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
 year_max1 = year_max +1

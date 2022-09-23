@@ -90,19 +90,20 @@ def prepare_data_for_metric_calc(model_data: pd.DataFrame, empirical_data: pd.Da
     result_empirical = empirical_data[variable][start_row:stop_row]
     return result_model, result_empirical
 
-def improved_limits(metrics):
+def improved_limits(metrics, parameter_var_list):
     """
     Find the combination at which the NRMSD is minimal.
     Cecks if parameter is boundary value, if yes calculate next value as new limit.
     Calculate new limits.
     """
+
     #set initial limits
-    s.parameter1_start_val = s.parameter_var_list.iloc[0,0]
-    s.parameter1_end_val = s.parameter_var_list.iloc[s.grid_resolution-1,0]
-    s.parameter2_start_val = s.parameter_var_list.iloc[0,1]
-    s.parameter2_end_val = s.parameter_var_list.iloc[s.grid_resolution-1,1]
-    s.parameter3_start_val = s.parameter_var_list.iloc[0,2]
-    s.parameter3_end_val = s.parameter_var_list.iloc[s.grid_resolution-1,2]
+    parameter1_start_val_old = parameter_var_list.iloc[0,0]
+    parameter1_end_val_old = parameter_var_list.iloc[s.grid_resolution-1,0]
+    parameter2_start_val_old = parameter_var_list.iloc[0,1]
+    parameter2_end_val_old = parameter_var_list.iloc[s.grid_resolution-1,1]
+    parameter3_start_val_old = parameter_var_list.iloc[0,2]
+    parameter3_end_val_old = parameter_var_list.iloc[s.grid_resolution-1,2]
     
     #find index of optimal combination
     NRMSD_index= int(metrics["NRMSD[%]"].idxmin())
@@ -114,67 +115,72 @@ def improved_limits(metrics):
 
     #find index of parameters, probably a better solution but not found
     for i in range (0,s.grid_resolution):
-        if s.parameter_var_list.iloc[i,0] == parameter1_val:
+        if round(parameter_var_list.iloc[i,0],4) == round(parameter1_val,4):
             index_parameter1 = i
 
     for i in range (0,s.grid_resolution):
-        if s.parameter_var_list.iloc[i,1] == parameter2_val:
+        if round(parameter_var_list.iloc[i,1],4) == round(parameter2_val,4):
             index_parameter2 = i
 
     for i in range (0,s.grid_resolution):
-        if s.parameter_var_list.iloc[i,2] == parameter3_val:
+        if round(parameter_var_list.iloc[i,2], 4) == round(parameter3_val,4):
             index_parameter3 = i
             
     #check if parameter values are boundry values and set new limits
-    if parameter1_val == s.parameter1_start_val and parameter1_val != s.parameter1_end_val:
-        parameter1_start_val = parameter1_val-((s.parameter1_end_val-s.parameter1_start_val)/(s.grid_resolution-1))
-        parameter1_end_val = s.parameter_var_list.iloc[index_parameter1+1,0]
+    if parameter1_val == parameter1_start_val_old and parameter1_val != parameter1_end_val_old:
+        parameter1_start_val = round(parameter1_val-((parameter1_end_val_old-parameter1_start_val_old)/(s.grid_resolution-1)),4)
+        parameter1_end_val = round(parameter_var_list.iloc[index_parameter1+1,0],4)
         
-    if parameter1_val == s.parameter1_end_val and parameter1_val != s.parameter1_start_val:
-        parameter1_end_val = parameter1_val+((s.parameter1_end_val-s.parameter1_start_val)/(s.grid_resolution-1))
-        parameter1_start_val = s.parameter_var_list.iloc[index_parameter1-1,0]
+    if parameter1_val == parameter1_end_val_old and parameter1_val != parameter1_start_val_old:
+        parameter1_end_val = round(parameter1_val+((parameter1_end_val_old-parameter1_start_val_old)/(s.grid_resolution-1)),4)
+        parameter1_start_val = round(parameter_var_list.iloc[index_parameter1-1,0],4)
         
-    if parameter1_val != s.parameter1_start_val and parameter1_val != s.parameter1_end_val:
-        parameter1_start_val = s.parameter_var_list.iloc[index_parameter1-1,0]
-        parameter1_end_val = s.parameter_var_list.iloc[index_parameter1+1,0]
+    if parameter1_val != parameter1_start_val_old and parameter1_val != parameter1_end_val_old:
+        parameter1_start_val = round(parameter_var_list.iloc[index_parameter1-1,0],4)
+        parameter1_end_val = round(parameter_var_list.iloc[index_parameter1+1,0],4)
     
-    if parameter2_val == s.parameter2_start_val and parameter2_val != s.parameter2_end_val:
-        parameter2_start_val = parameter2_val-((s.parameter2_end_val-s.parameter2_start_val)/(s.grid_resolution-1))
-        parameter2_end_val = s.parameter_var_list.iloc[index_parameter2+1,1]
+    if parameter2_val == parameter2_start_val_old and parameter2_val != parameter2_end_val_old:
+        parameter2_start_val = round(parameter2_val-((parameter2_end_val_old-parameter2_start_val_old)/(s.grid_resolution-1)),4)
+        if parameter2_start_val < 0:
+            parameter2_start_val = 0
+        parameter2_end_val = round(parameter_var_list.iloc[index_parameter2+1,1],4)
         
-    if parameter2_val == s.parameter2_end_val and parameter2_val != s.parameter2_start_val:
-        parameter2_end_val = parameter2_val+((s.parameter2_end_val-s.parameter2_start_val)/(s.grid_resolution-1))
-        parameter2_start_val = s.parameter_var_list.iloc[index_parameter2-1,1]
+    if parameter2_val == parameter2_end_val_old and parameter2_val != parameter2_start_val_old:
+        parameter2_end_val = round(parameter2_val+((parameter2_end_val_old-parameter2_start_val_old)/(s.grid_resolution-1)),4)
+        parameter2_start_val = round(parameter_var_list.iloc[index_parameter2-1,1],4)
         
-    if parameter2_val != s.parameter2_start_val and parameter2_val != s.parameter2_end_val:
-        parameter2_start_val = s.parameter_var_list.iloc[index_parameter2-1,1]
-        parameter2_end_val = s.parameter_var_list.iloc[index_parameter2+1,1]
+    if parameter2_val != parameter2_start_val_old and parameter2_val != parameter2_end_val_old:
+        parameter2_start_val = round(parameter_var_list.iloc[index_parameter2-1,1],4)
+        parameter2_end_val = round(parameter_var_list.iloc[index_parameter2+1,1],4)
     
-    if parameter3_val == s.parameter3_start_val and parameter3_val != s.parameter3_end_val:
-        parameter3_start_val = parameter3_val-((s.parameter3_end_val-s.parameter3_start_val)/(s.grid_resolution-1))
-        parameter3_end_val = s.parameter_var_list.iloc[index_parameter3+1,2]
+    if parameter3_val == parameter3_start_val_old and parameter3_val != parameter3_end_val_old:
+        parameter3_start_val = round(parameter3_val-((parameter3_end_val_old-parameter3_start_val_old)/(s.grid_resolution-1)),4)
+        if parameter3_start_val < 0:
+            parameter3_start_val = 0
+        parameter3_end_val = round(parameter_var_list.iloc[index_parameter3+1,2],4)
         
-    if parameter3_val == s.parameter3_end_val and parameter3_val != s.parameter3_start_val:
-        parameter3_end_val = parameter3_val+((s.parameter3_end_val-s.parameter3_start_val)/(s.grid_resolution-1))
-        parameter3_start_val = s.parameter_var_list.iloc[index_parameter3-1,2]
+    if parameter3_val == parameter3_end_val_old and parameter3_val != parameter3_start_val_old:
+        parameter3_end_val = round(parameter3_val+((parameter3_end_val_old-parameter3_start_val_old)/(s.grid_resolution-1)),4)
+        parameter3_start_val = round(parameter_var_list.iloc[index_parameter3-1,2],4)
         
-    if parameter3_val != s.parameter3_start_val and parameter3_val != s.parameter3_end_val:
-        parameter3_start_val = s.parameter_var_list.iloc[index_parameter3-1,2]
-        parameter3_end_val = s.parameter_var_list.iloc[index_parameter3+1,2]
+    if parameter3_val != parameter3_start_val_old and parameter3_val != parameter3_end_val_old:
+        parameter3_start_val = round(parameter_var_list.iloc[index_parameter3-1,2],4)
+        parameter3_end_val = round(parameter_var_list.iloc[index_parameter3+1,2],4)
     
     #calculate new parameter dataframe with steps
     setting_values = {'start_value':[parameter1_start_val, parameter2_start_val, parameter3_start_val],
                       'end_value':[parameter1_end_val, parameter2_end_val, parameter3_end_val] }
     setting_values = pd.DataFrame( data = setting_values, index = ['parameter1', 'parameter2', 'parameter3'])
     setting_values['delta'] = (setting_values['end_value'] - setting_values['start_value'])/(s.grid_resolution-1)
-
-    parameter_var_list_improved_val = {'parameter1': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.000001, setting_values.iloc[0,2]), #wozu sind die +0.0001 nötig?
-                                       'parameter2': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.000001, setting_values.iloc[1,2]),
-                                       'parameter3': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.000001, setting_values.iloc[2,2])}
+    print(setting_values)
+    
+    parameter_var_list_improved_val = {'parameter1': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.000000001, setting_values.iloc[0,2]),
+                                       'parameter2': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.000000001, setting_values.iloc[1,2]),
+                                       'parameter3': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.000000001, setting_values.iloc[2,2])}
 
     parameter_var_list_improved = pd.DataFrame()
     parameter_var_list_improved = pd.DataFrame(data=parameter_var_list_improved_val)
-    
+
     return parameter_var_list_improved
 
     
@@ -205,9 +211,9 @@ if __name__ == '__main__':
                               'parameter2':[30, 40, 50],
                               'parameter3':[300, 400, 500],}
     
-    s.parameter_var_list = pd.DataFrame(data=parameter_var_list_val, index = ['0', '1', '2'])
+    parameter_var_list = pd.DataFrame(data=parameter_var_list_val, index = ['0', '1', '2'])
     print("Parameter_var_list:")
-    print(s.parameter_var_list)
+    print(parameter_var_list)
     
     metrics_val = {  'parameter1':[3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, ],
                      'parameter2':[30, 30, 30, 40, 40, 40, 50, 50, 50,30, 30, 30, 40, 40, 40, 50, 50, 50, 30, 30, 30, 40, 40, 40, 50, 50, 50],
@@ -217,6 +223,7 @@ if __name__ == '__main__':
     metrics = pd.DataFrame(data=metrics_val, index = ['1', '2', '3', "4", "5", "6", "7", "8", "9", "10","11","12","13","14", "15","16","17", "18","19","20","21","22","23","24","25","26","27"])
     print("Simulation Metrics:")
     print(metrics)
-    parameter_var_list_improved = improved_limits(metrics)
+    parameter_var_list_improved = improved_limits(metrics,parameter_var_list)
     print("New Limits:")
     print(parameter_var_list_improved)
+
