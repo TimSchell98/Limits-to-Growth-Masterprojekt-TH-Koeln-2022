@@ -172,7 +172,7 @@ def improved_limits(metrics, parameter_var_list):
                       'end_value':[parameter1_end_val, parameter2_end_val, parameter3_end_val] }
     setting_values = pd.DataFrame( data = setting_values, index = ['parameter1', 'parameter2', 'parameter3'])
     setting_values['delta'] = (setting_values['end_value'] - setting_values['start_value'])/(s.grid_resolution-1)
-    print(setting_values)
+    #print(setting_values)
     
     parameter_var_list_improved_val = {'parameter1': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.000000001, setting_values.iloc[0,2]),
                                        'parameter2': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.000000001, setting_values.iloc[1,2]),

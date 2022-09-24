@@ -17,8 +17,9 @@ else:
 # - - - - - - Function definitions - -
 
 def run_simulation(i, parameter_var_list):
+    
     #run simulation
-    world3 = World3(dt=s.sim_time_step, year_max=2022)
+    world3 = World3(dt=s.sim_time_step, year_max=s.year_max)
     world3.init_world3_constants(dcfsn = parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
                                  frpm = parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
                                  pl = parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
@@ -42,19 +43,17 @@ def run_simulation(i, parameter_var_list):
 if __name__ == '__main__':
     startTime = time.time()
     pool = mp.Pool(mp.cpu_count())
-    run_parallel = True
+    run_parallel = False
     mp.freeze_support()
 
     #create parameter_var_list for this script
-    parameter_var_list = s.parameter_var_list
+    parameter_var_list = s.parameter_init()
 
     print("Starting limits:")
     print(parameter_var_list)
     print("Parameter1 = " + s.parameter1_name)
     print("Parameter2 = " + s.parameter2_name)
     print("Parameter3 = " + s.parameter3_name)
-    
-
     
     #create list for plotting
     population_list = []
@@ -63,16 +62,20 @@ if __name__ == '__main__':
         
     # - - - Run Simulation - - -
     for j in range (0, s.grid_zoom+1):
-        
         print('Number of simulations left = ' + str(s.grid_resolution**3+(s.grid_zoom-j)*s.grid_resolution**3))
-        print('Estimated time left = ' + str(round(s.grid_resolution**3*0.71+(s.grid_zoom-j)*s.grid_resolution**3*0.45,2)) + ' seconds')
-        
+
         if not run_parallel:
+            print('Estimated time left = ' + str(round(s.grid_resolution**3*1.24+(s.grid_zoom-j)*s.grid_resolution**3*1.24,2)) + ' seconds')
+            print('Running in not-parallel mode')
+            
+            results = pd.DataFrame()
+            df_results = pd.DataFrame()
             for i in range(0, s.grid_resolution**3):
-                # pool.map(run_simulation)
-                # pool.close()
-                run_simulation(i)
+                results = run_simulation(i, parameter_var_list)
+                df_results = pd.concat([df_results, results], axis=1)
+            
         else:
+            print('Estimated time left = ' + str(round(s.grid_resolution**3*0.71+(s.grid_zoom-j)*s.grid_resolution**3*0.45,2)) + ' seconds')
             print('Running in parallel mode')
             
             #run simulations and safe results
@@ -84,8 +87,7 @@ if __name__ == '__main__':
                 df_results = pd.concat([df_results, results[i]], axis=1)
         
         print("df_results:")
-        print(df_results)
-        
+        print(df_results)        
     
         # - - - Metric calculation - -
         empirical_data = af.initialize_empirical_data()
@@ -115,6 +117,7 @@ if __name__ == '__main__':
         #df_results.plot(legend=0)
         df_results[population_list].plot(legend=0, color = ["b"], linewidth = 0.5)
         empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
+        plt.ylim([1e9,10e9])
         plt.show()
     
     #results = pool.map(af.calculate_metrics(model_data['AL_{}'.format(i)]))
