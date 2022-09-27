@@ -17,7 +17,7 @@ else:
 # - - - - - - Function definitions - -
 
 def run_simulation(i, parameter_var_list):
-    
+    print('Starting Simulation {}'.format(i))
     #run simulation
     world3 = World3(dt=s.sim_time_step, year_max=s.year_max)
     world3.init_world3_constants(dcfsn = parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
@@ -37,13 +37,13 @@ def run_simulation(i, parameter_var_list):
     #simulation_data['Food-p-c_{}'.format(i)] = world3.fpc
     #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
     #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
-
+    print('Ending Simulation {}'.format(i))
     return simulation_data
 
 if __name__ == '__main__':
     startTime = time.time()
     pool = mp.Pool(mp.cpu_count())
-    run_parallel = False
+    run_parallel = True
     mp.freeze_support()
 
     #create parameter_var_list for this script
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         population_list.append("POP_" + str(i))
         
     # - - - Run Simulation - - -
-    for j in range (0, s.grid_zoom+1):
+    for j in range(0, s.grid_zoom+1):
         print('Number of simulations left = ' + str(s.grid_resolution**3+(s.grid_zoom-j)*s.grid_resolution**3))
 
         if not run_parallel:
@@ -75,16 +75,18 @@ if __name__ == '__main__':
                 df_results = pd.concat([df_results, results], axis=1)
             
         else:
-            print('Estimated time left = ' + str(round(s.grid_resolution**3*0.71+(s.grid_zoom-j)*s.grid_resolution**3*0.45,2)) + ' seconds')
+            print('Estimated time left = ' + str(round(s.grid_resolution**3*0.71+(s.grid_zoom-j)*s.grid_resolution**3*0.45, 2)) + ' seconds')
             print('Running in parallel mode')
             
             #run simulations and safe results
             df_results = pd.DataFrame()
             #results = pool.map(run_simulation, [i for i in range(0, s.grid_resolution**3)])
-            results = [pool.apply(run_simulation, args=(i, parameter_var_list)) for i in range(0,s.grid_resolution**3)]
-            
+            results = [pool.apply_async(run_simulation, args=(i, parameter_var_list)) for i in range(0, s.grid_resolution**3)]
+            for i in results:
+                i.wait()
+
             for i in range(0, s.grid_resolution**3):
-                df_results = pd.concat([df_results, results[i]], axis=1)
+                df_results = pd.concat([df_results, results[i].get()], axis=1)
         
         print("df_results:")
         print(df_results)        
