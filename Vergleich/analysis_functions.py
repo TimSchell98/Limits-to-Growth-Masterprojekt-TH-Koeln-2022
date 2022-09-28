@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import analysis_parallel_settings as s
+import analysis_parallel as p
 
 
 def calculate_d_value(model_data, empirical_data):
@@ -56,7 +57,7 @@ def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_int
     return nrmsd
 
 
-def calculate_metrics(model_data, empirical_data, index=0, parameter1_name='none', parameter1_value=np.nan, parameter2_name='none', parameter2_value=np.nan, parameter3_name='none', parameter3_value=np.nan,
+def calculate_metrics_single_attribute(model_data, empirical_data, index=0, parameter1_name='none', parameter1_value=np.nan, parameter2_name='none', parameter2_value=np.nan, parameter3_name='none', parameter3_value=np.nan,
                       calculation_period=50):
     results = pd.DataFrame(index=[index])
     if not parameter1_name == 'none' or parameter2_name == 'none' or parameter3_name == 'none':
@@ -71,6 +72,36 @@ def calculate_metrics(model_data, empirical_data, index=0, parameter1_name='none
                                           calculation_period=calculation_period)
     return results
 
+def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, parameter1_name='none', parameter1_value=np.nan, parameter2_name='none', parameter2_value=np.nan, parameter3_name='none', parameter3_value=np.nan,
+                      calculation_period=50, sim_number=0):
+    results = pd.DataFrame(index=[index])
+    if not parameter1_name == 'none' or parameter2_name == 'none' or parameter3_name == 'none':
+        results['{}'.format(parameter1_name)] = parameter1_value
+        results['{}'.format(parameter2_name)] = parameter2_value
+        results['{}'.format(parameter3_name)] = parameter3_value
+    
+    #attribute_list_empirical = s.empirical_settings.index
+    attribute_list_empirical = [s.pop_name, s.al_name, s.crd_name, s.brd_name]
+    attribute_list_model = ['POP_{}','AL_{}', 'CDR_{}', 'CBR_{}']
+
+    # attribute_list_model = df_results
+    for i in np.arange(0,len(attribute_list_empirical)):
+        #attribute_empirical(i)
+        #attributemodel = (i)
+        model_data_slice, empirical_data_slice = prepare_data_for_metric_calc_multiple_attributes(model_data, empirical_data, attribute_list_empirical[i], attribute_list_model[i].format(int(index)-1))
+
+        results['NRMSD[%]_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
+                                              calculation_interval=s.calculation_interval,
+                                              calculation_period=calculation_period)
+    
+    results['NRMSD[%]_total'] = (0.25*results['NRMSD[%]_Population']+
+                                 0.25*results['NRMSD[%]_Arable_land']+
+                                 0.25*results['NRMSD[%]_Death_rate']+
+                                 0.25*results['NRMSD[%]_Birth_rate']) #)/len(attribute_list_empirical)
+    
+    
+    return results
+
 
 def initialize_empirical_data():
     "Data - measured"
@@ -82,6 +113,14 @@ def initialize_empirical_data():
 
     return empirical_data
 
+
+def prepare_data_for_metric_calc_multiple_attributes(model_data: pd.DataFrame, empirical_data: pd.DataFrame, variable_empirical, variable_model):
+    start_row = s.empirical_settings.loc[variable_empirical, 'year_min'] * s.sim_time_step - 1900
+    stop_row = s.empirical_settings.loc[variable_empirical, 'year_max'] * s.sim_time_step - 1900
+    result_model = model_data[variable_model][start_row:stop_row]
+    result_empirical = empirical_data[variable_empirical][start_row:stop_row]
+
+    return result_model, result_empirical
 
 def prepare_data_for_metric_calc(model_data: pd.DataFrame, empirical_data: pd.DataFrame, variable):
     start_row = s.empirical_settings.loc[variable, 'year_min'] * s.sim_time_step - 1900
@@ -106,7 +145,7 @@ def improved_limits(metrics, parameter_var_list):
     parameter3_end_val_old = parameter_var_list.iloc[s.grid_resolution-1,2]
     
     #find index of optimal combination
-    NRMSD_index= int(metrics["NRMSD[%]"].idxmin())
+    NRMSD_index= int(metrics["NRMSD[%]_total"].idxmin())
     
     #find optimal combination parameter values
     parameter1_val = metrics.iloc[NRMSD_index-1,0]

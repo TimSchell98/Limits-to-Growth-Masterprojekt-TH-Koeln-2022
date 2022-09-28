@@ -32,9 +32,11 @@ def run_simulation(i, parameter_var_list):
     simulation_data = pd.DataFrame()
     simulation_data['POP_{}'.format(i)] = world3.pop
     simulation_data['AL_{}'.format(i)] = world3.al
-    #simulation_data['Deaths-p-y_{}'.format(i)] = world3.d
-    #simulation_data['Births-p-y_{}'.format(i)] = world3.b
-    #simulation_data['Food-p-c_{}'.format(i)] = world3.fpc
+    simulation_data['CDR_{}'.format(i)] = world3.cdr
+    simulation_data['CBR_{}'.format(i)] = world3.cbr
+    simulation_data['IO_{}'.format(i)] = world3.io
+    simulation_data['FPC_{}'.format(i)] = world3.fpc
+    simulation_data['POLC_{}'.format(i)] = world3.ppol
     #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
     #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
     print('Ending Simulation {}'.format(i))
@@ -93,14 +95,14 @@ if __name__ == '__main__':
     
         # - - - Metric calculation - -
         empirical_data = af.initialize_empirical_data()
-        model_data, empirical_data_slice = af.prepare_data_for_metric_calc(df_results, empirical_data, s.pop_name)
-        metrics = pd.DataFrame()
+        metrics = pd.DataFrame() 
+        model_data, empirical_data_slice = af.prepare_data_for_metric_calc(df_results, empirical_data, s.pop_name) # for single attribute 
 
         for i in range(s.grid_resolution**3):
-            metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 
+            metric_result = af.calculate_metrics_multiple_attributes(df_results, empirical_data, str(i+1), 
                                                  'parameter1',parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
                                                  'parameter2',parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
-                                                 'parameter3',parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
+                                                 'parameter3',parameter_var_list.iloc[int(i/s.grid_resolution**2),2],i)
             metrics = pd.concat([metrics, metric_result])
 
         #Improved limits
@@ -121,8 +123,8 @@ if __name__ == '__main__':
         empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
         plt.ylim([1e9,10e9])
         plt.show()
-    
-    #results = pool.map(af.calculate_metrics(model_data['AL_{}'.format(i)]))
+
+    #results = pool.map(af.calculate_metrics_single_attribute(model_data['AL_{}'.format(i)]))
    
     pool.close()
     executionTime = (time.time() - startTime)
