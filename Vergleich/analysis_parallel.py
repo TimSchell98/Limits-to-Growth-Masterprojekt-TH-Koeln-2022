@@ -17,7 +17,7 @@ else:
 # - - - - - - Function definitions - -
 
 def run_simulation(i, parameter_var_list):
-    print('Starting Simulation {}'.format(i))
+    #print('Starting Simulation {}'.format(i))
     #run simulation
     world3 = World3(dt=s.sim_time_step, year_max=s.year_max)
     world3.init_world3_constants(dcfsn = parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
@@ -39,7 +39,7 @@ def run_simulation(i, parameter_var_list):
     simulation_data['POLC_{}'.format(i)] = world3.ppol
     #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
     #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
-    print('Ending Simulation {}'.format(i))
+    #print('Ending Simulation {}'.format(i))
     return simulation_data
 
 if __name__ == '__main__':

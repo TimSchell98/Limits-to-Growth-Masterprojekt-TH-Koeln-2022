@@ -89,16 +89,14 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         #attribute_empirical(i)
         #attributemodel = (i)
         model_data_slice, empirical_data_slice = prepare_data_for_metric_calc_multiple_attributes(model_data, empirical_data, attribute_list_empirical[i], attribute_list_model[i].format(int(index)-1))
-
+        
         results['NRMSD[%]_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
-                                              calculation_interval=s.calculation_interval,
-                                              calculation_period=calculation_period)
+                                              calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
     
     results['NRMSD[%]_total'] = (0.25*results['NRMSD[%]_Population']+
                                  0.25*results['NRMSD[%]_Arable_land']+
                                  0.25*results['NRMSD[%]_Death_rate']+
                                  0.25*results['NRMSD[%]_Birth_rate']) #)/len(attribute_list_empirical)
-    
     
     return results
 
@@ -110,7 +108,8 @@ def initialize_empirical_data():
     measured_data = measured_data.iloc[:,0:10]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
     empirical_data = measured_data.replace(0, np.nan)
-
+    
+    
     return empirical_data
 
 
@@ -119,7 +118,8 @@ def prepare_data_for_metric_calc_multiple_attributes(model_data: pd.DataFrame, e
     stop_row = s.empirical_settings.loc[variable_empirical, 'year_max'] * s.sim_time_step - 1900
     result_model = model_data[variable_model][start_row:stop_row]
     result_empirical = empirical_data[variable_empirical][start_row:stop_row]
-
+   
+   
     return result_model, result_empirical
 
 def prepare_data_for_metric_calc(model_data: pd.DataFrame, empirical_data: pd.DataFrame, variable):

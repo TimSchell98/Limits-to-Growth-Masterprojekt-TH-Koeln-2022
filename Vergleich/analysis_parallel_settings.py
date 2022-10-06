@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 
 # - - - - - Global  Settings
-grid_resolution = 3 #number of simulation
-grid_zoom = 0 #number of zooms
+grid_resolution = 5 #number of simulation
+grid_zoom = 2 #number of zooms
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
 year_max1 = year_max +1
@@ -12,6 +12,7 @@ period  = year_max1 - year_min # wird es noch benötigt?
 
 # - Analysis Settings
 calculation_interval = 5
+calculation_period = 50
 
 # - - - - - Parameter Settings 
 #1) desired complete family size normal - default = 4
@@ -84,7 +85,7 @@ polco2_year_max = 2021
 
 # - Settings to Dataframe
 empirical_settings = pd.DataFrame(index=[pop_name, al_name, crd_name, brd_name, gfcf_name, fpc_name, polco2_name], columns=['name' ,'year_min','year_max'])
-empirical_settings['name'] = (pop_name, al_name, crd_name, brd_name, gfcf_name, fpc_name, polco2_name)
+#empirical_settings['name'] = (pop_name, al_name, crd_name, brd_name, gfcf_name, fpc_name, polco2_name)
 empirical_settings['year_min'] = (pop_y_min, al_year_min, crd_year_min, brd_year_min, gfcf_year_min, fpc_year_min, polco2_year_min)
 empirical_settings['year_max'] = (pop_y_max, al_year_max, crd_year_max, brd_year_max, gfcf_year_max, fpc_year_max, polco2_year_max)
 
