@@ -8,21 +8,21 @@ import matplotlib.pyplot as plt
 import time
 startTime = time.time()
 # - - -  World 3 import and Version Switching
-use_update = False
-if use_update:
+
+if s.use_update == True:
     from PyWorld3_Update.pyworld3 import World3
-else:
+if s.use_update == False:
     from pyworld3 import World3
 
 # - - - - - - Function definitions - -
 
 def run_simulation(i, parameter_var_list):
-    print('Starting Simulation {}'.format(i))
+
     #run simulation
     world3 = World3(dt=s.sim_time_step, year_max=s.year_max)
-    world3.init_world3_constants(dcfsn = parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
-                                 frpm = parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
-                                 pl = parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
+    world3.init_world3_constants(dcfsn = parameter_var_list.iloc[i,0],
+                                 frpm = parameter_var_list.iloc[i,1],
+                                 pl = parameter_var_list.iloc[i,2])
     world3.init_world3_variables()
     world3.set_world3_table_functions()
     world3.set_world3_delay_functions()
@@ -37,59 +37,62 @@ def run_simulation(i, parameter_var_list):
     #simulation_data['Food-p-c_{}'.format(i)] = world3.fpc
     #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
     #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
-    print('Ending Simulation {}'.format(i))
+
     return simulation_data
 
 if __name__ == '__main__':
     startTime = time.time()
     pool = mp.Pool(mp.cpu_count())
-    run_parallel = True
     mp.freeze_support()
-
-    #create parameter_var_list for this script
-    parameter_var_list = s.parameter_init()
-
-    print("Starting limits:")
-    print(parameter_var_list)
-    print("Parameter1 = " + s.parameter1_name)
-    print("Parameter2 = " + s.parameter2_name)
-    print("Parameter3 = " + s.parameter3_name)
+    end_simulation = False
+     
+    #should analysis stopp at grid resolution or NRMSD accuracy
+    if s.zoom_limit == True:
+        j = 100 #if NRMSD accuracy isnt reached in 100 zooms, analysis will end
+    if s.zoom_limit == False:
+        j = s.grid_zoom
     
-    #create list for plotting
-    population_list = []
-    for i in range(0,s.grid_resolution**3):
-        population_list.append("POP_" + str(i))
+    #create parameter_var_list for this script
+    parameter_var_list, parameter_var_list_sorted = s.parameter_init()
         
+    
     # - - - Run Simulation - - -
-    for j in range(0, s.grid_zoom+1):
-        print('Number of simulations left = ' + str(s.grid_resolution**3+(s.grid_zoom-j)*s.grid_resolution**3))
-
-        if not run_parallel:
-            print('Estimated time left = ' + str(round(s.grid_resolution**3*1.24+(s.grid_zoom-j)*s.grid_resolution**3*1.24,2)) + ' seconds')
+    
+    while end_simulation == False:
+        j=j-1
+        if s.zoom_limit == False:
+            print('Number of simulations left = ' + str((j+2)*(s.grid_resolution**3)))
+            
+            if s.run_parallel == True:
+                print('Estimated time left = ' + str(round((j+2) * s.grid_resolution**3 * 0.35, 2)) + ' seconds')
+            if s.run_parallel == False:
+                print('Estimated time left = ' + str(round((j+2) * s.grid_resolution**3 * 1.21, 2)) + ' seconds')
+            
+        if s.zoom_limit == True:
+            print('Number of simulations completed = ' + str((100-j+1)*s.grid_resolution**3))
+        
+        if s.run_parallel == False:
             print('Running in not-parallel mode')
             
+            #run simulations and safe results
             results = pd.DataFrame()
             df_results = pd.DataFrame()
             for i in range(0, s.grid_resolution**3):
                 results = run_simulation(i, parameter_var_list)
                 df_results = pd.concat([df_results, results], axis=1)
             
-        else:
-            print('Estimated time left = ' + str(round(s.grid_resolution**3*0.71+(s.grid_zoom-j)*s.grid_resolution**3*0.45, 2)) + ' seconds')
+        if s.run_parallel == True:
             print('Running in parallel mode')
             
             #run simulations and safe results
             df_results = pd.DataFrame()
-            #results = pool.map(run_simulation, [i for i in range(0, s.grid_resolution**3)])
             results = [pool.apply_async(run_simulation, args=(i, parameter_var_list)) for i in range(0, s.grid_resolution**3)]
             for i in results:
                 i.wait()
 
             for i in range(0, s.grid_resolution**3):
                 df_results = pd.concat([df_results, results[i].get()], axis=1)
-        
-        print("df_results:")
-        print(df_results)        
+    
     
         # - - - Metric calculation - -
         empirical_data = af.initialize_empirical_data()
@@ -98,32 +101,44 @@ if __name__ == '__main__':
 
         for i in range(s.grid_resolution**3):
             metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 
-                                                 'parameter1',parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
-                                                 'parameter2',parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
-                                                 'parameter3',parameter_var_list.iloc[int(i/s.grid_resolution**2),2])
+                                                 'parameter1',parameter_var_list.iloc[i,0],
+                                                 'parameter2',parameter_var_list.iloc[i,1],
+                                                 'parameter3',parameter_var_list.iloc[i,2])
             metrics = pd.concat([metrics, metric_result])
+        
+        
+        #print resolutions
+        print("df_results:")
+        print(df_results) 
 
-        #Improved limits
         print("Metrics:")
         print(metrics)
-        print("Parameter1 = " + s.parameter1_name)
-        print("Parameter2 = " + s.parameter2_name)
-        print("Parameter3 = " + s.parameter3_name)
-        print("Old limits:")
-        print(parameter_var_list)
-        parameter_var_list=af.improved_limits(metrics,parameter_var_list)
-        print("Improved limits:")
-        print(parameter_var_list)
+        
+        #end simulation when nrmsd reaches defined accuracy, or if grid_zoom reaches limits
+        if s.zoom_limit == True:
+            if round(metrics.iloc[(int(metrics["NRMSD[%]"].idxmin()))-1,5],4) <= s.result_accuracy or j < 0:
+                end_simulation = True
+
+        if s.zoom_limit == False and j < 0:
+            end_simulation = True
+        
+        #Improved limits
+        #todo: funktion einfügen die zuerst den parameter mit dem höchsten einfluss analysiert und verbessert, bevor die anderen parameter hinzugefügt werden
+        parameter_var_list, parameter_var_list_sorted=af.improved_limits(metrics,parameter_var_list, parameter_var_list_sorted)
+        af.new_limits(metrics,parameter_var_list)
         
         #plot resolution
-        #df_results.plot(legend=0)
-        df_results[population_list].plot(legend=0, color = ["b"], linewidth = 0.5)
-        empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
-        plt.ylim([1e9,10e9])
-        plt.show()
-    
-    #results = pool.map(af.calculate_metrics(model_data['AL_{}'.format(i)]))
+        af.plot_results(df_results,empirical_data, metrics)
    
+    #end simulation and print final results 
     pool.close()
+    print("Final Results:")
+    print("Parameter 1: ", end="")
+    print(round(parameter_var_list.iloc[int(s.grid_resolution/2),0],4))
+    print("Parameter 2: ", end= "")
+    print(round(parameter_var_list.iloc[int(s.grid_resolution/2),1],4))
+    print("Parameter 3: ", end= "")
+    print(round(parameter_var_list.iloc[int(s.grid_resolution/2),2],4))
+    
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(round(executionTime,2)))
