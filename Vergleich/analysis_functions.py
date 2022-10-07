@@ -4,33 +4,6 @@ import analysis_parallel_settings as s
 import matplotlib.pyplot as plt
 
 
-def calculate_d_value(model_data, empirical_data):
-    '''Function for the formula for delta value
-    Originally from Herrington 2020 - Update to limits to growth
-    \n inputs are two arrays with data
-    Output is the calculated value different for the last timestep as specified in the paper
-    '''
-    d_value = (np.array(model_data)[-1] - np.array(empirical_data)[-1]) / np.array(empirical_data)[-1]
-    return d_value
-
-
-def calculate_roc(model_data, empirical_data, timestep: float, calculation_interval=5):
-    ''' Function for the formula for the rate of change(roc)
-    Originally from Herrington 2020 - Update to limits to growth
-    \n inputs:
-     two arrays with data
-     the timestep between the data points in yrs
-     calculation interval in yrs
-    \n Output is the calculated roc for the last timestep and the year back the inteval rate
-    '''
-    stepwidth = calculation_interval * timestep
-    model_data = np.array(model_data)
-    empirical_data = np.array(empirical_data)
-    roc = ((model_data[-1] - model_data[-stepwidth]) - (empirical_data[-1] - empirical_data[-stepwidth])) / (
-                empirical_data[-1] - empirical_data[-stepwidth])
-    return roc
-
-
 def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_interval=5, calculation_period=50):
     ''' Function for the formula for normalized root mean squre difference (NRMSD)
     Originally from Herrington 2020 - Update to limits to growth
@@ -55,22 +28,6 @@ def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_int
 
     nrmsd = (np.sqrt(nominator_single_values.sum() / 6)) / (denominator_single_values.sum() / 6)
     return nrmsd
-
-
-def calculate_metrics(model_data, empirical_data, index=0, parameter1_name='none', parameter1_value=np.nan, parameter2_name='none', parameter2_value=np.nan, parameter3_name='none', parameter3_value=np.nan,
-                      calculation_period=50):
-    results = pd.DataFrame(index=[index])
-    if not parameter1_name == 'none' or parameter2_name == 'none' or parameter3_name == 'none':
-        results['{}'.format(parameter1_name)] = parameter1_value
-        results['{}'.format(parameter2_name)] = parameter2_value
-        results['{}'.format(parameter3_name)] = parameter3_value
-    results['delta_value'] = calculate_d_value(model_data, empirical_data)
-    results['roc'] = calculate_roc(model_data, empirical_data, timestep=s.sim_time_step,
-                                      calculation_interval=s.calculation_interval)
-    results['NRMSD'] = calculate_nrmsd(model_data, empirical_data, timestep=s.sim_time_step,
-                                          calculation_interval=s.calculation_interval,
-                                          calculation_period=calculation_period)
-    return results
 
 def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, parameter1_name='none', parameter1_value=np.nan, parameter2_name='none', parameter2_value=np.nan, parameter3_name='none', parameter3_value=np.nan,
                       calculation_period=50, sim_number=0):
@@ -103,24 +60,6 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
     
     return results
 
-def initialize_empirical_data():
-    "Data - measured"
-    measured_data = pd.read_csv('empirical_data.csv', sep=',')
-    # measured_data = measured_data['data'].str.split(";", expand=True)
-    measured_data = measured_data.iloc[:,0:10]
-    # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
-    empirical_data = measured_data.replace(0, np.nan)
-
-    return empirical_data
-
-
-def prepare_data_for_metric_calc(model_data: pd.DataFrame, empirical_data: pd.DataFrame, variable):
-    start_row = s.empirical_settings.loc[variable, 'year_min'] * s.sim_time_step - 1900
-    stop_row = s.empirical_settings.loc[variable, 'year_max'] * s.sim_time_step - 1900
-    result_model = model_data[start_row:stop_row]
-    result_empirical = empirical_data[variable][start_row:stop_row]
-    
-    return result_model, result_empirical
 
 def prepare_data_for_metric_calc_multiple_attributes(model_data: pd.DataFrame, empirical_data: pd.DataFrame, variable_empirical, variable_model):
     """used in function "calculate_metrics_multiple_attributes" to cut big data for NRMSD calculation with fitting period
@@ -132,6 +71,15 @@ def prepare_data_for_metric_calc_multiple_attributes(model_data: pd.DataFrame, e
     
     return result_model, result_empirical
 
+def initialize_empirical_data():
+    "Data - measured"
+    measured_data = pd.read_csv('empirical_data.csv', sep=',')
+    # measured_data = measured_data['data'].str.split(";", expand=True)
+    measured_data = measured_data.iloc[:,0:10]
+    # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
+    empirical_data = measured_data.replace(0, np.nan)
+
+    return empirical_data
 
 def improved_limits(metrics, parameter_var_list, parameter_var_list_sorted):
     """
