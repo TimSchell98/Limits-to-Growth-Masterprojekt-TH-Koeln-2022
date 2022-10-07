@@ -32,11 +32,16 @@ def run_simulation(i, parameter_var_list):
     simulation_data = pd.DataFrame()
     simulation_data['POP_{}'.format(i)] = world3.pop
     simulation_data['AL_{}'.format(i)] = world3.al
-    #simulation_data['Deaths-p-y_{}'.format(i)] = world3.d
-    #simulation_data['Births-p-y_{}'.format(i)] = world3.b
-    #simulation_data['Food-p-c_{}'.format(i)] = world3.fpc
+    simulation_data['CDR_{}'.format(i)] = world3.cdr
+    simulation_data['CBR_{}'.format(i)] = world3.cbr
+    simulation_data['IO_{}'.format(i)] = world3.io
+    simulation_data['FPC_{}'.format(i)] = world3.fpc
+    simulation_data['POLC_{}'.format(i)] = world3.ppol
     #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
     #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
+    #print('Ending Simulation {}'.format(i))
+    
+    return simulation_data
 
     return simulation_data
 
@@ -95,18 +100,16 @@ if __name__ == '__main__':
     
     
         # - - - Metric calculation - -
-        empirical_data = af.initialize_empirical_data()
-        model_data, empirical_data_slice = af.prepare_data_for_metric_calc(df_results, empirical_data, s.pop_name)
-        metrics = pd.DataFrame()
+        empirical_data = af.initialize_empirical_data()  # CSV Data to Dataframe 
+        metrics = pd.DataFrame()                         # Dataframe for results - metrics
 
-        for i in range(s.grid_resolution**3):
-            metric_result = af.calculate_metrics(model_data['POP_{}'.format(i)], empirical_data_slice, str(i+1), 
-                                                 'parameter1',parameter_var_list.iloc[i,0],
-                                                 'parameter2',parameter_var_list.iloc[i,1],
-                                                 'parameter3',parameter_var_list.iloc[i,2])
+        for i in range(s.grid_resolution**3):            # calculate NRMSD for all parameter possibilities and attributes
+            metric_result = af.calculate_metrics_multiple_attributes(df_results, empirical_data, str(i+1), 
+                                                 'parameter1',parameter_var_list.iloc[i-s.grid_resolution*int(i/s.grid_resolution),0],
+                                                 'parameter2',parameter_var_list.iloc[int((i-s.grid_resolution**2*int(i/s.grid_resolution**2))/s.grid_resolution),1],
+                                                 'parameter3',parameter_var_list.iloc[int(i/s.grid_resolution**2),2],i)
             metrics = pd.concat([metrics, metric_result])
-        
-        
+
         #print resolutions
         print("df_results:")
         print(df_results) 
@@ -116,7 +119,7 @@ if __name__ == '__main__':
         
         #end simulation when nrmsd reaches defined accuracy, or if grid_zoom reaches limits
         if s.zoom_limit == True:
-            if round(metrics.iloc[(int(metrics["NRMSD[%]"].idxmin()))-1,5],4) <= s.result_accuracy or j < 0:
+            if round(metrics.iloc[(int(metrics["NRMSD_total"].idxmin()))-1,5],4) <= s.result_accuracy or j < 0:
                 end_simulation = True
 
         if s.zoom_limit == False and j < 0:

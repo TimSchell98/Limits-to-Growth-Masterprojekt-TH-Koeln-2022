@@ -64,14 +64,44 @@ def calculate_metrics(model_data, empirical_data, index=0, parameter1_name='none
         results['{}'.format(parameter1_name)] = parameter1_value
         results['{}'.format(parameter2_name)] = parameter2_value
         results['{}'.format(parameter3_name)] = parameter3_value
-    results['delta_value[%]'] = calculate_d_value(model_data, empirical_data)
-    results['roc[%]'] = calculate_roc(model_data, empirical_data, timestep=s.sim_time_step,
+    results['delta_value'] = calculate_d_value(model_data, empirical_data)
+    results['roc'] = calculate_roc(model_data, empirical_data, timestep=s.sim_time_step,
                                       calculation_interval=s.calculation_interval)
-    results['NRMSD[%]'] = calculate_nrmsd(model_data, empirical_data, timestep=s.sim_time_step,
+    results['NRMSD'] = calculate_nrmsd(model_data, empirical_data, timestep=s.sim_time_step,
                                           calculation_interval=s.calculation_interval,
                                           calculation_period=calculation_period)
     return results
 
+def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, parameter1_name='none', parameter1_value=np.nan, parameter2_name='none', parameter2_value=np.nan, parameter3_name='none', parameter3_value=np.nan,
+                      calculation_period=50, sim_number=0):
+    """ Calculate NRSMD for selected attributes 
+    - using function "prepare_data_for_metric_calc_multiple_attributes" to cut data
+    - NRMSD total for weighting attributes"""
+    results = pd.DataFrame(index=[index])
+    if not parameter1_name == 'none' or parameter2_name == 'none' or parameter3_name == 'none':
+        results['{}'.format(parameter1_name)] = parameter1_value
+        results['{}'.format(parameter2_name)] = parameter2_value
+        results['{}'.format(parameter3_name)] = parameter3_value
+    
+    #attribute_list_empirical = s.empirical_settings.index
+    attribute_list_empirical = [s.pop_name, s.al_name, s.crd_name, s.brd_name]
+    attribute_list_model = ['POP_{}','AL_{}', 'CDR_{}', 'CBR_{}']
+
+    # attribute_list_model = df_results
+    for i in np.arange(0,len(attribute_list_empirical)):
+        #attribute_empirical(i)
+        #attributemodel = (i)
+        model_data_slice, empirical_data_slice = prepare_data_for_metric_calc_multiple_attributes(model_data, empirical_data, attribute_list_empirical[i], attribute_list_model[i].format(int(index)-1))
+        
+        results['NRMSD_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
+                                              calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
+    
+    results['NRMSD_total'] = (0.25*results['NRMSD_Population']+
+                                 0.25*results['NRMSD_Arable_land']+
+                                 0.25*results['NRMSD_Death_rate']+
+                                 0.25*results['NRMSD_Birth_rate']) #)/len(attribute_list_empirical)
+    
+    return results
 
 def initialize_empirical_data():
     "Data - measured"
@@ -89,7 +119,19 @@ def prepare_data_for_metric_calc(model_data: pd.DataFrame, empirical_data: pd.Da
     stop_row = s.empirical_settings.loc[variable, 'year_max'] * s.sim_time_step - 1900
     result_model = model_data[start_row:stop_row]
     result_empirical = empirical_data[variable][start_row:stop_row]
+    
     return result_model, result_empirical
+
+def prepare_data_for_metric_calc_multiple_attributes(model_data: pd.DataFrame, empirical_data: pd.DataFrame, variable_empirical, variable_model):
+    """used in function "calculate_metrics_multiple_attributes" to cut big data for NRMSD calculation with fitting period
+    - start and stop years can be selected in settings """
+    start_row = s.empirical_settings.loc[variable_empirical, 'year_min'] * s.sim_time_step - 1900
+    stop_row = s.empirical_settings.loc[variable_empirical, 'year_max'] * s.sim_time_step - 1900
+    result_model = model_data[variable_model][start_row:stop_row]
+    result_empirical = empirical_data[variable_empirical][start_row:stop_row]
+    
+    return result_model, result_empirical
+
 
 def improved_limits(metrics, parameter_var_list, parameter_var_list_sorted):
     """
@@ -113,9 +155,9 @@ def improved_limits(metrics, parameter_var_list, parameter_var_list_sorted):
     parameter3_end_val_old = round(parameter_var_list_sorted.iloc[s.grid_resolution-1,2],6)
     
     #find index of optimal combination
-    NRMSD_index= int(metrics["NRMSD[%]"].idxmin())
+    NRMSD_index= int(metrics["NRMSD_total"].idxmin())
     print("Minimal NRMSD:")
-    print(round(metrics["NRMSD[%]"].min(),4))
+    print(round(metrics["NRMSD_total"].min(),4))
     
     #find optimal combination parameter values
     parameter1_val = round(metrics.iloc[NRMSD_index-1,0],6)
@@ -245,7 +287,7 @@ def new_limits(metrics,parameter_var_list):
     """
     
     #find biggest deviation in NRMSD
-    max_nrmsd=metrics["NRMSD[%]"].nlargest(s.grid_resolution+1)
+    max_nrmsd=metrics["NRMSD_Population"].nlargest(s.grid_resolution+1)
     
     #find fitting parameter values to the biggest NRMSDs. With average, find parameter which has the biggest influence.
     parameter1 = 0

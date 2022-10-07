@@ -4,8 +4,8 @@ import numpy as np
 # - - - - - Global  Settings
 use_update = False #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
-grid_resolution = 4 #number of simulations per zoom
-zoom_limit = True #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
+grid_resolution = 5 #number of simulations per zoom
+zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 1 #number of zooms, gerade nicht benutzt
 result_accuracy = 0.006 #accuracy, when zoom should stop
 sim_time_step = 1 #pro Jahr in Simulation
@@ -18,7 +18,9 @@ period  = year_max1 - year_min # wird es noch benötigt?
 parameter_divergence = 0.25
 
 # - Analysis Settings
-calculation_interval = 5
+calculation_interval = 5 # step size [years] for calculation
+calculation_period = 50  # period [years ]for calculation
+
 
 # - - - - - Parameter Settings 
 #1) desired complete family size normal - default = 4
@@ -132,20 +134,45 @@ for i in range(0,grid_resolution**3):
 # - - - - - empirical data settings
 # population 
 pop_name = 'Population'
-pop_y_min = 1970
-pop_y_max = 2018
+pop_y_min = 1960
+pop_y_max = 2021
 #index_pop_last = measured_data['population'].index.get_loc(measured_data['population'].last_valid_index())
 
 # Arable Land
-al_name = 'Arable_Land'
-al_year_min = 1970
-al_year_max = 2018
+al_name = 'Arable_land'
+al_year_min = 1961
+al_year_max = 2020
+
+# Crude Death Rate
+crd_name = 'Death_rate'
+crd_year_min = 1970
+crd_year_max = 2020
+
+# Crude Birth Rate
+brd_name = 'Birth_rate'
+brd_year_min = 1970
+brd_year_max = 2020
+
+# Gross Fixed Capital Formation
+gfcf_name = 'GFCF'
+gfcf_year_min = 1970
+gfcf_year_max = 2020
+
+# Food per Capita Vegetable Equivalent
+fpc_name = 'Food_per_capita_ve'
+fpc_year_min = 1961
+fpc_year_max = 2019
+
+# Pollution CO2
+polco2_name = 'Pollution_CO2'
+polco2_year_min = 1960
+polco2_year_max = 2021
 
 # - Settings to Dataframe
-empirical_settings = pd.DataFrame(index=[pop_name, al_name], columns=['name' ,'year_min','year_max'])
-#empirical_settings['name'] = (pop_name, al_name)
-empirical_settings['year_min'] = (pop_y_min, al_year_min)
-empirical_settings['year_max'] = (pop_y_max, al_year_max)
+empirical_settings = pd.DataFrame(index=[pop_name, al_name, crd_name, brd_name, gfcf_name, fpc_name, polco2_name], columns=['name' ,'year_min','year_max'])
+#empirical_settings['name'] = (pop_name, al_name, crd_name, brd_name, gfcf_name, fpc_name, polco2_name)
+empirical_settings['year_min'] = (pop_y_min, al_year_min, crd_year_min, brd_year_min, gfcf_year_min, fpc_year_min, polco2_year_min)
+empirical_settings['year_max'] = (pop_y_max, al_year_max, crd_year_max, brd_year_max, gfcf_year_max, fpc_year_max, polco2_year_max)
 
 
 if __name__ == '__main__':
