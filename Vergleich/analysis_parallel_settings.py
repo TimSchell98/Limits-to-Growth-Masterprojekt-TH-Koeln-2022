@@ -4,9 +4,10 @@ import numpy as np
 # - - - - - Global  Settings
 use_update = False #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
-grid_resolution = 5 #number of simulations per zoom
+single_parameter_zoom = 2 #how often should the parameter with the highest influence be improved alone
+grid_resolution = 8 #number of simulations per zoom
 zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
-grid_zoom = 1 #number of zooms, gerade nicht benutzt
+grid_zoom = 4 #number of zooms, gerade nicht benutzt
 result_accuracy = 0.006 #accuracy, when zoom should stop
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
@@ -14,13 +15,19 @@ year_max1 = year_max +1
 year_min = 1900
 period  = year_max1 - year_min # wird es noch benötigt?
 
+
+
+
+#temporäre variablen, ich muss mir noch was besseres einfallen lassen
+x = 1
+parameter_hi = 0
+
 #how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
 parameter_divergence = 0.25
 
 # - Analysis Settings
 calculation_interval = 5 # step size [years] for calculation
 calculation_period = 50  # period [years ]for calculation
-
 
 # - - - - - Parameter Settings 
 #1) desired complete family size normal - default = 4
@@ -72,14 +79,14 @@ def parameter_init():
     setting_values = pd.DataFrame( data = setting_values, index = ['parameter1', 'parameter2', 'parameter3'])
     setting_values['delta'] = (setting_values['end_value'] - setting_values['start_value'])/(grid_resolution-1)
     
-    print(setting_values)
+    #print(setting_values)
     
     # - - Dataframe Parameter list
-    parameter_var_list = {'parameter1': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.00001, setting_values.iloc[0,2]),
+    parameter_var_list_sorted = {'parameter1': np.arange(setting_values.iloc[0,0], setting_values.iloc[0,1]+0.00001, setting_values.iloc[0,2]),
                           'parameter2': np.arange(setting_values.iloc[1,0], setting_values.iloc[1,1]+0.00001, setting_values.iloc[1,2]),
                           'parameter3': np.arange(setting_values.iloc[2,0], setting_values.iloc[2,1]+0.00001, setting_values.iloc[2,2])}
     
-    parameter_var_list = pd.DataFrame(data=parameter_var_list)
+    parameter_var_list_sorted = pd.DataFrame(data=parameter_var_list_sorted)
     
     
     #parameter_var_list_full is a list of every combination of the parameters
@@ -92,13 +99,13 @@ def parameter_init():
     for i in range (0,grid_resolution**3):
         #fill parameter_var_list_full with parameter 1
         i1 = i1+1
-        parameter_var_list_full.loc[i,0] = parameter_var_list.iloc[i1-1,0]
+        parameter_var_list_full.loc[i,0] = parameter_var_list_sorted.iloc[i1-1,0]
         if i1 == grid_resolution:
             i1 = 0
             
         #fill parameter_var_list_full with parameter 2
         j = j+1
-        parameter_var_list_full.loc[i,1] = parameter_var_list.iloc[i2,1]
+        parameter_var_list_full.loc[i,1] = parameter_var_list_sorted.iloc[i2,1]
         if j == grid_resolution:
             j = 0
             i2 = i2+1
@@ -108,27 +115,23 @@ def parameter_init():
         
         #fill parameter_var_list_full with parameter 3
         x = x+1
-        parameter_var_list_full.loc[i,2] = parameter_var_list.iloc[i3,2]
+        parameter_var_list_full.loc[i,2] = parameter_var_list_sorted.iloc[i3,2]
         if x == grid_resolution**2:
             x = 0
             i3 = i3+1
         if i3 == 4:
             i3 = 0
         
-        
     print("Starting limits:")
-    print(parameter_var_list)
+    print(parameter_var_list_sorted)
     print("Parameter1 = " + parameter1_name)
     print("Parameter2 = " + parameter2_name)
     print("Parameter3 = " + parameter3_name)
     
-    return parameter_var_list_full, parameter_var_list
+    return parameter_var_list_full, parameter_var_list_sorted
 
 
-#create list for plotting function
-population_list = []
-for i in range(0,grid_resolution**3):
-    population_list.append("POP_" + str(i))
+
 
 
 # - - - - - empirical data settings
