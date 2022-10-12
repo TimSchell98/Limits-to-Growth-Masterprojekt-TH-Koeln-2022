@@ -21,7 +21,7 @@ def create_variation(default_value):
 def create_single_value_array(value):
     return np.full(ps.grid_resolution,value)
 
-def calculate_nrmsd(model_results, empirical_data):
+#def calculate_nrmsd(model_results, empirical_data):
 
 
 
@@ -63,11 +63,17 @@ def pre_solver(parameter_name, empirical_data_name):
     empirical_data = af.initialize_empirical_data()  # CSV Data to Dataframe
     metrics = pd.DataFrame()                         # Dataframe for results - metrics
 
+    model_data, empirical_data_slice = af.prepare_data_for_metric_calc(df_results,empirical_data, empirical_data_name)
+    print(empirical_data_slice)
 
+    for i in range(ps.grid_resolution):
+        metric_result = af.calculate_metrics(model_data['{}_{}'.format(ps.name_dict_empirical_model[empirical_data_name], i)], empirical_data_slice, str(i+1), parameter_name,
+                                             parameter_var_list[parameter_name][i])
+        metrics = pd.concat([metrics, metric_result])
 
+    print(metrics)
 
-
-
+    index_of_minimum_nrmsd = metrics['NRMSD[%]'].idmin()
 
 
 

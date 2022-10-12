@@ -5,7 +5,7 @@ import analysis_parallel_settings as s
 
 print_debug_messages = True
 search_range_from_default = 0.25
-grid_resolution = 2
+grid_resolution = 8
 
 parameter_default_dict = {
     s.parameter1_name: s.parameter1_default,
@@ -18,3 +18,11 @@ parameter_number_dict = {
     s.parameter2_name: 2,
     s.parameter3_name: 3
 }
+name_dict_empirical_model = {
+    'Population':'POP'
+
+# TO DO: alle Daten ergänzen
+}
+
+if __name__ == '__main__':
+    print(name_dict_empirical_model['Population'])
