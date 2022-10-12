@@ -40,9 +40,9 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         results['{}'.format(parameter2_name)] = parameter2_value
         results['{}'.format(parameter3_name)] = parameter3_value
     
-    #attribute_list_empirical = s.empirical_settings.index
-    attribute_list_empirical = [s.pop_name, s.al_name, s.crd_name, s.brd_name]
-    attribute_list_model = ['POP_{}','AL_{}', 'CDR_{}', 'CBR_{}']
+    attribute_list_empirical = s.empirical_settings.index
+    #attribute_list_empirical = [s.pop_name, s.al_name, s.crd_name, s.brd_name, s.fpc_name]
+    attribute_list_model = ['POP_{}', 'CDR_{}', 'CBR_{}','AL_{}', 'FPC_{}', 'POLC_{}']
 
     # attribute_list_model = df_results
     for i in np.arange(0,len(attribute_list_empirical)):
@@ -53,10 +53,11 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         results['NRMSD_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
                                               calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
     
-    results['NRMSD_total'] = (0.25*results['NRMSD_Population']+
-                                 0.25*results['NRMSD_Arable_land']+
-                                 0.25*results['NRMSD_Death_rate']+
-                                 0.25*results['NRMSD_Birth_rate']) #)/len(attribute_list_empirical)
+    results['NRMSD_total'] = (1*results['NRMSD_Population']+
+                                 1*results['NRMSD_Arable_land']+
+                                 1*results['NRMSD_Death_rate']+
+                                 1*results['NRMSD_Birth_rate']+
+                                 1*results['NRMSD_Food_per_capita_ve']) /len(attribute_list_empirical)
     
     return results
 
@@ -91,8 +92,6 @@ def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_lis
     print("Parameter1 = " + s.parameter1_name)
     print("Parameter2 = " + s.parameter2_name)
     print("Parameter3 = " + s.parameter3_name)
-    print("Old limits:")
-    print(parameter_var_list_sorted)
     
     #set initial limits
     parameter1_start_val_old = round(parameter_var_list_sorted.iloc[0,0],6)
@@ -104,8 +103,6 @@ def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_lis
     
     #find index of optimal combination
     NRMSD_index= int(metrics["NRMSD_Population"].idxmin())
-    print("Minimal NRMSD:")
-    print(round(metrics["NRMSD_Population"].min(),4))
     
     #find optimal combination parameter values
     parameter1_val = round(metrics.iloc[NRMSD_index-1,0],6)
@@ -127,48 +124,42 @@ def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_lis
             
     #check if parameter values are boundry values and set new limits
     if parameter1_val == parameter1_start_val_old and parameter1_val != parameter1_end_val_old:
-        #parameter1_start_val = round(parameter1_val-((parameter1_end_val_old-parameter1_start_val_old)/(s.grid_resolution-1)),5)
-        parameter1_start_val = round(parameter1_val-(s.parameter1_default*s.parameter_divergence*s.parameter1_modifier),6)
+        parameter1_start_val = round(parameter1_val-(((parameter1_end_val_old-parameter1_start_val_old)/(s.grid_resolution-1))*2),5)
         if parameter1_start_val < 0:
             parameter1_start_val = 0
-        parameter1_end_val = round(parameter_var_list_sorted.iloc[index_parameter1+1,0],6)
+        parameter1_end_val = round(parameter_var_list_sorted.iloc[index_parameter1+2,0],6)
         
     if parameter1_val == parameter1_end_val_old and parameter1_val != parameter1_start_val_old:
-        #parameter1_end_val = round(parameter1_val+((parameter1_end_val_old-parameter1_start_val_old)/(s.grid_resolution-1)),5)
-        parameter1_end_val = round(parameter1_val+(s.parameter1_default*s.parameter_divergence*s.parameter1_modifier),6)
-        parameter1_start_val = round(parameter_var_list_sorted.iloc[index_parameter1-1,0],6)
+        parameter1_end_val = round(parameter1_val+(((parameter1_end_val_old-parameter1_start_val_old)/(s.grid_resolution-1))*2),5)
+        parameter1_start_val = round(parameter_var_list_sorted.iloc[index_parameter1-2,0],6)
         
     if parameter1_val != parameter1_start_val_old and parameter1_val != parameter1_end_val_old:
         parameter1_start_val = round(parameter_var_list_sorted.iloc[index_parameter1-1,0],6)
         parameter1_end_val = round(parameter_var_list_sorted.iloc[index_parameter1+1,0],6)
     
     if parameter2_val == parameter2_start_val_old and parameter2_val != parameter2_end_val_old:
-        #parameter2_start_val = round(parameter2_val-((parameter2_end_val_old-parameter2_start_val_old)/(s.grid_resolution-1)),4)
-        parameter2_start_val = round(parameter2_val-(s.parameter2_default*s.parameter_divergence*s.parameter2_modifier),6)
+        parameter2_start_val = round(parameter2_val-(((parameter2_end_val_old-parameter2_start_val_old)/(s.grid_resolution-1))*2),4)
         if parameter2_start_val < 0:
             parameter2_start_val = 0
-        parameter2_end_val = round(parameter_var_list_sorted.iloc[index_parameter2+1,1],6)
+        parameter2_end_val = round(parameter_var_list_sorted.iloc[index_parameter2+2,1],6)
         
     if parameter2_val == parameter2_end_val_old and parameter2_val != parameter2_start_val_old:
-        #parameter2_end_val = round(parameter2_val+((parameter2_end_val_old-parameter2_start_val_old)/(s.grid_resolution-1)),4)
-        parameter2_end_val = round(parameter2_val+(s.parameter2_default*s.parameter_divergence*s.parameter2_modifier),6)
-        parameter2_start_val = round(parameter_var_list_sorted.iloc[index_parameter2-1,1],6)
+        parameter2_end_val = round(parameter2_val+(((parameter2_end_val_old-parameter2_start_val_old)/(s.grid_resolution-1))*2),4)
+        parameter2_start_val = round(parameter_var_list_sorted.iloc[index_parameter2-2,1],6)
         
     if parameter2_val != parameter2_start_val_old and parameter2_val != parameter2_end_val_old:
         parameter2_start_val = round(parameter_var_list_sorted.iloc[index_parameter2-1,1],6)
         parameter2_end_val = round(parameter_var_list_sorted.iloc[index_parameter2+1,1],6)
     
     if parameter3_val == parameter3_start_val_old and parameter3_val != parameter3_end_val_old:
-        #parameter3_start_val = round(parameter3_val-((parameter3_end_val_old-parameter3_start_val_old)/(s.grid_resolution-1)),4)
-        parameter3_start_val = round(parameter3_val-(s.parameter3_default*s.parameter_divergence*s.parameter3_modifier),6)
+        parameter3_start_val = round(parameter3_val-(((parameter3_end_val_old-parameter3_start_val_old)/(s.grid_resolution-1))*2),4)
         if parameter3_start_val < 0:
             parameter3_start_val = 0
-        parameter3_end_val = round(parameter_var_list_sorted.iloc[index_parameter3+1,2],6)
+        parameter3_end_val = round(parameter_var_list_sorted.iloc[index_parameter3+2,2],6)
         
     if parameter3_val == parameter3_end_val_old and parameter3_val != parameter3_start_val_old:
-        #parameter3_end_val = round(parameter3_val+((parameter3_end_val_old-parameter3_start_val_old)/(s.grid_resolution-1)),4)
-        parameter3_end_val = round(parameter3_val+(s.parameter3_default*s.parameter_divergence*s.parameter3_modifier),6)
-        parameter3_start_val = round(parameter_var_list_sorted.iloc[index_parameter3-1,2],6)
+        parameter3_end_val = round(parameter3_val+(((parameter3_end_val_old-parameter3_start_val_old)/(s.grid_resolution-1))*2),4)
+        parameter3_start_val = round(parameter_var_list_sorted.iloc[index_parameter3-2,2],6)
         
     if parameter3_val != parameter3_start_val_old and parameter3_val != parameter3_end_val_old:
         parameter3_start_val = round(parameter_var_list_sorted.iloc[index_parameter3-1,2],6)
@@ -188,10 +179,6 @@ def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_lis
 
     parameter_var_list_improved = pd.DataFrame()
     parameter_var_list_improved = pd.DataFrame(data=parameter_var_list_improved_val)
-    
-    #print new limits
-    print("Improved limits:")
-    print(parameter_var_list_improved)
 
     #parameter_var_list_full is a list of every combination of the parameters
     parameter_var_list_full = pd.DataFrame()
@@ -201,15 +188,14 @@ def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_lis
     j = 0
     x = 0
     
+    #fill parameter_var_list_full with parameters 1-3
     for i in range (0,s.grid_resolution**3):
         
-        #fill parameter_var_list_full with parameter 1
         i1 = i1+1
         parameter_var_list_full.loc[i,0] = parameter_var_list_improved.iloc[i1-1,0]
         if i1 == s.grid_resolution:
             i1 = 0
             
-        #fill parameter_var_list_full with parameter 2
         j = j+1
         parameter_var_list_full.loc[i,1] = parameter_var_list_improved.iloc[i2,1]
         if j == s.grid_resolution:
@@ -218,7 +204,6 @@ def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_lis
         if i2 == 4:
             i2 = 0
         
-        #fill parameter_var_list_full with parameter 3
         x = x+1
         parameter_var_list_full.loc[i,2] = parameter_var_list_improved.iloc[i3,2]
         if x == s.grid_resolution**2:
@@ -235,9 +220,6 @@ def improved_limits_single_parameter(metrics,parameter_var_list_full_old,paramet
     Function that calculates which parameter has the biggest influence on the results and calculates the improved limits only for this parameter.
     """
     
-    print("Old limits:")
-    print(parameter_var_list_sorted_old)
-    
     parameter_var_list_full = pd.DataFrame()
     parameter_var_list_sorted = pd.DataFrame() 
     
@@ -248,173 +230,72 @@ def improved_limits_single_parameter(metrics,parameter_var_list_full_old,paramet
         max_nrmsd=metrics["NRMSD_Population"].nlargest(s.grid_resolution**2+1)
 
         #find fitting parameter values to the biggest NRMSDs. With average, find parameter which has the biggest influence.
-        #hier ist noch ein fehler bei größeren resolutions, ich glaube weil der mittelwert erst bei vielen nachkommastellen anders wird
-        #anderen weg finden parameter mit dem größten Einfluss zu finden
         parameter1 = 0
         parameter2 = 0
         parameter3 = 0
         
-        for i in range (0,s.grid_resolution**2+1):
+        for i in range (0,s.grid_resolution**2):
             
             parameter1 = parameter1 + parameter_var_list_full_old.iloc[int(max_nrmsd.index[i]),0]
             parameter2 = parameter2 + parameter_var_list_full_old.iloc[int(max_nrmsd.index[i]),1]
             parameter3 = parameter3 + parameter_var_list_full_old.iloc[int(max_nrmsd.index[i]),2]
         
-        parameter1 = parameter1/(s.grid_resolution**2+1)
-        parameter2 = parameter2/(s.grid_resolution**2+1)
-        parameter3 = parameter3/(s.grid_resolution**2+1)
+        parameter1 = parameter1/(s.grid_resolution**2)
+        parameter2 = parameter2/(s.grid_resolution**2)
+        parameter3 = parameter3/(s.grid_resolution**2)
     
     
         if round(parameter1,6) == round(parameter_var_list_full_old.iloc[int(max_nrmsd.index[0]),0],6):
-            s.parameter_hi = 1
+            s.parameter_hi = 0
             print("Parameter 1 has the highest influence")
         if round(parameter2,6) == round(parameter_var_list_full_old.iloc[int(max_nrmsd.index[0]),1],6):
-            s.parameter_hi = 2
+            s.parameter_hi = 1
             print("Parameter 2 has the highest influence")
         if round(parameter3,6) == round(parameter_var_list_full_old.iloc[int(max_nrmsd.index[0]),2],6):
-            s.parameter_hi = 3
+            s.parameter_hi = 2
             print("Parameter 3 has the highest influence")
         
     #find index of optimal combination
     NRMSD_index= int(metrics["NRMSD_Population"].idxmin())
     
-    if s.parameter_hi == 1:
-        
-        #set initial limits
-        parameter1_start_val_old = round(parameter_var_list_sorted_old.iloc[0,0],6)
-        parameter1_end_val_old = round(parameter_var_list_sorted_old.iloc[s.grid_resolution-1,0],6)
-
-        #find optimal combination parameter values
-        parameter1_val = round(metrics.iloc[NRMSD_index-1,0],6)
-        
-        #find index of parameters, probably a better solution but not found
-        for i in range (0,s.grid_resolution):
-            if round(parameter_var_list_sorted_old.iloc[i,0],6) == round(parameter1_val,6):
-                index_parameter1 = i
-                
-        #check if parameter values are boundry values and set new limits
-        if parameter1_val == parameter1_start_val_old and parameter1_val != parameter1_end_val_old:
-            parameter1_start_val = round(parameter1_val-(s.parameter1_default*s.parameter_divergence*s.parameter1_modifier),6)
-            if parameter1_start_val < 0:
-                parameter1_start_val = 0
-            parameter1_end_val = round(parameter_var_list_sorted_old.iloc[index_parameter1+1,0],6)
-            
-        if parameter1_val == parameter1_end_val_old and parameter1_val != parameter1_start_val_old:
-            parameter1_end_val = round(parameter1_val+(s.parameter1_default*s.parameter_divergence*s.parameter1_modifier),6)
-            parameter1_start_val = round(parameter_var_list_sorted_old.iloc[index_parameter1-1,0],6)
-            
-        if parameter1_val != parameter1_start_val_old and parameter1_val != parameter1_end_val_old:
-            parameter1_start_val = round(parameter_var_list_sorted_old.iloc[index_parameter1-1,0],6)
-            parameter1_end_val = round(parameter_var_list_sorted_old.iloc[index_parameter1+1,0],6)
-
-        
-        parameter_hi_var_list_improved_val = {'parameter1': np.arange(parameter1_start_val, parameter1_end_val+0.00000001, (parameter1_end_val - parameter1_start_val)/(s.grid_resolution-1))}
-
-        parameter_hi_var_list_improved = pd.DataFrame()
-        parameter_hi_var_list_improved = pd.DataFrame(data=parameter_hi_var_list_improved_val)
-        
-        for i in range (0,s.grid_resolution):
-        
-            parameter_var_list_full.loc[i,0] = parameter_hi_var_list_improved.iloc[i,0]
-            parameter_var_list_full.loc[i,1] = parameter_var_list_sorted_old.iloc[i,1]
-            parameter_var_list_full.loc[i,2] = parameter_var_list_sorted_old.iloc[i,2]
-            
-            parameter_var_list_sorted.loc[i,0] = parameter_hi_var_list_improved.iloc[i,0]
-            parameter_var_list_sorted.loc[i,1] = parameter_var_list_sorted_old.iloc[i,1]
-            parameter_var_list_sorted.loc[i,2] = parameter_var_list_sorted_old.iloc[i,2]
-        
-    if s.parameter_hi == 2:
-        
-        #set initial limits
-        parameter2_start_val_old = round(parameter_var_list_sorted_old.iloc[0,1],6)
-        parameter2_end_val_old = round(parameter_var_list_sorted_old.iloc[s.grid_resolution-1,1],6)
-
-        #find optimal combination parameter values
-        parameter2_val = round(metrics.iloc[NRMSD_index-1,1],6)
-        
-        #find index of parameters, probably a better solution but not found
-        for i in range (0,s.grid_resolution):
-            if round(parameter_var_list_sorted_old.iloc[i,1],6) == round(parameter2_val,6):
-                index_parameter2 = i
-                
-        #check if parameter values are boundry values and set new limits
-        if parameter2_val == parameter2_start_val_old and parameter2_val != parameter2_end_val_old:
-            parameter2_start_val = round(parameter2_val-(s.parameter2_default*s.parameter_divergence*s.parameter2_modifier),6)
-            if parameter2_start_val < 0:
-                parameter2_start_val = 0
-            parameter2_end_val = round(parameter_var_list_sorted_old.iloc[index_parameter2+1,1],6)
-            
-        if parameter2_val == parameter2_end_val_old and parameter2_val != parameter2_start_val_old:
-            parameter2_end_val = round(parameter2_val+(s.parameter2_default*s.parameter_divergence*s.parameter2_modifier),6)
-            parameter2_start_val = round(parameter_var_list_sorted_old.iloc[index_parameter2-1,1],6)
-            
-        if parameter2_val != parameter2_start_val_old and parameter2_val != parameter2_end_val_old:
-            parameter2_start_val = round(parameter_var_list_sorted_old.iloc[index_parameter2-1,1],6)
-            parameter2_end_val = round(parameter_var_list_sorted_old.iloc[index_parameter2+1,1],6)
-
-        
-        parameter_hi_var_list_improved_val = {'parameter2': np.arange(parameter2_start_val, parameter2_end_val+0.00000001, (parameter2_end_val - parameter2_start_val)/(s.grid_resolution-1))}
-
-        parameter_hi_var_list_improved = pd.DataFrame()
-        parameter_hi_var_list_improved = pd.DataFrame(data=parameter_hi_var_list_improved_val)
-        
-        for i in range (0,s.grid_resolution):
-            parameter_var_list_full.loc[i,0] = parameter_var_list_sorted_old.iloc[i,0]
-            parameter_var_list_full.loc[i,1] = parameter_hi_var_list_improved.iloc[i,1]
-            parameter_var_list_full.loc[i,2] = parameter_var_list_sorted_old.iloc[i,2]
-            
-            parameter_var_list_sorted.loc[i,0] = parameter_var_list_sorted_old.iloc[i,0]
-            parameter_var_list_sorted.loc[i,1] = parameter_hi_var_list_improved.iloc[i,1]
-            parameter_var_list_sorted.loc[i,2] = parameter_var_list_sorted_old.iloc[i,2]    
-            
-        
-    if s.parameter_hi == 3:
+    #define old
+    parameter_start_val_old = round(parameter_var_list_sorted_old.iloc[0,s.parameter_hi],6)
+    parameter_end_val_old = round(parameter_var_list_sorted_old.iloc[s.grid_resolution-1,s.parameter_hi],6)
+    parameter_val = round(metrics.iloc[NRMSD_index-1,s.parameter_hi],6)
     
-        #set initial limits
-        parameter3_start_val_old = round(parameter_var_list_sorted_old.iloc[0,2],6)
-        parameter3_end_val_old = round(parameter_var_list_sorted_old.iloc[s.grid_resolution-1,2],6)
-
-        #find optimal combination parameter values
-        parameter3_val = round(metrics.iloc[NRMSD_index-1,2],6)
+    for x in range (0,s.grid_resolution):
+        if round(parameter_var_list_sorted_old.iloc[x,s.parameter_hi],6) == round(parameter_val,6):
+            index_parameter = x
+    
+    if parameter_val == parameter_start_val_old and parameter_val != parameter_end_val_old:
+        parameter_start_val = round(parameter_val-(((parameter_end_val_old-parameter_start_val_old)/(s.grid_resolution-1))*2),5)
+        if parameter_start_val < 0:
+            parameter_start_val = 0
+        parameter_end_val = round(parameter_var_list_sorted_old.iloc[index_parameter+2,s.parameter_hi],6)
         
-        #find index of parameters, probably a better solution but not found
-        for i in range (0,s.grid_resolution):
-            if round(parameter_var_list_sorted_old.iloc[i,2],6) == round(parameter3_val,6):
-                index_parameter3 = i
-                
-        #check if parameter values are boundry values and set new limits
-        if parameter3_val == parameter3_start_val_old and parameter3_val != parameter3_end_val_old:
-            parameter3_start_val = round(parameter3_val-(s.parameter3_default*s.parameter_divergence*s.parameter3_modifier),6)
-            if parameter3_start_val < 0:
-                parameter3_start_val = 0
-            parameter3_end_val = round(parameter_var_list_sorted_old.iloc[index_parameter2+1,2],6)
-            
-        if parameter3_val == parameter3_end_val_old and parameter3_val != parameter3_start_val_old:
-            parameter3_end_val = round(parameter3_val+(s.parameter3_default*s.parameter_divergence*s.parameter3_modifier),6)
-            parameter3_start_val = round(parameter_var_list_sorted_old.iloc[index_parameter2-1,2],6)
-            
-        if parameter3_val != parameter3_start_val_old and parameter3_val != parameter3_end_val_old:
-            parameter3_start_val = round(parameter_var_list_sorted_old.iloc[index_parameter2-1,2],6)
-            parameter3_end_val = round(parameter_var_list_sorted_old.iloc[index_parameter2+1,2],6)
-
+    if parameter_val == parameter_end_val_old and parameter_val != parameter_start_val_old:
+        parameter_end_val = round(parameter_val+(((parameter_end_val_old-parameter_start_val_old)/(s.grid_resolution-1))*2),5)
+        parameter_start_val = round(parameter_var_list_sorted_old.iloc[index_parameter-2,s.parameter_hi],6)
         
-        parameter_hi_var_list_improved_val = {'parameter3': np.arange(parameter3_start_val, parameter3_end_val+0.00000001, (parameter3_end_val - parameter3_start_val)/(s.grid_resolution-1))}
+    if parameter_val != parameter_start_val_old and parameter_val != parameter_end_val_old:
+        parameter_start_val = round(parameter_var_list_sorted_old.iloc[index_parameter-1,s.parameter_hi],6)
+        parameter_end_val = round(parameter_var_list_sorted_old.iloc[index_parameter+1,s.parameter_hi],6)
 
-        parameter_hi_var_list_improved = pd.DataFrame()
-        parameter_hi_var_list_improved = pd.DataFrame(data=parameter_hi_var_list_improved_val)    
+    parameter_hi_var_list_improved_val = {'parameter': np.arange(parameter_start_val, parameter_end_val+0.00000001, (parameter_end_val - parameter_start_val)/(s.grid_resolution-1))}
+    parameter_hi_var_list_improved = pd.DataFrame()
+    parameter_hi_var_list_improved = pd.DataFrame(data=parameter_hi_var_list_improved_val)
     
+    for x in range (0,s.grid_resolution):
+        parameter_var_list_sorted_old.iloc[x,s.parameter_hi] = parameter_hi_var_list_improved.iloc[x,0]
     
-        for i in range (0,s.grid_resolution):
-            parameter_var_list_full.loc[i,0] = parameter_var_list_sorted_old.iloc[i,0]
-            parameter_var_list_full.loc[i,1] = parameter_var_list_sorted_old.iloc[i,1]
-            parameter_var_list_full.loc[i,2] = parameter_hi_var_list_improved.iloc[i,2]
-            
-            parameter_var_list_sorted.loc[i,0] = parameter_var_list_sorted_old.iloc[i,0]
-            parameter_var_list_sorted.loc[i,1] = parameter_var_list_sorted_old.iloc[i,1]
-            parameter_var_list_sorted.loc[i,2] = parameter_hi_var_list_improved.iloc[i,2]  
-    
-    print("Improved limits:")
-    print(parameter_var_list_sorted)
+    for x in range (0,s.grid_resolution):
+        parameter_var_list_full.loc[x,0] = parameter_var_list_sorted_old.iloc[x,0]
+        parameter_var_list_full.loc[x,1] = parameter_var_list_sorted_old.iloc[x,1]
+        parameter_var_list_full.loc[x,2] = parameter_var_list_sorted_old.iloc[x,2]
+
+        parameter_var_list_sorted.loc[x,0] = parameter_var_list_sorted_old.iloc[x,0]
+        parameter_var_list_sorted.loc[x,1] = parameter_var_list_sorted_old.iloc[x,1]
+        parameter_var_list_sorted.loc[x,2] = parameter_var_list_sorted_old.iloc[x,2]
 
     return parameter_var_list_full, parameter_var_list_sorted
 
