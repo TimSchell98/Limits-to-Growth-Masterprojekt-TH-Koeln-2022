@@ -51,9 +51,9 @@ if __name__ == '__main__':
      
     #should analysis stopp at grid resolution or NRMSD accuracy
     if s.zoom_limit == True:
-        j = 25 #if NRMSD accuracy isnt reached in 25 zooms, analysis will end
+        j = 100 #if NRMSD accuracy isnt reached in 100 zooms, analysis will end
     if s.zoom_limit == False:
-        j = s.grid_zoom + s.single_parameter_zoom
+        j = s.grid_zoom
     
     #create parameter_var_list for this script
     parameter_var_list_full, parameter_var_list_sorted = s.parameter_init()
@@ -63,9 +63,8 @@ if __name__ == '__main__':
     
     while end_simulation == False:
         
-        #define sim_number as the lenght of parameter_var_list_full
         sim_number = parameter_var_list_full.shape[0]
-        
+        j=j-1
         
         if s.zoom_limit == False:
             print('Number of simulations left = ' + str((j+2)*(s.grid_resolution**3)))
@@ -76,13 +75,12 @@ if __name__ == '__main__':
                 print('Estimated time left = ' + str(round((j+2) * s.grid_resolution**3 * 1.21, 2)) + ' seconds')
             
         if s.zoom_limit == True:
-            print('Number of simulations completed = ' + str((25-j)*s.grid_resolution**3))
+            print('Number of simulations completed = ' + str((100-j-1)*s.grid_resolution**3))
         
         if s.run_parallel == False:
             print('Running in not-parallel mode')
             
-            
-            # - - - Run Simulation - - -
+            #run simulations and safe results
             results = pd.DataFrame()
             df_results = pd.DataFrame()
             for i in range(0, sim_number):
@@ -92,6 +90,7 @@ if __name__ == '__main__':
         if s.run_parallel == True:
             print('Running in parallel mode')
             
+            #run simulations and safe results
             df_results = pd.DataFrame()
             results = [pool.apply_async(run_simulation, args=(i, parameter_var_list_full)) for i in range(0, sim_number)]
             for i in results:
@@ -111,7 +110,7 @@ if __name__ == '__main__':
                                                  'parameter2',parameter_var_list_full.iloc[i,1],
                                                  'parameter3',parameter_var_list_full.iloc[i,2])
             metrics = pd.concat([metrics, metric_result])
-        
+
         #print resolutions
         print("df_results:")
         print(df_results) 
@@ -119,44 +118,27 @@ if __name__ == '__main__':
         print("Metrics:")
         print(metrics)
         
-        #print minimal NRMSD
-        print("Minimal NRMSD_Population:")
-        print(round(metrics["NRMSD_Population"].min(),4))
-        
         # - - - Improve limits - - -
-        print("Old limits:")
-        print(parameter_var_list_sorted)
         #for the first number of simulations (defined by "single_parameter_zoom") only the parameter with the highest influence will be improved
-        if s.zoom_limit == True and 25-j < s.single_parameter_zoom:
-            #print("Improve only one parameter")
+        if s.zoom_limit == True and 100-j <= s.single_parameter_zoom:
             parameter_var_list_full, parameter_var_list_sorted = af.improved_limits_single_parameter(metrics,parameter_var_list_full, parameter_var_list_sorted)
-        if s.zoom_limit == True and 25-j >= s.single_parameter_zoom:
-            #print("Improve all parameters")
+        if s.zoom_limit == True and 100-j > s.single_parameter_zoom:
             parameter_var_list_full, parameter_var_list_sorted = af.improved_limits_all_parameter(metrics,parameter_var_list_full, parameter_var_list_sorted)
-        if s.zoom_limit == False and s.grid_zoom+s.single_parameter_zoom-j < s.single_parameter_zoom:
-            #print("Improve only one parameter")
+        if s.zoom_limit == False and s.grid_zoom-j <= s.single_parameter_zoom:
             parameter_var_list_full, parameter_var_list_sorted = af.improved_limits_single_parameter(metrics,parameter_var_list_full, parameter_var_list_sorted)          
-        if s.zoom_limit == False and s.grid_zoom + s.single_parameter_zoom - j >= s.single_parameter_zoom:
-            #print("Improve all parameters")
+        if s.zoom_limit == False and s.grid_zoom-j > s.single_parameter_zoom:
             parameter_var_list_full, parameter_var_list_sorted = af.improved_limits_all_parameter(metrics,parameter_var_list_full, parameter_var_list_sorted)
-        
-        print("Improved limits:")
-        print(parameter_var_list_sorted)
-        
-        # - - - plot results - - - 
+            
+        #plot resolution
         af.plot_results(df_results,empirical_data, metrics)
     
-        #end simulation when nrmsd reaches defined accuracy, or if grid_zoom reaches limits, or delta is smaller or equal to 0.000001
+        #end simulation when nrmsd reaches defined accuracy, or if grid_zoom reaches limits
         if s.zoom_limit == True:
-            if round(parameter_var_list_sorted.iloc[1,0]-parameter_var_list_sorted.iloc[0,0],6) <= 0.000001 and round(parameter_var_list_sorted.iloc[1,1]-parameter_var_list_sorted.iloc[0,1],6) <= 0.000001 and round(parameter_var_list_sorted.iloc[1,2]-parameter_var_list_sorted.iloc[0,2],6) <= 0.000001:
+            if round(metrics.iloc[(int(metrics["NRMSD_total"].idxmin()))-1,5],4) <= s.result_accuracy or j < 0:
                 end_simulation = True
-            if round(metrics["NRMSD_Population"].min(),4) <= s.result_accuracy or j < 0:
-                end_simulation = True
-            
-        if s.zoom_limit == False and j <= 0:
+
+        if s.zoom_limit == False and j < 0:
             end_simulation = True
-        
-        j=j-1
         
     #end simulation and print final results 
     pool.close()
