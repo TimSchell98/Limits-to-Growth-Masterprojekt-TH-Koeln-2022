@@ -4,11 +4,11 @@ import numpy as np
 # - - - - - Global  Settings
 use_update = False #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
-single_parameter_zoom = 2 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 8 #number of simulations per zoom
-zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
-grid_zoom = 4 #number of zooms, gerade nicht benutzt
-result_accuracy = 0.006 #accuracy, when zoom should stop
+single_parameter_zoom = 4 #how often should the parameter with the highest influence be improved alone
+grid_resolution = 5 #number of simulations per zoom
+zoom_limit = True #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
+grid_zoom = 2 #number of zooms, gerade nicht benutzt
+result_accuracy = 0.003 #accuracy, when zoom should stop
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
 year_max1 = year_max +1
@@ -23,7 +23,7 @@ x = 1
 parameter_hi = 0
 
 #how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
-parameter_divergence = 0.25
+parameter_divergence = 0.50
 
 # - Analysis Settings
 calculation_interval = 5 # step size [years] for calculation
@@ -34,22 +34,13 @@ calculation_period = 50  # period [years ]for calculation
 parameter1_default = 4
 parameter1_name = "dcfsn"
 
-#parameter modifier for improved limits function
-parameter1_modifier = parameter1_default/(grid_resolution*2)
-
 #2) fraction res pers mtl - default = 0.02
 parameter2_default = 0.02
 parameter2_name = "frpm"
 
-#parameter modifier for improved limits function
-parameter2_modifier = parameter2_default/(grid_resolution*2)
-
 #3) processing loss  - default = 0.1
 parameter3_default = 0.1
 parameter3_name = "pl"
-
-#parameter modifier for improved limits function
-parameter3_modifier = parameter3_default/(grid_resolution*2)
 
 def parameter_init():
     #parameter1 start+end value
