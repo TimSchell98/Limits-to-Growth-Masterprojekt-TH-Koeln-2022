@@ -40,9 +40,9 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         results['{}'.format(parameter2_name)] = parameter2_value
         results['{}'.format(parameter3_name)] = parameter3_value
     
-    #attribute_list_empirical = s.empirical_settings.index
-    attribute_list_empirical = [s.pop_name, s.al_name, s.crd_name, s.brd_name]
-    attribute_list_model = ['POP_{}','AL_{}', 'CDR_{}', 'CBR_{}']
+    attribute_list_empirical = s.empirical_settings.index
+    #attribute_list_empirical = [s.pop_name, s.al_name, s.crd_name, s.brd_name, s.fpc_name]
+    attribute_list_model = ['POP_{}', 'CDR_{}', 'CBR_{}','AL_{}', 'FPC_{}', 'POLC_{}']
 
     # attribute_list_model = df_results
     for i in np.arange(0,len(attribute_list_empirical)):
@@ -53,10 +53,11 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         results['NRMSD_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
                                               calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
     
-    results['NRMSD_total'] = (0.25*results['NRMSD_Population']+
-                                 0.25*results['NRMSD_Arable_land']+
-                                 0.25*results['NRMSD_Death_rate']+
-                                 0.25*results['NRMSD_Birth_rate']) #)/len(attribute_list_empirical)
+    results['NRMSD_total'] = (1*results['NRMSD_Population']+
+                                 1*results['NRMSD_Arable_land']+
+                                 1*results['NRMSD_Death_rate']+
+                                 1*results['NRMSD_Birth_rate']+
+                                 1*results['NRMSD_Food_per_capita_ve']) /len(attribute_list_empirical)
     
     return results
 
