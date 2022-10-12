@@ -4,11 +4,11 @@ import numpy as np
 # - - - - - Global  Settings
 use_update = False #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
-single_parameter_zoom = 4 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 5 #number of simulations per zoom
-zoom_limit = True #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
-grid_zoom = 2 #number of zooms, gerade nicht benutzt
-result_accuracy = 0.003 #accuracy, when zoom should stop
+single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
+grid_resolution = 4 #number of simulations per zoom
+zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
+grid_zoom = 0 #number of zooms, gerade nicht benutzt
+result_accuracy = 0.006 #accuracy, when zoom should stop
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
 year_max1 = year_max +1
@@ -23,24 +23,33 @@ x = 1
 parameter_hi = 0
 
 #how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
-parameter_divergence = 0.50
+parameter_divergence = 0.25
 
 # - Analysis Settings
 calculation_interval = 5 # step size [years] for calculation
-calculation_period = 50  # period [years ]for calculation
+calculation_period = 40  # period [years ]for calculation
 
 # - - - - - Parameter Settings 
 #1) desired complete family size normal - default = 4
 parameter1_default = 4
 parameter1_name = "dcfsn"
 
+#parameter modifier for improved limits function
+parameter1_modifier = parameter1_default/(grid_resolution*2)
+
 #2) fraction res pers mtl - default = 0.02
 parameter2_default = 0.02
 parameter2_name = "frpm"
 
+#parameter modifier for improved limits function
+parameter2_modifier = parameter2_default/(grid_resolution*2)
+
 #3) processing loss  - default = 0.1
 parameter3_default = 0.1
 parameter3_name = "pl"
+
+#parameter modifier for improved limits function
+parameter3_modifier = parameter3_default/(grid_resolution*2)
 
 def parameter_init():
     #parameter1 start+end value
@@ -159,14 +168,14 @@ fpc_year_max = 2019
 
 # Pollution CO2
 polco2_name = 'Pollution_CO2'
-polco2_year_min = 1960
+polco2_year_min = 1979
 polco2_year_max = 2021
 
 # - Settings to Dataframe
-empirical_settings = pd.DataFrame(index=[pop_name, al_name, crd_name, brd_name, gfcf_name, fpc_name, polco2_name], columns=['name' ,'year_min','year_max'])
+empirical_settings = pd.DataFrame(index=[pop_name, crd_name, brd_name, al_name, fpc_name, polco2_name], columns=['name' ,'year_min','year_max'])
 #empirical_settings['name'] = (pop_name, al_name, crd_name, brd_name, gfcf_name, fpc_name, polco2_name)
-empirical_settings['year_min'] = (pop_y_min, al_year_min, crd_year_min, brd_year_min, gfcf_year_min, fpc_year_min, polco2_year_min)
-empirical_settings['year_max'] = (pop_y_max, al_year_max, crd_year_max, brd_year_max, gfcf_year_max, fpc_year_max, polco2_year_max)
+empirical_settings['year_min'] = (pop_y_min, crd_year_min, brd_year_min, al_year_min, fpc_year_min, polco2_year_min)
+empirical_settings['year_max'] = (pop_y_max, crd_year_max, brd_year_max, al_year_max, fpc_year_max, polco2_year_max)
 
 
 if __name__ == '__main__':
