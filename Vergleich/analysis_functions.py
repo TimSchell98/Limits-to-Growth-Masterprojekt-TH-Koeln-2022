@@ -72,6 +72,22 @@ def prepare_data_for_metric_calc_multiple_attributes(model_data: pd.DataFrame, e
     
     return result_model, result_empirical
 
+
+def prepare_data_for_metric_calc(model_data:pd.DataFrame, empirical_data:pd.DataFrame, variable):
+    start_row = s.empirical_settings.loc[variable, 'year_min']*s.sim_time_step-1900
+    stop_row = s.empirical_settings.loc[variable, 'year_max']*s.sim_time_step-1900
+    result_model = model_data[start_row:stop_row]
+    result_empirical = empirical_data[variable][start_row:stop_row]
+    return result_model, result_empirical
+
+def calculate_metrics(model_data, empirical_data, index=0, parameter_name='none', parameter_value=np.nan,
+                      calculation_period=50):
+    results = pd.DataFrame(index=[index])
+    if not parameter_name == 'none':
+        results['{}'.format(parameter_name)] = parameter_value
+    results['NRMSD[%]'] = calculate_nrmsd(model_data, empirical_data, timestep=s.sim_time_step, calculation_interval=s.calculation_interval, calculation_period=calculation_period)
+    return results
+
 def initialize_empirical_data():
     "Data - measured"
     measured_data = pd.read_csv('empirical_data.csv', sep=',')
