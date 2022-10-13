@@ -5,7 +5,7 @@ import numpy as np
 use_update = False #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
 single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 4 #number of simulations per zoom
+grid_resolution = 3 #number of simulations per zoom
 zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0.006 #accuracy, when zoom should stop
@@ -105,11 +105,13 @@ def parameter_init():
             
         #fill parameter_var_list_full with parameter 2
         j = j+1
+        
         parameter_var_list_full.loc[i,1] = parameter_var_list_sorted.iloc[i2,1]
         if j == grid_resolution:
+            
             j = 0
             i2 = i2+1
-        if i2 == 4:
+        if i2 == grid_resolution:
             i2 = 0
 
         
@@ -119,7 +121,7 @@ def parameter_init():
         if x == grid_resolution**2:
             x = 0
             i3 = i3+1
-        if i3 == 4:
+        if i3 == grid_resolution:
             i3 = 0
         
     print("Starting limits:")

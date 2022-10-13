@@ -217,7 +217,7 @@ def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_lis
         if j == s.grid_resolution:
             j = 0
             i2 = i2+1
-        if i2 == 4:
+        if i2 == s.grid_resolution:
             i2 = 0
         
         x = x+1
@@ -225,7 +225,7 @@ def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_lis
         if x == s.grid_resolution**2:
             x = 0
             i3 = i3+1
-        if i3 == 4:
+        if i3 == s.grid_resolution:
             i3 = 0
 
     return parameter_var_list_full, parameter_var_list_improved
