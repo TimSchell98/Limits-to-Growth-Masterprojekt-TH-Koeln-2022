@@ -19,8 +19,13 @@ parameter_number_dict = {
     s.parameter3_name: 3
 }
 name_dict_empirical_model = {
-    'Population':'POP'
-
+    'Population':'POP',
+    'Arable_land':'AL',
+    'Arable_land_pc':'',
+    'Death_rate':'CDR',
+    'Birth_rate':'CBR',
+    '':'PPOL',
+    'Food_per_capita_ve':'FPC'
 # TO DO: alle Daten ergänzen
 }
 
