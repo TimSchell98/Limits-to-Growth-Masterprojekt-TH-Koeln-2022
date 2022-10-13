@@ -148,7 +148,7 @@ if __name__ == '__main__':
     
         #end simulation when nrmsd reaches defined accuracy, or if grid_zoom reaches limits, or delta is smaller or equal to 0.000001
         if s.zoom_limit == True:
-            if round(parameter_var_list_sorted.iloc[1,0]-parameter_var_list_sorted.iloc[0,0],6) <= 0.000001 and round(parameter_var_list_sorted.iloc[1,1]-parameter_var_list_sorted.iloc[0,1],6) <= 0.000001 and round(parameter_var_list_sorted.iloc[1,2]-parameter_var_list_sorted.iloc[0,2],6) <= 0.000001:
+            if round(parameter_var_list_sorted.iloc[1,0]-parameter_var_list_sorted.iloc[0,0],6) <= s.delta_end and round(parameter_var_list_sorted.iloc[1,1]-parameter_var_list_sorted.iloc[0,1],6) <= s.delta_end and round(parameter_var_list_sorted.iloc[1,2]-parameter_var_list_sorted.iloc[0,2],6) <= s.delta_end:
                 end_simulation = True
             if round(metrics["NRMSD_Population"].min(),4) <= s.result_accuracy or j < 0:
                 end_simulation = True

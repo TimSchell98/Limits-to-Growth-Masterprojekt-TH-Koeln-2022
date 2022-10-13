@@ -4,11 +4,12 @@ import numpy as np
 # - - - - - Global  Settings
 use_update = False #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
-single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 3 #number of simulations per zoom
-zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
+single_parameter_zoom = 4 #how often should the parameter with the highest influence be improved alone
+grid_resolution = 6 #number of simulations per zoom
+zoom_limit = True #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0.006 #accuracy, when zoom should stop
+delta_end = 0.0001 #at witch delta the simulation should stopp
 sim_time_step = 1 #pro Jahr in Simulation
 year_max = 2021
 year_max1 = year_max +1
