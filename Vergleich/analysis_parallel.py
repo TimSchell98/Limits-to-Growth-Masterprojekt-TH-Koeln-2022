@@ -41,7 +41,7 @@ def run_simulation(i, parameter_var_list_full):
     simulation_data['IO_{}'.format(i)] = world3.io
     simulation_data['FPC_{}'.format(i)] = world3.fpc
     simulation_data['POLC_{}'.format(i)] = world3.ppol
-    simulation_data['POLC_GR_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation 
+    #simulation_data['POLC_GR_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation 
     #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
     #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
     #print('Ending Simulation {}'.format(i))
@@ -166,12 +166,17 @@ if __name__ == '__main__':
     #end simulation and print final results 
     pool.close()
     print("Final Results:")
+    print("NRMSD min:")
+    print(round(metrics["NRMSD_Population"].min(),4))
     print("Parameter 1: ", end="")
     print(round(parameter_var_list_sorted.iloc[int(s.grid_resolution/2),0],4))
+    print(round(parameter_var_list_full.iloc[int(metrics["NRMSD_Population"].idxmin()),0],4))
     print("Parameter 2: ", end= "")
     print(round(parameter_var_list_sorted.iloc[int(s.grid_resolution/2),1],4))
+    print(round(parameter_var_list_full.iloc[int(metrics["NRMSD_Population"].idxmin()),1],4))
     print("Parameter 3: ", end= "")
     print(round(parameter_var_list_sorted.iloc[int(s.grid_resolution/2),2],4))
+    print(round(parameter_var_list_full.iloc[int(metrics["NRMSD_Population"].idxmin()),2],4))
     
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(round(executionTime,2)))

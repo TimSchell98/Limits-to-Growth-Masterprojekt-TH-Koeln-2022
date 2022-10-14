@@ -110,6 +110,9 @@ def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_lis
     print("Parameter2 = " + s.parameter2_name)
     print("Parameter3 = " + s.parameter3_name)
     
+    #das könnte man eigentlich allgemein halten und dann 3 mal ausführen
+    
+    
     #set initial limits
     parameter1_start_val_old = round(parameter_var_list_sorted.iloc[0,0],6)
     parameter1_end_val_old = round(parameter_var_list_sorted.iloc[s.grid_resolution-1,0],6)
@@ -244,7 +247,7 @@ def improved_limits_single_parameter(metrics,parameter_var_list_full_old,paramet
     if s.x == 1: #verändern
         s.x = 0
         #find biggest deviation in NRMSD
-        max_nrmsd=metrics["NRMSD_Population"].nlargest(s.grid_resolution**2+1)
+        max_nrmsd=metrics["NRMSD_Population"].nlargest(s.grid_resolution**2)
 
         #find fitting parameter values to the biggest NRMSDs. With average, find parameter which has the biggest influence.
         parameter1 = 0

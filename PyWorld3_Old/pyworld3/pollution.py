@@ -128,6 +128,10 @@ class Pollution:
         assimilation half-life [years].
     ahlm : numpy.ndarray
         assimilation half-life multiplier [].
+    abl : numpy.ndarray
+        Absorbtion Land in Gha
+    ef : numpy.ndarray
+        Human ecological footprint
 
     """
 
@@ -183,6 +187,8 @@ class Pollution:
         self.pptd = np.full((self.n,), np.nan)
         self.ahlm = np.full((self.n,), np.nan)
         self.ahl = np.full((self.n,), np.nan)
+        self.abl = np.full((self.n,), np.nan)
+        self.ef = np.full((self.n,), np.nan)
 
     def set_pollution_delay_functions(self, method="euler"):
         """
@@ -391,6 +397,8 @@ class Pollution:
         self._update_ahlm(0)
         self._update_ahl(0)
         self._update_ppasr(0, 0)
+        self._update_abl(0)
+        self._update_ef(0)
 
     def loopk_pollution(self, j, k, jk, kl, alone=False):
         """
@@ -416,6 +424,8 @@ class Pollution:
         self._update_ahlm(k)
         self._update_ahl(k)
         self._update_ppasr(k, kl)
+        self._update_abl(k)
+        self._update_ef(k)
 
     def run_pollution(self):
         """
@@ -517,3 +527,17 @@ class Pollution:
         From step k requires: AHL PPOL
         """
         self.ppasr[kl] = self.ppol[k] / (self.ahl[k] * 1.4)
+
+    @requires(["abl"],["ppgr"])
+    def _update_abl(self,k):
+        """
+        From step k requires: ppgr
+        """
+        self.abl[k] = self.ppgr[k] * self.ghup
+        
+    @requires (["ef"],["abl"])
+    def _update_ef(self,k):
+        """
+        From step k requires: abl
+        """
+        self.ef[k] = (self.al[k]/1e9 + self.uil[k]/1e9 + self.abl[k])/1.91

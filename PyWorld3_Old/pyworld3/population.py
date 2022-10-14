@@ -40,6 +40,7 @@ import numpy as np
 
 from .specials import Dlinf3, Smooth, clip, ramp
 from .utils import requires
+import math
 
 
 class Population:
@@ -213,6 +214,16 @@ class Population:
         social family size norm [].
     tf : numpy.ndarray
         total fertility [].
+    lef : numpy.ndarray
+        Life Expectancy Index [].
+    gdpc : numpy.ndarray
+        GDP per Capita [].
+    gdpi : numpy.ndarray
+        GDP Index [].
+    wi : numpy.ndarray
+        Education Index [].
+    hwi : numpy.ndarray
+        Human Welfare Index [].
 
     """
 
@@ -310,6 +321,11 @@ class Population:
         self.fcapc = np.full((self.n,), np.nan)
         self.fcfpc = np.full((self.n,), np.nan)
         self.fsafc = np.full((self.n,), np.nan)
+        self.lei = np.full((self.n,), np.nan)
+        self.gdpc = np.full((self.n,), np.nan)
+        self.gdpi = np.full((self.n,), np.nan)
+        self.ei = np.full((self.n,), np.nan)
+        self.hwi = np.full((self.n,), np.nan)
 
     def set_population_delay_functions(self, method="euler"):
         """
@@ -358,7 +374,7 @@ class Population:
         func_names = ["M1", "M2", "M3", "M4",
                       "LMF", "HSAPC", "LMHS1", "LMHS2",
                       "FPU", "CMI", "LMP", "FM", "CMPLE",
-                      "SFSN", "FRSN", "FCE_TOCLIP", "FSAFC"]
+                      "SFSN", "FRSN", "FCE_TOCLIP", "FSAFC", "LEI", "GDPC", "EI"]
 
         for func_name in func_names:
             for table in tables:
@@ -524,6 +540,11 @@ class Population:
         self._update_b(0, 0)
         # recompute supplementary initial conditions
         self._update_frsn(0)
+        self._update_lei(0)
+        self._update_gdpc(0)
+        self._update_gdpi(0)
+        self._update_ei(0)
+        self._update_hwi(0)
 
     def loopk_population(self, j, k, jk, kl, alone=False):
         """
@@ -591,6 +612,12 @@ class Population:
         self._update_tf(k)
         self._update_cbr(k, jk)
         self._update_b(k, kl)
+        self._update_lei(k)
+        self._update_gdpc(k)
+        self._update_gdpi(k)
+        self._update_ei(k)
+        self._update_hwi(k)
+
 
     def run_population(self):
         """
@@ -943,3 +970,43 @@ class Population:
         self.b[kl] = clip(self.d[k],
                           self.tf[k] * self.p2[k] * 0.5 / self.rlt,
                           self.time[k], self.pet)
+        
+    @requires (["lei"],["le"])
+    def _update_lei (self, k):
+        """
+        From step k requires: LE
+        """
+        
+        self.lei[k] = self.lei_f(self.le[k])
+    
+    @requires (["gdpc"],["aiopc"])    
+    def _update_gdpc (self, k):
+        """
+        From step k requires: aiopc
+        """
+        
+        self.gdpc[k] = self.gdpc_f(self.iopc[k])
+    
+    @requires (["gdpi"],["gdpc"])    
+    def _update_gdpi (self, k):
+        """
+        From step k requires: GDPC
+        """
+        
+        self.gdpi[k] = (math.log(self.gdpc[k])-math.log(24))/(math.log(9508)-math.log(24))
+        
+    @requires (["ei"],["gdpc"])    
+    def _update_ei (self, k):
+        """
+        From step k requires: gdpc
+        """
+        
+        self.ei[k] = self.ei_f(self.gdpc[k])
+    
+    @requires(["hwi"],["ei", "lei", "gdpi"])    
+    def _update_hwi (self, k):
+        """
+        From step k requires: lei, ei, gdpi
+        """
+        
+        self.hwi[k] = (self.lei[k]+self.ei[k]+self.gdpi[k])/3
