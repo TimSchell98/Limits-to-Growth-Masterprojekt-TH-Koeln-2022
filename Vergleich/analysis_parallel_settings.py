@@ -4,14 +4,14 @@ import numpy as np
 # - - - - - Global  Settings
 use_update = False #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
-single_parameter_zoom = 4 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 6 #number of simulations per zoom
-zoom_limit = True #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
+single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
+grid_resolution = 3 #number of simulations per zoom
+zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0.006 #accuracy, when zoom should stop
 delta_end = 0.0001 #at witch delta the simulation should stopp
 sim_time_step = 1 #pro Jahr in Simulation
-year_max = 2021
+year_max = 2022
 year_max1 = year_max +1
 year_min = 1900
 period  = year_max1 - year_min # wird es noch benötigt?
@@ -150,14 +150,14 @@ al_year_min = 1961
 al_year_max = 2020
 
 # Crude Death Rate
-crd_name = 'Death_rate'
-crd_year_min = 1970
-crd_year_max = 2020
+cdr_name = 'Death_rate'
+cdr_year_min = 1970
+cdr_year_max = 2020
 
 # Crude Birth Rate
-brd_name = 'Birth_rate'
-brd_year_min = 1970
-brd_year_max = 2020
+cbr_name = 'Birth_rate'
+cbr_year_min = 1970
+cbr_year_max = 2020
 
 # Gross Fixed Capital Formation
 gfcf_name = 'GFCF'
@@ -174,11 +174,16 @@ polco2_name = 'Pollution_CO2'
 polco2_year_min = 1979
 polco2_year_max = 2021
 
+polco2gr_name = 'Pollution_CO2_gr'
+polco2gr_year_min = 1959
+polco2gr_year_max = 2021
+
 # - Settings to Dataframe
-empirical_settings = pd.DataFrame(index=[pop_name, crd_name, brd_name, al_name, fpc_name, polco2_name], columns=['name' ,'year_min','year_max'])
-#empirical_settings['name'] = (pop_name, al_name, crd_name, brd_name, gfcf_name, fpc_name, polco2_name)
-empirical_settings['year_min'] = (pop_y_min, crd_year_min, brd_year_min, al_year_min, fpc_year_min, polco2_year_min)
-empirical_settings['year_max'] = (pop_y_max, crd_year_max, brd_year_max, al_year_max, fpc_year_max, polco2_year_max)
+empirical_settings = pd.DataFrame(index=[pop_name, cdr_name, cbr_name, al_name, fpc_name, polco2gr_name])
+empirical_settings['year_min'] = (pop_y_min, cdr_year_min, cbr_year_min, al_year_min, fpc_year_min, polco2gr_year_min)
+empirical_settings['year_max'] = (pop_y_max, cdr_year_max, cbr_year_max, al_year_max, fpc_year_max, polco2gr_year_max)
+empirical_settings['pyworld_name'] = ('POP', 'CRD', 'BRD', 'AL', 'FPC', 'POLC_GR')
+empirical_settings['pyworld_name_add'] = ('POP_{}', 'CBR_{}', 'CDR_{}', 'AL_{}', 'FPC_{}', 'POLC_GR_{}')
 
 
 if __name__ == '__main__':

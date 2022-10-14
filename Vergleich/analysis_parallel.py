@@ -1,18 +1,22 @@
 # - - - - Imports - - - - - -
 import multiprocessing as mp
 import numpy as np
+from numpy import diff
 import pandas as pd
 import analysis_functions as af
 import analysis_parallel_settings as s
 import matplotlib.pyplot as plt
 import time
+import sys
 startTime = time.time()
 # - - -  World 3 import and Version Switching
 
 if s.use_update == True:
+    sys.path.append('..')
     from PyWorld3_Update.pyworld3 import World3
 if s.use_update == False:
-    from pyworld3 import World3
+    sys.path.append('..')
+    from PyWorld3_Old.pyworld3 import World3
 
 # - - - - - - Function definitions - -
 
@@ -37,6 +41,7 @@ def run_simulation(i, parameter_var_list_full):
     simulation_data['IO_{}'.format(i)] = world3.io
     simulation_data['FPC_{}'.format(i)] = world3.fpc
     simulation_data['POLC_{}'.format(i)] = world3.ppol
+    simulation_data['POLC_GR_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation 
     #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
     #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
     #print('Ending Simulation {}'.format(i))

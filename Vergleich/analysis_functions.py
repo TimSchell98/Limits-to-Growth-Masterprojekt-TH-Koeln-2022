@@ -41,8 +41,9 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         results['{}'.format(parameter3_name)] = parameter3_value
     
     attribute_list_empirical = s.empirical_settings.index
+    attribute_list_model = s.empirical_settings['pyworld_name_add']
     #attribute_list_empirical = [s.pop_name, s.al_name, s.crd_name, s.brd_name, s.fpc_name]
-    attribute_list_model = ['POP_{}', 'CDR_{}', 'CBR_{}','AL_{}', 'FPC_{}', 'POLC_{}']
+    #attribute_list_model = ['POP_{}', 'CDR_{}', 'CBR_{}','AL_{}', 'FPC_{}', 'POLC_{}']
 
     # attribute_list_model = df_results
     for i in np.arange(0,len(attribute_list_empirical)):
@@ -92,7 +93,7 @@ def initialize_empirical_data():
     "Data - measured"
     measured_data = pd.read_csv('empirical_data.csv', sep=',')
     # measured_data = measured_data['data'].str.split(";", expand=True)
-    measured_data = measured_data.iloc[:,0:10]
+    measured_data = measured_data.iloc[:,0:11]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
     empirical_data = measured_data.replace(0, np.nan)
 
