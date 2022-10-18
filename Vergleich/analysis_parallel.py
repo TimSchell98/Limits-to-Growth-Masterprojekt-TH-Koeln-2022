@@ -15,9 +15,11 @@ if s.use_update == True:
     sys.path.append('..')
     from PyWorld3_Update.pyworld3 import World3
 if s.use_update == False:
-    sys.path.append('..')
-    from PyWorld3_Old.pyworld3 import World3
-
+    from pyworld3 import World3
+    # Wenn old funktioniert:
+    #sys.path.append('..') 
+    #from PyWorld3_Old.pyworld3 import World3
+    
 # - - - - - - Function definitions - -
 
 def run_simulation(i, parameter_var_list_full):
@@ -38,10 +40,15 @@ def run_simulation(i, parameter_var_list_full):
     simulation_data['AL_{}'.format(i)] = world3.al
     simulation_data['CDR_{}'.format(i)] = world3.cdr
     simulation_data['CBR_{}'.format(i)] = world3.cbr
-    simulation_data['IO_{}'.format(i)] = world3.io
+    #simulation_data['IO_{}'.format(i)] = world3.io
     simulation_data['FPC_{}'.format(i)] = world3.fpc
-    simulation_data['POLC_{}'.format(i)] = world3.ppol
-    #simulation_data['POLC_GR_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation 
+    #simulation_data['POLC_{}'.format(i)] = world3.ppol
+    simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation 
+    simulation_data['NRUR_{}'.format(i)] = world3.nrur    
+    
+    simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
+    simulation_data['PPGR{}'.format(i)] = world3.ppgr
+    
     #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
     #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
     #print('Ending Simulation {}'.format(i))

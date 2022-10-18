@@ -93,7 +93,7 @@ def initialize_empirical_data():
     "Data - measured"
     measured_data = pd.read_csv('empirical_data.csv', sep=',')
     # measured_data = measured_data['data'].str.split(";", expand=True)
-    measured_data = measured_data.iloc[:,0:11]
+    measured_data = measured_data.iloc[:,0:12]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
     empirical_data = measured_data.replace(0, np.nan)
 
@@ -374,7 +374,7 @@ if __name__ == '__main__':
     metrics = pd.DataFrame(data=metrics_val, index = ['1', '2', '3', "4", "5", "6", "7", "8", "9", "10","11","12","13","14", "15","16","17", "18","19","20","21","22","23","24","25","26","27"])
     print("Simulation Metrics:")
     print(metrics)
-    parameter_var_list_improved = improved_limits(metrics,parameter_var_list)
+    #parameter_var_list_improved = improved_limits(metrics,parameter_var_list)
     print("New Limits:")
-    print(parameter_var_list_improved)
+    #print(parameter_var_list_improved)
 

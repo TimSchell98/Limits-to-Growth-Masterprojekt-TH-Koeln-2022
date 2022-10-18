@@ -5,7 +5,7 @@ import numpy as np
 use_update = False #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
 single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 4 #number of simulations per zoom
+grid_resolution = 3 #number of simulations per zoom
 zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0 #accuracy, when zoom should stop
@@ -28,7 +28,7 @@ parameter_divergence = 0.25
 
 # - Analysis Settings
 calculation_interval = 5 # step size [years] for calculation
-calculation_period = 40  # period [years ]for calculation
+calculation_period = 50  # period [years ]for calculation
 
 # - - - - - Parameter Settings 
 #1) desired complete family size normal - default = 4
@@ -174,16 +174,20 @@ polco2_name = 'Pollution_CO2'
 polco2_year_min = 1979
 polco2_year_max = 2021
 
-polco2gr_name = 'Pollution_CO2_gr'
-polco2gr_year_min = 1959
-polco2gr_year_max = 2021
+polco2_dt_name = 'Pollution_CO2_dt'
+polco2_dt_year_min = 1959
+polco2_dt_year_max = 2021
+
+nrur_name = 'Fossil_fuel_consumption_TWh'
+nrur_year_min = 1965
+nrur_year_max = 2021
 
 # - Settings to Dataframe
-empirical_settings = pd.DataFrame(index=[pop_name, cdr_name, cbr_name, al_name, fpc_name, polco2gr_name])
-empirical_settings['year_min'] = (pop_y_min, cdr_year_min, cbr_year_min, al_year_min, fpc_year_min, polco2gr_year_min)
-empirical_settings['year_max'] = (pop_y_max, cdr_year_max, cbr_year_max, al_year_max, fpc_year_max, polco2gr_year_max)
-empirical_settings['pyworld_name'] = ('POP', 'CRD', 'BRD', 'AL', 'FPC', 'POLC_GR')
-empirical_settings['pyworld_name_add'] = ('POP_{}', 'CBR_{}', 'CDR_{}', 'AL_{}', 'FPC_{}', 'POLC_GR_{}')
+empirical_settings = pd.DataFrame(index=[pop_name, cdr_name, cbr_name, al_name, fpc_name, polco2_dt_name, nrur_name])
+empirical_settings['year_min'] = (pop_y_min, cdr_year_min, cbr_year_min, al_year_min, fpc_year_min, polco2_dt_year_min, nrur_year_min)
+empirical_settings['year_max'] = (pop_y_max, cdr_year_max, cbr_year_max, al_year_max, fpc_year_max, polco2_dt_year_max, nrur_year_max)
+empirical_settings['pyworld_name'] = ('POP', 'CRD', 'BRD', 'AL', 'FPC', 'POLC_dt', 'NRUR')
+empirical_settings['pyworld_name_add'] = ('POP_{}', 'CBR_{}', 'CDR_{}', 'AL_{}', 'FPC_{}', 'POLC_dt_{}', 'NRUR_{}')
 
 
 if __name__ == '__main__':
