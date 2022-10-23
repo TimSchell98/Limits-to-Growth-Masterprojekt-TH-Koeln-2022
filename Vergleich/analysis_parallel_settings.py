@@ -28,7 +28,7 @@ parameter_divergence = 0.25
 
 # - Analysis Settings
 calculation_interval = 5 # step size [years] for calculation
-calculation_period = 50  # period [years ]for calculation
+calculation_period = 30  # period [years ]for calculation
 
 # - - - - - Parameter Settings 
 #1) desired complete family size normal - default = 4
@@ -182,12 +182,16 @@ nrur_name = 'Fossil_fuel_consumption_TWh'
 nrur_year_min = 1965
 nrur_year_max = 2021
 
+sopc_dt_name = 'Expected_years_of_schooling'
+sopc_dt_year_min = 1990
+sopc_dt_year_max = 2021
+
 # - Settings to Dataframe
-empirical_settings = pd.DataFrame(index=[pop_name, cdr_name, cbr_name, al_name, fpc_name, polco2_dt_name, nrur_name])
-empirical_settings['year_min'] = (pop_y_min, cdr_year_min, cbr_year_min, al_year_min, fpc_year_min, polco2_dt_year_min, nrur_year_min)
-empirical_settings['year_max'] = (pop_y_max, cdr_year_max, cbr_year_max, al_year_max, fpc_year_max, polco2_dt_year_max, nrur_year_max)
-empirical_settings['pyworld_name'] = ('POP', 'CRD', 'BRD', 'AL', 'FPC', 'POLC_dt', 'NRUR')
-empirical_settings['pyworld_name_add'] = ('POP_{}', 'CBR_{}', 'CDR_{}', 'AL_{}', 'FPC_{}', 'POLC_dt_{}', 'NRUR_{}')
+empirical_settings = pd.DataFrame(index=[pop_name, cdr_name, cbr_name, al_name, fpc_name, polco2_dt_name, nrur_name, gfcf_name, sopc_dt_name])
+empirical_settings['year_min'] = (pop_y_min, cdr_year_min, cbr_year_min, al_year_min, fpc_year_min, polco2_dt_year_min, nrur_year_min, gfcf_year_min, sopc_dt_year_min)
+empirical_settings['year_max'] = (pop_y_max, cdr_year_max, cbr_year_max, al_year_max, fpc_year_max, polco2_dt_year_max, nrur_year_max, gfcf_year_max, sopc_dt_year_max)
+empirical_settings['pyworld_name'] = ('POP', 'CRD', 'BRD', 'AL', 'FPC', 'POLC_dt', 'NRUR', 'IO_dt', 'SOPC_dt')
+empirical_settings['pyworld_name_add'] = ('POP_{}', 'CBR_{}', 'CDR_{}', 'AL_{}', 'FPC_{}', 'POLC_dt_{}', 'NRUR_{}', 'IO_dt_{}', 'SOPC_dt_{}')
 
 
 if __name__ == '__main__':
