@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pyworld3 import World3
 from pyworld3.utils import plot_world_variables
 
-params = {'lines.linewidth': '3'}
+params = {'lines.linewidth': '3','axes.labelsize' : '12', 'xtick.labelsize' : '10', 'ytick.labelsize' : '10', 'figure.autolayout' : 'True'}
 plt.rcParams.update(params)
 
 """
@@ -14,11 +14,11 @@ Choose Szenario:
     2: More Abundant Nonrenewable Resources
     Mehr hinzufügen
 """
-szenario = 1
+szenario = 2
 
 if szenario == 1:
 
-    world3 = World3(dt = 0.5)
+    world3 = World3(dt = 1)
     world3.init_world3_constants()
     world3.init_world3_variables()
     world3.set_world3_table_functions()
@@ -51,11 +51,6 @@ if szenario == 1:
                      figsize=(7, 5), title="World3 Referenze Run - Human Wellfare and Footprint, 2004 Szenario 1")
     
     print("Szenario 1, referenz run")
-    
-    """
-    for i in range(0,400):
-        print(world3.luf[i])
-    """
 
 if szenario == 2:
     world3 = World3(dt = 0.5)

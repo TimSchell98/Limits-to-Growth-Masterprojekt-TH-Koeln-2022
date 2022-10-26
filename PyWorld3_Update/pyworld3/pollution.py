@@ -117,7 +117,7 @@ class Pollution:
         Technology development time. Default is 20 
         
     apfay : numpy.ndarray
-        Air pollution factor on agricultural yield. #im pollution sektor keine to verbindung. Wahrscheinlich im agricultural sektor
+        Air pollution factor on agricultural yield.
     ymap1 : numpy.ndarray
         Yield multiplier air poll 1
     ymap2 : numpy.ndarray
