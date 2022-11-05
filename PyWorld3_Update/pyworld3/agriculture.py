@@ -262,7 +262,6 @@ class Agriculture:
         self.length = self.year_max - self.year_min
         self.n = int(self.length / self.dt)
         self.time = np.arange(self.year_min, self.year_max, self.dt)
-        print('Using local edit of pyworld3')
 
     def init_agriculture_constants(self, ali=0.9e9, pali=2.3e9, lfh=0.7,
                                    palt=3.2e9, pl=0.1, alai1=2, alai2=2,
@@ -304,7 +303,7 @@ class Agriculture:
         self.dfr = dfr
         self.tdt = tdt
         
-        print("using updated version of agricultur sector, 03.08.2022")
+        #print("using updated version of agricultur sector, 05.11.2022")
 
 
     def init_agriculture_variables(self):
@@ -331,6 +330,7 @@ class Agriculture:
         self.tai = np.full((self.n,), np.nan)
         # loop 2 - food from investment in agricultural inputs
         self.ai = np.full((self.n,), np.nan)
+        self.aic = np.full((self.n,), np.nan)
         self.aiph = np.full((self.n,), np.nan)
         self.alai = np.full((self.n,), np.nan)
         self.cai = np.full((self.n,), np.nan)
@@ -366,7 +366,9 @@ class Agriculture:
         self.falm = np.full((self.n,), np.nan)
         self.fr = np.full((self.n,), np.nan)
         self.pfr = np.full((self.n,), np.nan)
-        #2004 update, added:
+        self.cpfr = np.full((self.n,), np.nan)
+        
+        #update 2004, added yield tech
         self.frd = np.full((self.n,), np.nan)
         self.ytcm = np.full((self.n,), np.nan)
         self.ytcr = np.full((self.n,), np.nan)
@@ -510,8 +512,10 @@ class Agriculture:
         self.uil[0] = self.uili
         self.lfert[0] = self.lferti
         self.ai[0] = 5e9
+        #update 2004, added yield tech
         self.pfr[0] = 1
         self.yt[0] = 1
+        self.ytcr[0] = 0
 
         if alone:
             self.loop0_exogenous()
@@ -532,11 +536,11 @@ class Agriculture:
         # loop 2
         self._update_cai(0)
         self._update_alai(0)
-        self._update_ai(0)
+        self._update_aic(0)
         # loop 6
         self._update_falm(0)
         self._update_fr(0)
-        self._update_pfr(0)
+        self._update_cpfr(0)
         # back to loop 2
         self._update_aiph(0)
         self._update_lymc(0)
@@ -559,10 +563,10 @@ class Agriculture:
         self._update_lfrt(0)
         # recompute supplementary initial conditions
         
-        #update 2004, added
+        #update 2004, added yield tech
         self._update_frd(0)
         self._update_ytcm(0)
-        self._update_ytcr(0)
+        self._update_ytcr(0,0)
         self._update_lyf2(0)
 
     def loopk_agriculture(self, j, k, jk, kl, alone=False):
@@ -600,10 +604,14 @@ class Agriculture:
         self._update_ldr(k, kl)
         # loop 2
         self._update_cai(k)
+        
         self._update_alai(k)
-        self._update_ai(k)  # !!! checks cai for all k but useless if >=1
+        self._update_aic(k)
+        self._update_ai(k, j, jk)
+        
         # loop 6
-        self._update_pfr(k)
+        self._update_cpfr(k)
+        self._update_pfr(k,j)
         self._update_falm(k)
         self._update_fr(k)
         # back to loop 2
@@ -627,11 +635,11 @@ class Agriculture:
         self._update_lfr(k, kl)
         self._update_lfrt(k)
         
-        #update 2004, added
+        #update 2004, added yield tech
         self._update_frd(k)
         self._update_ytcm(k)
-        self._update_ytcr(k)
-        self._update_yt(k)
+        self._update_ytcr(k,j)
+        self._update_yt(k,j)
         self._update_lyf2(k)
 
     def run_agriculture(self):
@@ -658,6 +666,7 @@ class Agriculture:
         """
         From step k requires: AL
         """
+        
         self.lfc[k] = self.al[k] / self.palt
 
 
@@ -666,13 +675,15 @@ class Agriculture:
         """
         State variable, requires previous step only
         """
-        self.al[k] = self.al[k-1] + self.dt * (self.ldr[k-1] - self.ler[k-1] - self.lrui[k-1])
+        
+        self.al[k] = self.al[j] + self.dt * (self.ldr[jk] - self.ler[jk] - self.lrui[jk])
 
     @requires(["pal"])
     def _update_state_pal(self, k, j, jk):
         """
         State variable, requires previous step only
         """
+        
         self.pal[k] = self.pal[j] - self.dt * self.ldr[jk]
 
     @requires(["f"], ["ly", "al"])
@@ -688,6 +699,7 @@ class Agriculture:
         """
         From step k requires: F POP
         """
+        
         self.fpc[k] = self.f[k] / self.pop[k]
 
     @requires(["ifpc1", "ifpc2", "ifpc"], ["iopc"])
@@ -695,6 +707,7 @@ class Agriculture:
         """
         From step k requires: IOPC
         """
+        
         self.ifpc1[k] = self.ifpc1_f(self.iopc[k])
         self.ifpc2[k] = self.ifpc2_f(self.iopc[k])
         self.ifpc[k] = clip(self.ifpc2[k], self.ifpc1[k], self.time[k],
@@ -705,6 +718,7 @@ class Agriculture:
         """
         From step k requires: IO FIOAA
         """
+        
         self.tai[k] = self.io[k] * self.fioaa[k]
 
     @requires(["fioaa1", "fioaa2", "fioaa"], ["fpc", "ifpc"])
@@ -712,6 +726,7 @@ class Agriculture:
         """
         From step k requires: FPC IFPC
         """
+        
         self.fioaa1[k] = self.fioaa1_f(self.fpc[k] / self.ifpc[k])
         self.fioaa2[k] = self.fioaa2_f(self.fpc[k] / self.ifpc[k])
         self.fioaa[k] = clip(self.fioaa2[k], self.fioaa1[k], self.time[k],
@@ -722,6 +737,7 @@ class Agriculture:
         """
         From step k requires: TAI FIALD DCPH
         """
+        
         self.ldr[kl] = self.tai[k] * self.fiald[k] / self.dcph[k]
 
     @requires(["dcph"], ["pal"])
@@ -729,6 +745,7 @@ class Agriculture:
         """
         From step k requires: PAL
         """
+        
         self.dcph[k] = self.dcph_f(self.pal[k] / self.palt)
 
     @requires(["cai"], ["tai", "fiald"])
@@ -736,23 +753,31 @@ class Agriculture:
         """
         From step k requires: TAI FIALD
         """
-        self.cai[k] = self.tai[k] * (1 - self.fiald[k])
-
-    # OPTIMIZE checks more than necessary (cai[k] for k>=1)
-    
-    @requires(["ai"],["cai", "alai"])
-    def _update_ai(self, k):
-        """
-        From step k=0 requires: CAI
-        """
         
-        self.ai[k] = self.smooth_cai(k, self.alai[k], 5e9) #2004 update, added init Val
+        self.cai[k] = self.tai[k] * (1 - self.fiald[k])
+    
+    @requires(["cai","alai"])
+    def _update_aic(self, k):
+        """
+        From step k requirers: cai, ai, alai
+        """
+
+        self.aic[k] =  (self.cai[k]-self.ai[k])/self.alai[k]
+    
+    @requires(["ai"],["aic"])
+    def _update_ai(self, k, j, jk):
+        """
+        From step k requires: aic
+        """
+    
+        self.ai[k] = self.ai[j] + (self.dt * self.aic[jk])
         
     @requires(["alai"])
     def _update_alai(self, k):
         """
         From step k requires: nothing
         """
+        
         self.alai[k] = clip(self.alai2, self.alai1, self.time[k],
                             self.pyear)
 
@@ -769,6 +794,7 @@ class Agriculture:
         """
         From step k requires: AIPH
         """
+        
         self.lymc[k] = self.lymc_f(self.aiph[k]) #changed json file, update 2004
 
     @requires(["ly"], ["lyf", "lfert", "lymc", "lymap"])
@@ -784,6 +810,7 @@ class Agriculture:
         """
         From step k requires: LYF2
         """
+        
         self.lyf[k] = clip(self.lyf2[k], self.lyf1, self.time[k],self.pyear_y_tech) # 2004 update: changed lyf2 to array
 
     @requires(["lymap1", "lymap2", "lymap"], ["io"])
@@ -791,6 +818,7 @@ class Agriculture:
         """
         From step k requires: IO
         """
+        
         self.lymap1[k] = self.lymap1_f(self.io[k] / self.io70)
         self.lymap2[k] = self.lymap2_f(self.io[k] / self.io70)
         self.lymap[k] = clip(self.lymap2[k], self.lymap1[k], self.time[k],
@@ -801,6 +829,7 @@ class Agriculture:
         """
         From step k requires: MPLD MPAI
         """
+        
         self.fiald[k] = self.fiald_f(self.mpld[k] / self.mpai[k])
 
     @requires(["mpld"], ["ly", "dcph"])
@@ -808,6 +837,7 @@ class Agriculture:
         """
         From step k requires: LY DCPH
         """
+        
         self.mpld[k] = self.ly[k] / (self.dcph[k] * self.sd)
 
     @requires(["mpai"], ["alai", "ly", "mlymc", "lymc"])
@@ -815,6 +845,7 @@ class Agriculture:
         """
         From step k requires: ALAI LY MLYMC LYMC
         """
+        
         self.mpai[k] = self.alai[k] * self.ly[k] * self.mlymc[k] / self.lymc[k]
 
     @requires(["mlymc"], ["aiph"])
@@ -822,6 +853,7 @@ class Agriculture:
         """
         From step k requires: AIPH
         """
+        
         self.mlymc[k] = self.mlymc_f(self.aiph[k])
 
     @requires(["all"], ["llmy"])
@@ -829,6 +861,7 @@ class Agriculture:
         """
         From step k requires: LLMY
         """
+        
         self.all[k] = self.alln * self.llmy[k]
 
     @requires(["llmy1", "llmy2", "llmy"], ["ly"])
@@ -836,6 +869,7 @@ class Agriculture:
         """
         From step k requires: LY
         """
+        
         self.llmy1[k] = self.llmy1_f(self.ly[k] / self.ilf)
         self.llmy2[k] = self.llmy2_f(self.ly[k] / self.ilf) #2004 update, changed json file
         self.llmy[k] = clip(self.llmy2[k], self.llmy1[k], self.time[k],self.pyear)
@@ -845,6 +879,7 @@ class Agriculture:
         """
         From step k requires: AL ALL
         """
+        
         self.ler[kl] = self.al[k] / self.all[k]
 
     @requires(["uilpc"], ["iopc"])
@@ -852,6 +887,7 @@ class Agriculture:
         """
         From step k requires: IOPC
         """
+        
         self.uilpc[k] = self.uilpc_f(self.iopc[k])
 
     @requires(["uilr"], ["uilpc", "pop"])
@@ -859,6 +895,7 @@ class Agriculture:
         """
         From step k requires: UILPC POP
         """
+        
         self.uilr[k] = self.uilpc[k] * self.pop[k]
 
     @requires(["lrui"], ["uilr", "uil"])
@@ -866,6 +903,7 @@ class Agriculture:
         """
         From step k requires: UILR UIL
         """
+        
         self.lrui[kl] = np.maximum(0,
                                    (self.uilr[k] - self.uil[k]) / self.uildt)
 
@@ -874,6 +912,7 @@ class Agriculture:
         """
         State variable, requires previous step only
         """
+        
         self.uil[k] = self.uil[j] + self.dt * self.lrui[jk]
 
     @requires(["lfert"])
@@ -881,13 +920,15 @@ class Agriculture:
         """
         State variable, requires previous step only
         """
-        self.lfert[k] = self.lfert[k-1] + self.dt * (self.lfr[jk] - self.lfd[jk])
+        
+        self.lfert[k] = self.lfert[j] + self.dt * (self.lfr[jk] - self.lfd[jk])
 
     @requires(["lfdr"], ["ppolx"])
     def _update_lfdr(self, k):
         """
         From step k requires: PPOLX
         """
+        
         self.lfdr[k] = self.lfdr_f(self.ppolx[k])
 
     @requires(["lfd"], ["lfert", "lfdr"])
@@ -895,6 +936,7 @@ class Agriculture:
         """
         From step k requires: LFERT LFDR
         """
+        
         self.lfd[kl] = self.lfert[k] * self.lfdr[k]
 
     @requires(["lfr"], ["lfert", "lfrt"])
@@ -902,6 +944,7 @@ class Agriculture:
         """
         From step k requires: LFERT LFRT
         """
+        
         self.lfr[kl] = (self.ilf - self.lfert[k]) / self.lfrt[k]
 
     @requires(["lfrt"], ["falm"])
@@ -909,6 +952,7 @@ class Agriculture:
         """
         From step k requires: FALM
         """
+        
         self.lfrt[k] = self.lfrt_f(self.falm[k])
 
     @requires(["falm"], ["pfr"])
@@ -916,6 +960,7 @@ class Agriculture:
         """
         From step k requires: PFR
         """
+        
         self.falm[k] = self.falm_f(self.pfr[k])
 
     @requires(["fr"], ["fpc"])
@@ -923,23 +968,28 @@ class Agriculture:
         """
         From step k requires: FPC
         """
+        
         self.fr[k] = self.fpc[k] / self.sfpc
 
-    @requires(["pfr"], ["fr"], check_after_init=False)
-    def _update_pfr(self, k):
+    @requires(["fr", "pfr"], check_after_init=False)
+    def _update_cpfr(self, k):
+        
+        self.cpfr[k] = (self.fr[k]-self.pfr[k])/self.fspd
+
+    @requires(["cpfr", "pfr"], check_after_init=False)
+    def _update_pfr(self, k,j):
         """
-        From step k=0 requires: FR, else nothing
+        From step k requires: cpfr
         """
 
-        self.pfr[k] = self.smooth_fr(k, self.fspd, 1) #2004 update, added init Val
-        
-    #2004 update, added:
+        self.pfr[k] = self.pfr[j] + self.dt * self.cpfr[j]
     
     @requires(["frd"],["fr"])
     def _update_frd(self, k):
         """
         From step k requires: FR
         """
+        
         self.frd[k] = self.dfr - self.fr[k]
         
     @requires(["ytcm"],["frd"])
@@ -947,29 +997,32 @@ class Agriculture:
         """
         From step k requires: FRD
         """
+        
         self.ytcm[k] = self.ytcm_f(self.frd[k]) #added in json file
 
     @requires(["ytcr"],["ytcm"])
-    def _update_ytcr(self, k):
+    def _update_ytcr(self, k,j):
         """
         From step k requires: YTCM
         """
+        
         if self.time[k] < self.pyear_y_tech:
             self.ytcr[k] = 0
         else:
-            self.ytcr[k] = self.ytcm[k] * self.yt[k-1]
+            self.ytcr[k] = self.ytcm[k] * self.yt[j]
             
     @requires(["yt"],["ytcr"])
-    def _update_yt(self, k):
+    def _update_yt(self, k, j):
         """
-        From step k requires: FRD
+        From step k requires: YTCR
         """
 
-        self.yt[k] = self.yt[k-1] + self.dt*self.ytcr[k]
+        self.yt[k] = self.yt[j] + self.dt*self.ytcr[k]
             
     @requires(["lyf2"],["yt"])
     def _update_lyf2(self, k):
         """
         From step k requires: YT
         """
+        
         self.lyf2[k] = self.dlinf3_yt(k, self.tdt)

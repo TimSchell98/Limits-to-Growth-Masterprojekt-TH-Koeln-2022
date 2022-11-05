@@ -212,7 +212,7 @@ class Pollution:
         self.dppolx = dppolx
         self.tdt= tdt
         self.ppgf1 = ppgf1
-        print("using updated version of pollution sector, 27.07.2022")
+        #print("using updated version of pollution sector, 05.11.2022")
  
     def init_pollution_variables(self):
         """
@@ -262,11 +262,6 @@ class Pollution:
             "euler".
 
         """
-        var_delay3 = ["PPGR", "PPT"]
-        for var_ in var_delay3:
-            func_delay = Delay3(getattr(self, var_.lower()),
-                                self.dt, self.time, method=method)
-            setattr(self, "delay3_"+var_.lower(), func_delay)
             
         var_dlinf3 = ["PPGR", "PPT"]
         for var_ in var_dlinf3:
@@ -473,11 +468,10 @@ class Pollution:
 
         """
 
-        self.pp[0] = self.pp19 #set init value
+        self.pp[0] = self.pp19
         self.ppt[0] = 1 
         self._update_pcrum(0)
         self._update_ppolx(0)
-        
         if alone:
             self.loopk_exogenous(0)
         self._update_ppgi(0)
@@ -485,14 +479,12 @@ class Pollution:
         self._update_ppgf(0)
         self._update_ppgr(0)
         self._update_ppar(0)
-        self._update_pp(0)
         self._update_ahlm(0)
         self._update_ahl(0)
         self._update_ppasr(0)
         self._update_pptc(0)
         self._update_pptcm(0)
-        self._update_pptcr(0)
-        self._update_ppt(0)
+        self._update_pptcr(0,0)
         self._update_ppgf2(0)
         self._update_pptmi(0)
         self._update_pii(0)
@@ -524,14 +516,14 @@ class Pollution:
         self._update_ppgf(k)
         self._update_ppgr(k)
         self._update_ppar(k)
-        self._update_pp(k)
+        self._update_pp(k,j,jk)
         self._update_ahlm(k)
         self._update_ahl(k)
         self._update_ppasr(k)
         self._update_pptc(k)
         self._update_pptcm(k)
-        self._update_pptcr(k)
-        self._update_ppt(k)
+        self._update_pptcr(k,j)
+        self._update_ppt(k,j)
         self._update_ppgf2(k)
         self._update_pptmi(k)
         self._update_pii(k)
@@ -566,6 +558,7 @@ class Pollution:
         """
         State variable, requires previous step only
         """
+        
         self.pcrum[k] = self.pcrum_f(self.iopc[k])
 
     @requires(["ppgi"],["pcrum"])
@@ -589,6 +582,7 @@ class Pollution:
         """
         From step k requires: nothing
         """
+        
         self.ppgf[k] = clip(self.ppgf2[k], self.ppgf1, self.time[k], self.pyear_pp_tech)
         
     @requires(["ppgr"],["ppgf"],["ppga"],["ppgi"])
@@ -608,28 +602,27 @@ class Pollution:
         self.ppar[k] = self.dlinf3_ppgr(k, self.pptd)
         
     @requires(["pp"],["ppar", "ppasr"])
-    def _update_pp(self, k):
+    def _update_pp(self, k,j,jk):
         """
         From step k requires: ppar, ppasr
         """
-        if k == 0: #set init value again, init in loop0 does not work
-            self.pp[0] = 2.5e7
-        if k > 0:
-            self.pp[k] = self.pp[k-1] + self.dt*(self.ppar[k-1] - self.ppasr[k-1]) # weis nicht ob das richtig ist, sollten die werte nicht aus dem aktuellen zeitschritt genommen werden?
+
+        self.pp[k] = self.pp[j] + self.dt*(self.ppar[jk] - self.ppasr[jk])
 
     @requires(["ppolx"],["pp"])
     def _update_ppolx(self, k):
         """
         From step k requires: pp
         """
+        
         self.ppolx[k] = self.pp[k]/self.pp70
-
 
     @requires(["ahlm"],["ppolx"])
     def _update_ahlm(self, k):
         """
         From step k requires: ppolx
         """
+        
         self.ahlm[k] = self.ahlm_f(self.ppolx[k])
     
     @requires(["ahl"],["ahlm"])
@@ -637,6 +630,7 @@ class Pollution:
         """
         From step k requires: ahlm
         """
+        
         self.ahl[k] = self.ahl70 * self.ahlm[k]
 
     @requires(["ppasr"],["ahl"])
@@ -644,6 +638,7 @@ class Pollution:
         """
         From step k requires: ahl
         """
+        
         self.ppasr[k] = self.pp[k]/(1.4*self.ahl[k])
 
     @requires(["pptc"],["ppolx"])
@@ -651,6 +646,7 @@ class Pollution:
         """
         From step k requires: ppolx
         """
+        
         self.pptc[k] = 1-(self.ppolx[k]/self.dppolx)
 
     @requires(["pptcm"],["pptc"])
@@ -658,43 +654,43 @@ class Pollution:
         """
         From step k requires: pptc
         """
+        
         self.pptcm[k] = self.pptcm_f(self.pptc[k]) 
 
     @requires(["pptcr"],["pptcm"])
-    def _update_pptcr(self, k):
+    def _update_pptcr(self, k,j):
         """
         From step k requires: pptcm
         """
-        if self.time[k] >= self.pyear:
-            self.pptcr[k] = self.pptcm[k-1] * self.ppt[k-1]
+        
+        if self.time[k] >= self.pyear_pp_tech:
+            self.pptcr[k] = self.pptcm[j] * self.ppt[j]
 
         else:
             self.pptcr[k] = 0
-
         
     @requires(["ppt"],["pptcr"])
-    def _update_ppt(self, k):
+    def _update_ppt(self, k,j):
         """
         From step k requires: pptcr
         """
-        if k == 0: #set init value again, init in loop0 does not work
-            self.ppt[k] = 1 
-        if k > 0:
-            self.ppt[k] = self.ppt[k-1] + self.dt*self.pptcr[k]
+
+        self.ppt[k] = self.ppt[j] + self.dt*self.pptcr[k]
 
     @requires(["ppgf2"],["ppt"])
     def _update_ppgf2(self, k):
         """
         From step k requires: ppt
         """
-        #self.ppgf2[k] =  self.delay3_ppt(k,self.tdt) #starts at 0.15
-        self.ppgf2[k] = self.dlinf3_ppt(k, self.tdt) #starts at right init value
+
+        self.ppgf2[k] = self.dlinf3_ppt(k, self.tdt)
         
     @requires(["ppmi"],["ppgf"])
     def _update_pptmi(self, k):
         """
         From step k requires: ppgf
         """
+        
         self.pptmi[k] =  self.pptmi_f(self.ppgf[k])
 
     @requires(["pii"],["ppgf","ppgi", "io"])
@@ -705,12 +701,12 @@ class Pollution:
         
         self.pii[k] = self.ppgi[k] * self.ppgf[k] / self.io[k]
 
-
     @requires(["fio70"])
     def _update_fio70(self, k):
         """
         From step k requires: nothing
         """
+        
         self.fio70[k] = self.io[k]/self.io70
 
     @requires(["ymap1"],["fio70"])
@@ -718,6 +714,7 @@ class Pollution:
         """
         From step k requires: fio70
         """
+        
         self.ymap1[k] = self.ymap1_f(self.fio70[k])
 
     @requires(["ymap2"],["fio70"])
@@ -725,6 +722,7 @@ class Pollution:
         """
         From step k requires: fio70
         """
+        
         self.ymap2[k] = self.ymap2_f(self.fio70[k])
 
     @requires(["apfay"],["ymap1","ymap2"])
@@ -732,6 +730,7 @@ class Pollution:
         """
         From step k requires: ymap1, ymap2
         """
+        
         if self.time[k] > self.apct:
             self.apfay[k] = self.ymap2[k]
      
@@ -743,12 +742,14 @@ class Pollution:
         """
         From step k requires: ppgr
         """
+        
         self.abl[k] = self.ppgr[k] * self.ghup
         
-    @requires (["ef"],["abl"])
+    @requires (["ef"],["abl", "al", "uil"])
     def _update_ef(self,k):
         """
-        From step k requires: abl
+        From step k requires: abl, al, uil
         """
+        
         self.ef[k] = (self.al[k]/1e9 + self.uil[k]/1e9 + self.abl[k])/1.91
 

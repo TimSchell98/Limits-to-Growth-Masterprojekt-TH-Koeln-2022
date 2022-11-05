@@ -14,11 +14,11 @@ Choose Szenario:
     2: More Abundant Nonrenewable Resources
     Mehr hinzufügen
 """
-szenario = 2
+szenario = 1
 
 if szenario == 1:
 
-    world3 = World3(dt = 1)
+    world3 = World3(dt = 1, pyear = 4000)
     world3.init_world3_constants()
     world3.init_world3_variables()
     world3.set_world3_table_functions()
@@ -29,7 +29,7 @@ if szenario == 1:
                      [world3.nrfr, world3.io, world3.f, world3.pop,
                       world3.ppolx],
                      ["NRFR", "IO", "F", "POP", "PPOLX"],
-                     [[0, 1.975], [0, 4e12], [0, 6e12], [0, 12e9], [0, 40]],
+                     [[0, 1.975], [0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40]],
                      img_background="./img/fig 4-1-1.png",
                      figsize=(7, 5),
                      title="World3 Referenze Run, 2004 Szenario 1")
@@ -37,7 +37,7 @@ if szenario == 1:
     plot_world_variables(world3.time,
                      [world3.le, world3.fpc, world3.sopc, world3.ciopc],
                      ["LE", "FPC", "SOPC", "CIOPC"],
-                     [[0, 90], [0,1020],[0,970], [0, 250]],
+                     [[0, 90], [0,1000],[0,970], [0, 250]],
                      img_background="./img/fig 4-1-2.png",
                      figsize=(7, 5),
                      title="World3 Referenze Run - Material standard of living, 2004 Szenario 1")
@@ -46,14 +46,14 @@ if szenario == 1:
     plot_world_variables(world3.time,
                      [world3.ef, world3.hwi],
                      ["EF", "HWI"],
-                     [[0, 4.2], [0,1]],
+                     [[0, 4], [0,1]],
                      img_background="./img/fig 4-1-3.png",
                      figsize=(7, 5), title="World3 Referenze Run - Human Wellfare and Footprint, 2004 Szenario 1")
     
     print("Szenario 1, referenz run")
-
+    
 if szenario == 2:
-    world3 = World3(dt = 0.5)
+    world3 = World3(dt = 1, pyear = 4000)
     world3.init_world3_constants(nri=2e12)
     world3.init_world3_variables()
     world3.set_world3_table_functions()
@@ -64,7 +64,7 @@ if szenario == 2:
                      [world3.nrfr, world3.io, world3.f, world3.pop,
                       world3.ppolx],
                      ["NRFR", "IO", "F", "POP", "PPOLX"],
-                     [[0, 1.975], [0, 4e12], [0, 6e12], [0, 12e9], [0, 40]],
+                     [[0, 0.9875], [0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40]],
                      img_background="./img/fig 4-2-1.jpg",
                      figsize=(7, 5),
                      title="World3 More Resources, 2004 Szenario 2")
@@ -72,7 +72,7 @@ if szenario == 2:
     plot_world_variables(world3.time,
                      [world3.le, world3.fpc, world3.sopc, world3.ciopc],
                      ["LE", "FPC", "SOPC", "CIOPC"],
-                     [[0, 90], [0,1020],[0,970], [0, 250]],
+                     [[0, 90], [0,1000],[0,970], [0, 250]],
                      img_background="./img/fig 4-2-2.jpg",
                      figsize=(7, 5),
                      title="World3 More Resources - Material standard of living, 2004 Szenario 2")
@@ -80,7 +80,7 @@ if szenario == 2:
     plot_world_variables(world3.time,
                      [world3.ef, world3.hwi],
                      ["EF", "HWI"],
-                     [[0, 4.2], [0,1]],
+                     [[0, 4], [0,1]],
                      img_background="./img/fig 4-2-3.jpg",
                      figsize=(7, 5), title="World3 More Resources - Human Wellfare and Footprint, 2004 Szenario 2")
     

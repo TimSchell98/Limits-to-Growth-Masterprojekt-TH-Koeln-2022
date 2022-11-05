@@ -122,9 +122,9 @@ class Capital:
     fioai : numpy.ndarray
         fraction of industrial output allocated to industry [].
     cio : numpy.ndarray
-        Cons Industrial  Output
+        Consumption of Industrial  Output, added, 2004 update
     ciopc : numpy.ndarray
-        Cons Industrial  Output per capita
+        Consumption of Industrial  Output per capita, added, 2004 update
 
     **Service subsector**
 
@@ -218,6 +218,8 @@ class Capital:
         self.alsc2 = alsc2
         self.fioac1 = fioac1
         self.fioac2 = fioac2
+        
+        #print("using updated version of capital sector, 05.11.2022")
 
     def init_capital_variables(self):
         """
@@ -238,6 +240,7 @@ class Capital:
         self.fioacc = np.full((self.n,), np.nan)
         self.fioai = np.full((self.n,), np.nan)
         self.fioacv = np.full((self.n,), np.nan)
+        #added, 2004 update
         self.cio = np.full((self.n,), np.nan)
         self.ciopc = np.full((self.n,), np.nan)
         # service subsector
@@ -403,6 +406,7 @@ class Capital:
         self._update_io(0)
         self._update_iopc(0)
         self._update_fioac(0)
+        #added, 2004 update
         self._update_cio(0)
         self._update_ciopc(0)
         # service subsector
@@ -455,6 +459,7 @@ class Capital:
         self._update_io(k)
         self._update_iopc(k)
         self._update_fioac(k)
+        #added, 2004 update
         self._update_cio(k)
         self._update_ciopc(k)
         # service subsector
@@ -505,13 +510,14 @@ class Capital:
         From step k=0 requires: LUF, else nothing
         """
 
-        self.lufd[k] = self.smooth_luf(k, self.lufdt, 1)#2004 update, added init Val
+        self.lufd[k] = self.smooth_luf(k, self.lufdt, 1) #2004 update, added init Val
 
     @requires(["cuf"], ["lufd"])
     def _update_cuf(self, k):
         """
         From step k requires: LUFD
         """
+        
         self.cuf[k] = self.cuf_f(self.lufd[k])
 
     @requires(["ic"])
@@ -527,6 +533,7 @@ class Capital:
         """
         From step k requires: nothing
         """
+        
         self.alic[k] = clip(self.alic2, self.alic1, self.time[k], self.pyear)
 
     @requires(["icdr"], ["ic", "alic"])
@@ -534,6 +541,7 @@ class Capital:
         """
         From step k requires: IC ALIC
         """
+        
         self.icdr[kl] = self.ic[k] / self.alic[k]
 
     @requires(["icor"])
@@ -541,6 +549,7 @@ class Capital:
         """
         From step k requires: nothing
         """
+        
         self.icor[k] = clip(self.icor2, self.icor1, self.time[k], self.pyear)
 
     @requires(["io"], ["ic", "fcaor", "cuf", "icor"])
@@ -549,13 +558,14 @@ class Capital:
         From step k requires: IC FCAOR CUF ICOR
         """
         
-        self.io[k] = (self.ic[k] * (1 - self.fcaor[k]) * self.cuf[k] / self.icor[k])
+        self.io[k] = self.ic[k] * (1 - self.fcaor[k]) * self.cuf[k] / self.icor[k]
         
     @requires(["iopc"], ["io", "pop"])
     def _update_iopc(self, k):
         """
         From step k requires: IO POP
         """
+        
         self.iopc[k] = self.io[k] / self.pop[k]
 
     @requires(["fioacv", "fioacc", "fioac"], ["iopc"])
@@ -563,6 +573,7 @@ class Capital:
         """
         From step k requires: IOPC
         """
+        
         self.fioacv[k] = self.fioacv_f(self.iopc[k] / self.iopcd)
         self.fioacc[k] = clip(self.fioac2, self.fioac1, self.time[k],
                               self.pyear)
@@ -582,6 +593,7 @@ class Capital:
         """
         From step k requires: IOPC
         """
+        
         self.isopc1[k] = self.isopc1_f(self.iopc[k])
         self.isopc2[k] = self.isopc2_f(self.iopc[k])
         self.isopc[k] = clip(self.isopc2[k], self.isopc1[k], self.time[k],
@@ -592,6 +604,7 @@ class Capital:
         """
         From step k requires: nothing
         """
+        
         self.alsc[k] = clip(self.alsc2, self.alsc1, self.time[k], self.pyear)
 
     @requires(["scdr"], ["sc", "alsc"])
@@ -599,6 +612,7 @@ class Capital:
         """
         From step k requires: SC ALSC
         """
+        
         self.scdr[kl] = self.sc[k] / self.alsc[k]
 
     @requires(["scor"])
@@ -606,6 +620,7 @@ class Capital:
         """
         From step k requires: nothing
         """
+        
         self.scor[k] = clip(self.scor2, self.scor1, self.time[k], self.pyear)
 
     @requires(["so"], ["sc", "cuf", "scor"])
@@ -613,6 +628,7 @@ class Capital:
         """
         From step k requires: SC CUF SCOR
         """
+        
         self.so[k] = self.sc[k] * self.cuf[k] / self.scor[k]
 
     @requires(["sopc"], ["so", "pop"])
@@ -620,6 +636,7 @@ class Capital:
         """
         From step k requires: SO POP
         """
+        
         self.sopc[k] = self.so[k] / self.pop[k]
 
     @requires(["fioas1", "fioas2", "fioas"], ["sopc", "isopc"])
@@ -627,6 +644,7 @@ class Capital:
         """
         From step k requires: SOPC ISOPC
         """
+        
         self.fioas1[k] = self.fioas1_f(self.sopc[k] / self.isopc[k])
         self.fioas2[k] = self.fioas2_f(self.sopc[k] / self.isopc[k])
         self.fioas[k] = clip(self.fioas2[k], self.fioas1[k], self.time[k],
@@ -638,6 +656,7 @@ class Capital:
         """
         From step k requires: fioas, io
         """
+        
         self.cio[k] = self.fioac[k] * self.io[k]
     
     #added, 2004 update
@@ -646,6 +665,7 @@ class Capital:
         """
         From step k requires: cio, pop
         """
+        
         self.ciopc[k] = self.cio[k] / self.pop[k]
     
     @requires(["scir"], ["io", "fioas"])
@@ -653,6 +673,7 @@ class Capital:
         """
         From step k requires: IO FIOAS
         """
+        
         self.scir[kl] = self.io[k] * self.fioas[k]
 
     @requires(["fioaa", "fioas", "fioac"])
@@ -668,6 +689,7 @@ class Capital:
         """
         From step k requires: IO FIOAI
         """
+        
         self.icir[kl] = self.io[k] * self.fioai[k]
 
     @requires(["jpicu"], ["iopc"])
@@ -675,6 +697,7 @@ class Capital:
         """
         From step k requires: IOPC
         """
+        
         self.jpicu[k] = self.jpicu_f(self.iopc[k])
 
     @requires(["pjis"], ["ic", "jpicu"])
@@ -682,6 +705,7 @@ class Capital:
         """
         From step k requires: IC JPICU
         """
+        
         self.pjis[k] = self.ic[k] * self.jpicu[k]
 
     @requires(["jpscu"], ["sopc"])
@@ -689,6 +713,7 @@ class Capital:
         """
         From step k requires: SOPC
         """
+        
         self.jpscu[k] = self.jpscu_f(self.sopc[k])
 
     @requires(["pjss"], ["sc", "jpscu"])
@@ -696,6 +721,7 @@ class Capital:
         """
         From step k requires: SC JPSCU
         """
+        
         self.pjss[k] = self.sc[k] * self.jpscu[k]
 
     @requires(["jph"], ["aiph"])
@@ -703,6 +729,7 @@ class Capital:
         """
         From step k requires: AIPH
         """
+        
         self.jph[k] = self.jph_f(self.aiph[k])
 
     @requires(["pjas"], ["jph", "al"])
@@ -710,6 +737,7 @@ class Capital:
         """
         From step k requires: JPH AL
         """
+        
         self.pjas[k] = self.jph[k] * self.al[k]
 
     @requires(["j"], ["pjis", "pjas", "pjss"])
@@ -717,6 +745,7 @@ class Capital:
         """
         From step k requires: PJIS PJAS PJSS
         """
+        
         self.j[k] = self.pjis[k] + self.pjas[k] + self.pjss[k]
 
     @requires(["lf"], ["p2", "p3"])
@@ -724,6 +753,7 @@ class Capital:
         """
         From step k requires: P2 P3
         """
+        
         self.lf[k] = (self.p2[k] + self.p3[k]) * self.lfpf
 
     @requires(["luf"], ["j", "lf"])
@@ -731,4 +761,5 @@ class Capital:
         """
         From step k requires: J LF
         """
+        
         self.luf[k] = self.j[k] / self.lf[k]

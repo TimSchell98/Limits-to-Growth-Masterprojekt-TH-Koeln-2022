@@ -101,13 +101,14 @@ class World3(Population, Capital, Agriculture, Pollution, Resource):
     jk = j
     """
 
-    def __init__(self, year_min=1900, year_max=2100, dt=0.5, pyear=1975, pyear_res_tech = 4000, pyear_pp_tech = 4000, pyear_y_tech = 4000,
+    def __init__(self, year_min=1900, year_max=2100, dt=0.5, pyear=1975, pyear_res_tech = 4000, pyear_pp_tech = 4000,pyear_fcaor = 4000, pyear_y_tech = 4000,
                  iphst=1940, verbose=False):
-        print("using updated version of world3, 03.08.2022")
+        #print("using updated version of world3, 05.11.2022")
         self.iphst = iphst
         self.pyear = pyear
         self.pyear_res_tech = pyear_res_tech
         self.pyear_pp_tech = pyear_pp_tech
+        self.pyear_fcaor = pyear_fcaor 
         self.pyear_y_tech = pyear_y_tech
         self.dt = dt
         self.year_min = year_min
@@ -243,7 +244,7 @@ class World3(Population, Capital, Agriculture, Pollution, Resource):
             self.loop0_pollution()
             self.loop0_resource()
            
-    
+        self.verbose = False
         for k_ in range(1, self.n):
             self.redo_loop = True
             while self.redo_loop:
@@ -440,7 +441,7 @@ def hello_world3():
                          [[0, 1], [0, 1e3], [0, 1e3], [0, 16e9], [0, 32]],
                          figsize=(7, 5),
                          grid=1,
-                         title="World3 standard run")
+                         title="World3 reference run")
     show()
 
 

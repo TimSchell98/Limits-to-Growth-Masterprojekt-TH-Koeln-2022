@@ -44,11 +44,15 @@ def run_simulation(i, parameter_var_list_full):
     simulation_data['IO_dt_{}'.format(i)] = np.append((diff(world3.io)/s.sim_time_step),np.nan) #Industrial Output groth rate / derivation 
     simulation_data['FPC_{}'.format(i)] = world3.fpc
     #simulation_data['POLC_{}'.format(i)] = world3.ppol
-    simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation 
+    #simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation 
+    simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.pp)/s.sim_time_step),np.nan) #Pollution groth rate / derivation 
+    #im update heißt ppol nur noch pp
     simulation_data['NRUR_{}'.format(i)] = world3.nrur
     simulation_data['SOPC_dt_{}'.format(i)] = np.append((diff(world3.sopc)/s.sim_time_step),np.nan) #Servvice output pc groth rate / derivation 
     
-    simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
+    #simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
+    simulation_data['PPAR_{}'.format(i)] = world3.ppar
+    #im update heißt ppapr nur noch ppar
     simulation_data['PPGR{}'.format(i)] = world3.ppgr
     
     #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef

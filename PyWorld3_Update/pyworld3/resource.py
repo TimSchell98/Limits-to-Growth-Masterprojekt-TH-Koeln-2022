@@ -71,6 +71,8 @@ class Resource:
         implementation date of new policies [year]. The default is 1975.
     pyear_res_tech : float, optional
         implementation date of resource policies [year]. The default is 4000.
+    pyear_fcaor : floar, optional
+        implementation date of fcaor policies [year]. The default is 4000.
     verbose : bool, optional
         print information for debugging. The default is False.
     Attributes
@@ -94,10 +96,11 @@ class Resource:
     fcaor : numpy.ndarray
         fraction of capital allocated to obtaining resources [].
     fcaor1 : numpy.ndarray
-        fcaor value before time=pyear [].
+        fcaor value before time=pyear_fcaor [].
     fcaor2 : numpy.ndarray
-        fcaor value after time=pyear [].
-    2004 update, added:
+        fcaor value after time=pyear_fcaor [].
+    
+    2004 update, added res tech
     rtc : numpy.ndarray
         resource tech change
     drur : float
@@ -112,10 +115,11 @@ class Resource:
         technology development time. The default is 20.
     """
 
-    def __init__(self, year_min=1900, year_max=2100, dt=1, pyear=1975, pyear_res_tech = 4000,
+    def __init__(self, year_min=1900, year_max=2100, dt=1, pyear=1975, pyear_res_tech = 4000, pyear_fcaor = 4000,
                  verbose=False):
         self.pyear = pyear
-        self.pyear_res_tech = pyear_res_tech #2004 update
+        self.pyear_res_tech = pyear_res_tech #2004 update, added pyear
+        self.pyear_fcaor = pyear_fcaor 
         self.dt = dt
         self.year_min = year_min
         self.year_max = year_max
@@ -131,10 +135,11 @@ class Resource:
         """
         self.nri = nri
         self.nruf1 = nruf1
+        #2004 update, added res tech
         self.drur = drur
         self.tdt = tdt
         
-        print("using updated version of resources sector, 21.08.2022")
+        #print("using updated version of resources sector, 05.11.2022")
 
     def init_resource_variables(self):
         """
@@ -151,6 +156,7 @@ class Resource:
         self.fcaor = np.full((self.n,), np.nan)
         self.fcaor1 = np.full((self.n,), np.nan)
         self.fcaor2 = np.full((self.n,), np.nan)
+        #2004 update, added res tech
         self.rtc = np.full((self.n,), np.nan)
         self.rtcm = np.full((self.n,), np.nan)
         self.rtcr = np.full((self.n,), np.nan)
@@ -268,6 +274,7 @@ class Resource:
             is False.
         """
         self.nr[0] = self.nri
+        self.rt[0] = 1
         self._update_nrfr(0)
         self._update_fcaor(0)
         if alone:
@@ -275,7 +282,6 @@ class Resource:
         self._update_rtc(0)
         self._update_rtcm(0)
         self._update_rtcr(0)
-        self._update_rt(0)
         self._update_nruf2(0)
         self._update_nruf(0)
         self._update_pcrum(0)
@@ -298,7 +304,7 @@ class Resource:
         self._update_rtc(k)
         self._update_rtcm(k)
         self._update_rtcr(k)
-        self._update_rt(k)
+        self._update_rt(k,j)
         self._update_nruf2(k)
         self._update_nruf(k)
         self._update_pcrum(k)
@@ -326,6 +332,7 @@ class Resource:
         """
         State variable, requires previous step only
         """
+        
         self.nr[k] = self.nr[j] - self.dt * self.nrur[jk]
 
     @requires(["nrfr"], ["nr"])
@@ -333,23 +340,26 @@ class Resource:
         """
         From step k requires: NR
         """
-        self.nrfr[k] = self.nr[k] / 1e12
+        
+        self.nrfr[k] = self.nr[k] / self.nri
 
     @requires(["fcaor1", "fcaor2", "fcaor"], ["nrfr"])
     def _update_fcaor(self, k):
         """
         From step k requires: NRFR
         """
+        
         self.fcaor1[k] = self.fcaor1_f(self.nrfr[k])
         self.fcaor2[k] = self.fcaor2_f(self.nrfr[k])
         self.fcaor[k] = clip(self.fcaor2[k], self.fcaor1[k], self.time[k],
-                             self.pyear)
+                             self.pyear_fcaor)
 
     @requires(["rtc"], ["nrur"])
     def _update_rtc(self, k):
         """
         From step k requires: nrur
         """
+        
         self.rtc[k] = 1-self.nrur[k]/self.drur
 
     @requires(["rtcm"], ["rtc"])
@@ -357,6 +367,7 @@ class Resource:
         """
         From step k requires: rtc
         """
+        
         self.rtcm[k] = self.rtcm_f(self.rtc[k])
 
     @requires(["rtcr"], ["rtcm"])
@@ -371,21 +382,19 @@ class Resource:
             self.rtcr[k] = 0.0
         
     @requires(["rt"], ["rtcr"])
-    def _update_rt(self, k):
+    def _update_rt(self, k,j):
         """
         From step k requires: rtcr
         """
         
-        if k == 0:
-            self.rt[0] = 1
-        else:
-            self.rt[k] = self.rt[k-1] + (self.dt*self.rtcr[k]) 
+        self.rt[k] = self.rt[j] + (self.dt*self.rtcr[k]) 
 
     @requires(["nruf2"], ["rt"])
     def _update_nruf2(self, k):
         """
         From step k requires: rt
         """
+        
         self.nruf2[k] = self.dlinf3_rt(k, self.tdt) 
 
     @requires(["nruf"],["nruf2"])
@@ -393,6 +402,7 @@ class Resource:
         """
         From step k requires: nruf2
         """
+        
         self.nruf[k] = clip(self.nruf2[k], self.nruf1, self.time[k], self.pyear_res_tech)
 
     @requires(["pcrum"], ["iopc"])
@@ -400,6 +410,7 @@ class Resource:
         """
         From step k requires: IOPC
         """
+        
         self.pcrum[k] = self.pcrum_f(self.iopc[k])
 
     @requires(["nrur"], ["pop", "pcrum", "nruf"])
@@ -407,4 +418,5 @@ class Resource:
         """
         From step k requires: POP PCRUM NRUF
         """
+        
         self.nrur[kl] = self.pop[k] * self.pcrum[k] * self.nruf[k]
