@@ -2,6 +2,61 @@ import numpy as np
 import pandas as pd
 import analysis_parallel_settings as s
 import matplotlib.pyplot as plt
+from PyWorld3_Update.pyworld3 import World3
+
+
+def run_simulation(i=0, **kwargs):
+    """
+    Functions for running the World3 Model with variable set of parameters.
+    Return Value is a pandas Dataframe with certain selected Model Variables.
+
+        Parameters:
+                i = Number of simulation when used in a multi-run skript, for naming the output Dataframe
+                **kwargs = world3 variables that are initialized at the start of world3.
+                            The arguments are passed directly to the initialization
+
+        Returns:
+                Pandas Dataframe that contains certain parameters of the simulation
+
+    """
+
+    # run simulation
+    world3 = World3(dt=s.sim_time_step, year_max=s.year_max)
+    world3.init_world3_constants(**kwargs)
+    world3.init_world3_variables()
+    world3.set_world3_table_functions()
+    world3.set_world3_delay_functions()
+    world3.run_world3(fast=False)
+
+    # gather simulation data
+    simulation_data = pd.DataFrame()
+    simulation_data['POP_{}'.format(i)] = world3.pop
+    simulation_data['AL_{}'.format(i)] = world3.al
+    simulation_data['CDR_{}'.format(i)] = world3.cdr
+    simulation_data['CBR_{}'.format(i)] = world3.cbr
+    # simulation_data['IO_{}'.format(i)] = world3.io
+    simulation_data['IO_dt_{}'.format(i)] = np.append((np.diff(world3.io) / s.sim_time_step),
+                                                      np.nan)  # Industrial Output groth rate / derivation
+    simulation_data['FPC_{}'.format(i)] = world3.fpc
+    # simulation_data['POLC_{}'.format(i)] = world3.ppol
+    # simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation
+    simulation_data['POLC_dt_{}'.format(i)] = np.append((np.diff(world3.pp) / s.sim_time_step),
+                                                        np.nan)  # Pollution groth rate / derivation
+    # im update heißt ppol nur noch pp
+    simulation_data['NRUR_{}'.format(i)] = world3.nrur
+    simulation_data['SOPC_dt_{}'.format(i)] = np.append((np.diff(world3.sopc) / s.sim_time_step),
+                                                        np.nan)  # Servvice output pc groth rate / derivation
+
+    # simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
+    simulation_data['PPAR_{}'.format(i)] = world3.ppar
+    # im update heißt ppapr nur noch ppar
+    simulation_data['PPGR{}'.format(i)] = world3.ppgr
+
+    # simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
+    # simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
+    # print('Ending Simulation {}'.format(i))
+
+    return simulation_data
 
 
 def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_interval=5, calculation_period=50):
@@ -333,6 +388,9 @@ def plot_results(df_results,empirical_data,metrics):
     plt.show()
 
 if __name__ == '__main__':
+    # testing run simulation
+    results = run_simulation(3, nri=3e12,pl=0.4, dcfsn=7)
+    print(results)
     # testing roc and d_value calculation
     """
     a = np.arange(10)
@@ -353,7 +411,7 @@ if __name__ == '__main__':
     """
     
     #testing improved limits function
-    s.grid_resolution = 3
+    '''s.grid_resolution = 3
 
     parameter_var_list_val = {'parameter1':[3, 4, 5],
                               'parameter2':[30, 40, 50],
@@ -362,7 +420,8 @@ if __name__ == '__main__':
     parameter_var_list = pd.DataFrame(data=parameter_var_list_val, index = ['0', '1', '2'])
     print("Parameter_var_list:")
     print(parameter_var_list)
-    
+    '''
+    '''
     metrics_val = {  'parameter1':[3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, ],
                      'parameter2':[30, 30, 30, 40, 40, 40, 50, 50, 50,30, 30, 30, 40, 40, 40, 50, 50, 50, 30, 30, 30, 40, 40, 40, 50, 50, 50],
                      'parameter3':[300, 300, 300, 300, 300, 300, 300, 300, 300, 400, 400, 400, 400, 400, 400, 400, 400, 400, 500, 500, 500, 500, 500, 500, 500, 500, 500],
@@ -374,4 +433,5 @@ if __name__ == '__main__':
     #parameter_var_list_improved = improved_limits(metrics,parameter_var_list)
     print("New Limits:")
     #print(parameter_var_list_improved)
+    '''
 
