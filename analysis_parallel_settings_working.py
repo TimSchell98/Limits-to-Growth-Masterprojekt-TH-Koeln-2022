@@ -24,7 +24,7 @@ x = 1
 parameter_hi = 0
 
 #how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
-parameter_divergence = 0.25
+parameter_divergence = 0.5
 
 # - Analysis Settings
 calculation_interval = 5 # step size [years] for calculation

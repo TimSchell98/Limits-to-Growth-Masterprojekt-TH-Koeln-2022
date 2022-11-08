@@ -386,6 +386,17 @@ def plot_results(df_results,empirical_data,metrics):
     plt.ylim([1e9,10e9])
     plt.xlim([0,122])
     plt.show()
+    
+def plot_result(results):
+    """
+    Function for plotting the model results and the empirical data
+    """
+    results.plot(legend=1, linewidth = 0.7)
+    #empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
+    
+    plt.ylim([1e9,10e9])
+    plt.xlim([0,122])
+    plt.show()
 
 if __name__ == '__main__':
     # testing run simulation
