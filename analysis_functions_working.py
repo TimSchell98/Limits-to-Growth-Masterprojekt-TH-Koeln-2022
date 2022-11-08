@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-import analysis_parallel_settings as s
+import analysis_parallel_settings_working as s
 import matplotlib.pyplot as plt
-#from PyWorld3_Update.pyworld3 import World3
-from PyWorld3_Old.pyworld3 import World3
+from PyWorld3_Update.pyworld3 import World3
+#from PyWorld3_Old.pyworld3 import World3
 
 def run_simulation(i=0, **kwargs):
     """

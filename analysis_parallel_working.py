@@ -3,8 +3,8 @@ import multiprocessing as mp
 import numpy as np
 from numpy import diff
 import pandas as pd
-import analysis_functions as af
-import analysis_parallel_settings as s
+import analysis_functions_working as af
+import analysis_parallel_settings_working as s
 import matplotlib.pyplot as plt
 import time
 import sys

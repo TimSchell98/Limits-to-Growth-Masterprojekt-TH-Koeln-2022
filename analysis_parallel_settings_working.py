@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # - - - - - Global  Settings
-use_update = False #should updated World3 be used in the analysis
+use_update = True #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
 single_parameter_zoom = 2 #how often should the parameter with the highest influence be improved alone
 grid_resolution = 5 #number of simulations per zoom
