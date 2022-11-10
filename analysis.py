@@ -87,18 +87,16 @@ if __name__ == '__main__':
     #wie würde das funktionieren?
     """
     
-    #hierfür muss die run_simulation funktion verändert werden, in die world3.init_world3_constants funktions aufruf müssten alle 16 parameter eingefügt werden.
     """
     df_results = pd.DataFrame()
-    results = [pool.apply_async(af.run_simulation, args=(i, parameter_list_full)) for i in range(0, parameter.shape[0]*s.grid_resolution)]
+    results = [pool.apply_async(af.run_simulation_test, args=(i, parameter_list_full)) for i in range(0, parameter.shape[0]*s.grid_resolution)]
     for i in results:
         i.wait()
     
     for i in range(0, parameter.shape[0]*s.grid_resolution):
         df_results = pd.concat([df_results, results[i].get()], axis=1)
+    print(df_results)
     """
-    
-    
     
     
     #   -   -   - Matrics calculation -   -   -
