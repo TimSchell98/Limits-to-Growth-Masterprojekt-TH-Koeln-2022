@@ -58,59 +58,50 @@ def run_simulation(i=0, **kwargs):
 
     return simulation_data
 
-def run_simulation_test(i, parameter_list_full):
-    """
-    Functions for running the World3 Model with variable set of parameters.
-    Return Value is a pandas Dataframe with certain selected Model Variables.
-
-        Parameters:
-                i = Number of simulation when used in a multi-run skript, for naming the output Dataframe
-                **kwargs = world3 variables that are initialized at the start of world3.
-                            The arguments are passed directly to the initialization
-
-        Returns:
-                Pandas Dataframe that contains certain parameters of the simulation
-
-    """
-
-    # run simulation
-    world3 = World3(dt=s.sim_time_step, year_max=s.year_max)
-    world3.init_world3_constants(dcfsn = parameter_list_full.iloc[0,i], len = parameter_list_full.iloc[1,i], mtfn = parameter_list_full.iloc[2,i], lfpf = parameter_list_full.iloc[3,i], icor1 = parameter_list_full.iloc[4,i], scor1 = parameter_list_full.iloc[5,i], fioac1 = parameter_list_full.iloc[6,i], lfh = parameter_list_full.iloc[7,i], palt = parameter_list_full.iloc[8,i], pl = parameter_list_full.iloc[9,i], sd = parameter_list_full.iloc[10,i], alln = parameter_list_full.iloc[11,i], sfpc = parameter_list_full.iloc[12,i], frpm = parameter_list_full.iloc[13,i], faipm = parameter_list_full.iloc[14,i], nri = parameter_list_full.iloc[15,i])
-    world3.init_world3_variables()
-    world3.set_world3_table_functions()
-    world3.set_world3_delay_functions()
-    world3.run_world3(fast=False)
-
-    # gather simulation data
-    simulation_data = pd.DataFrame()
-    simulation_data['POP_{}'.format(i)] = world3.pop
-    simulation_data['AL_{}'.format(i)] = world3.al
-    simulation_data['CDR_{}'.format(i)] = world3.cdr
-    simulation_data['CBR_{}'.format(i)] = world3.cbr
-    # simulation_data['IO_{}'.format(i)] = world3.io
-    simulation_data['IO_dt_{}'.format(i)] = np.append((np.diff(world3.io) / s.sim_time_step),
-                                                      np.nan)  # Industrial Output groth rate / derivation
-    simulation_data['FPC_{}'.format(i)] = world3.fpc
-    # simulation_data['POLC_{}'.format(i)] = world3.ppol
-    # simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation
-    simulation_data['POLC_dt_{}'.format(i)] = np.append((np.diff(world3.pp) / s.sim_time_step),
-                                                        np.nan)  # Pollution groth rate / derivation
-    # im update heißt ppol nur noch pp
-    simulation_data['NRUR_{}'.format(i)] = world3.nrur
-    simulation_data['SOPC_dt_{}'.format(i)] = np.append((np.diff(world3.sopc) / s.sim_time_step),
-                                                        np.nan)  # Servvice output pc groth rate / derivation
-
-    # simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
-    simulation_data['PPAR_{}'.format(i)] = world3.ppar
-    # im update heißt ppapr nur noch ppar
-    simulation_data['PPGR{}'.format(i)] = world3.ppgr
-
-    # simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
-    # simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
-    # print('Ending Simulation {}'.format(i))
-
-    return simulation_data
-
+def init_parameter_list_full():
+    
+    #read excel with to be analysed parameters
+    parameter = pd.read_excel('Parameter.xlsx')
+    #create temporary version of parameter, becouse rows are being deleted
+    parameter_shortened = parameter
+    #create base of parameter_list
+    parameter_list= pd.DataFrame(index = np.arange(s.grid_resolution))
+    #loop for filling parameter_list_full
+    for i in range (0,parameter.shape[0]):
+        #remove row i if use_in_analysis=False
+        if parameter.iloc[i,1] == False:
+            parameter_shortened = parameter[parameter.use_in_analysis == True] 
+        #use parameter if use_in_analisis == true
+        if parameter.iloc[i,1] == True:
+            #if use standard == true, use parameter_divergence to calculate start and end value
+            if parameter.iloc[i,3] == True:
+                start_val = round(parameter.iloc[i,2]-parameter.iloc[i,2]*s.parameter_divergence,4)
+                end_val = round(parameter.iloc[i,2]+parameter.iloc[i,2]*s.parameter_divergence,4)
+            #if use standard == false, use predefined start and end values 
+            if parameter.iloc[i,3] == False:
+                start_val = parameter.iloc[i,4]
+                end_val = parameter.iloc[i,5]
+            #calculate delta from start and end value
+            delta = round((end_val-start_val)/(s.grid_resolution-1),6)
+            #create and write steps into parameter_list
+            for j in range (0,s.grid_resolution):
+                parameter_list.loc[j,i] = start_val+delta*j
+    parameter_list.rename(columns = parameter_shortened.name, inplace = True)
+    
+    #create dataframe with every possible combination
+    #create base
+    parameter_list_full = pd.DataFrame(columns = [parameter_shortened.name],index = np.arange(s.grid_resolution*parameter_shortened.shape[0]))
+    #fill parameter_list_full with standard values
+    for i in range(0,parameter_shortened.shape[0]*s.grid_resolution):
+        for j in range(0,parameter_shortened.shape[0]):
+            parameter_list_full.iloc[i,j] = parameter_shortened.iloc[j,2]
+    #fill parameter_list_full with steps     
+    for i in range(0,parameter_shortened.shape[0]):
+        for j in range(0,s.grid_resolution):
+            parameter_list_full.iloc[j+i*s.grid_resolution,i] = parameter_list.iloc[j,i]
+    
+    return parameter_list_full
+    
 
 def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_interval=5, calculation_period=50):
     ''' Function for the formula for normalized root mean squre difference (NRMSD)
