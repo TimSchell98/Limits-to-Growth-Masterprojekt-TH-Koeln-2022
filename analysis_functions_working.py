@@ -58,47 +58,71 @@ def run_simulation(i=0, **kwargs):
 
     return simulation_data
 
-def init_parameter_list_full():
+def init_parameter_list():
+    """
     
+
+    Returns
+    -------
+    parameter_list_shortened : TYPE Pandas DataFrame
+        Returns DataFrame of all parameters which will be analysed. Set in excel "Parameter"
+
+    """
     #read excel with to be analysed parameters
-    parameter = pd.read_excel('Parameter.xlsx')
-    #create temporary version of parameter, becouse rows are being deleted
-    parameter_shortened = parameter
-    #create base of parameter_list
-    parameter_list= pd.DataFrame(index = np.arange(s.grid_resolution))
+    parameter_list = pd.read_excel('Parameter.xlsx')
+    #shortened = parameter list if collumn "use_in_analysis" == True
+    parameter_list_shortened = parameter_list
+    parameter_list_shortened = parameter_list[parameter_list.use_in_analysis == True]
+    #rename index 
+    parameter_list_shortened.set_index([np.arange(parameter_list_shortened.shape[0])], inplace = True)
+    return parameter_list_shortened
+
+def parameter_list_full(parameter_list):
+    """
+    
+
+    Parameters
+    ----------
+    parameter_list : TYPE
+        DataFrame which contains parameter names and values
+
+    Returns
+    -------
+    parameter_list_full : TYPE Pandas DataFrame
+        DataFrame which contains all the combinations of every parameter.
+
+    """
+
+    parameter_list_steps= pd.DataFrame(index = np.arange(s.grid_resolution))
     #loop for filling parameter_list_full
-    for i in range (0,parameter.shape[0]):
-        #remove row i if use_in_analysis=False
-        if parameter.iloc[i,1] == False:
-            parameter_shortened = parameter[parameter.use_in_analysis == True] 
-        #use parameter if use_in_analisis == true
-        if parameter.iloc[i,1] == True:
-            #if use standard == true, use parameter_divergence to calculate start and end value
-            if parameter.iloc[i,3] == True:
-                start_val = round(parameter.iloc[i,2]-parameter.iloc[i,2]*s.parameter_divergence,4)
-                end_val = round(parameter.iloc[i,2]+parameter.iloc[i,2]*s.parameter_divergence,4)
-            #if use standard == false, use predefined start and end values 
-            if parameter.iloc[i,3] == False:
-                start_val = parameter.iloc[i,4]
-                end_val = parameter.iloc[i,5]
-            #calculate delta from start and end value
-            delta = round((end_val-start_val)/(s.grid_resolution-1),6)
-            #create and write steps into parameter_list
-            for j in range (0,s.grid_resolution):
-                parameter_list.loc[j,i] = start_val+delta*j
-    parameter_list.rename(columns = parameter_shortened.name, inplace = True)
+    for i in range (0,parameter_list.shape[0]):
+        #if use standard == true, use parameter_divergence to calculate start and end value
+        if parameter_list.iloc[i,3] == True:
+            start_val = round(parameter_list.iloc[i,2]-parameter_list.iloc[i,2]*s.parameter_divergence,4)
+            end_val = round(parameter_list.iloc[i,2]+parameter_list.iloc[i,2]*s.parameter_divergence,4)
+        #if use standard == false, use predefined start and end values 
+        if parameter_list.iloc[i,3] == False:
+            start_val = parameter_list.iloc[i,4]
+            end_val = parameter_list.iloc[i,5]
+        #calculate delta from start and end value
+        delta = round((end_val-start_val)/(s.grid_resolution-1),6)
+        #create and write steps into parameter_list_steps
+        for j in range (0,s.grid_resolution):
+            parameter_list_steps.loc[j,i] = start_val+delta*j
+    parameter_list_steps.rename(columns = parameter_list.name, inplace = True)
     
     #create dataframe with every possible combination
     #create base
-    parameter_list_full = pd.DataFrame(columns = [parameter_shortened.name],index = np.arange(s.grid_resolution*parameter_shortened.shape[0]))
+    parameter_list_full = pd.DataFrame(columns = [parameter_list.name],index = np.arange(s.grid_resolution*parameter_list.shape[0]))
     #fill parameter_list_full with standard values
-    for i in range(0,parameter_shortened.shape[0]*s.grid_resolution):
-        for j in range(0,parameter_shortened.shape[0]):
-            parameter_list_full.iloc[i,j] = parameter_shortened.iloc[j,2]
+    for i in range(0,parameter_list.shape[0]*s.grid_resolution):
+        for j in range(0,parameter_list.shape[0]):
+            parameter_list_full.iloc[i,j] = parameter_list.iloc[j,2]
     #fill parameter_list_full with steps     
-    for i in range(0,parameter_shortened.shape[0]):
+    for i in range(0,parameter_list.shape[0]):
         for j in range(0,s.grid_resolution):
-            parameter_list_full.iloc[j+i*s.grid_resolution,i] = parameter_list.iloc[j,i]
+            parameter_list_full.iloc[j+i*s.grid_resolution,i] = parameter_list_steps.iloc[j,i]
+
     
     return parameter_list_full
     

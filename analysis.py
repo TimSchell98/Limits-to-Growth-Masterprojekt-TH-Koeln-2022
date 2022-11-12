@@ -11,9 +11,16 @@ if __name__ == '__main__':
     
     #   -   -   - create dataframe of all variables with steps -   -   -
     
-    parameter_list_full = af.init_parameter_list_full()
-
+    #create base list of parameter to be analysed
+    parameter_list=af.init_parameter_list()
     
+    #after first initiation the value at "standard" collumn should be used, so that the new value can be used in next run
+    parameter_list["standard"] = True
+    
+    #create list of every combination of parameters
+    parameter_list_full = af.parameter_list_full(parameter_list)
+ 
+
     #   -   -   - run_simulation for every entry of parameter_list -   -   -
    
     #zoom_amount = 0
@@ -38,10 +45,22 @@ if __name__ == '__main__':
     empirical_data = af.initialize_empirical_data()
     #sollte nicht anders sein als im ersten hauptscript
     
-    #min_nrmsd = round(metrics["NRMSD_Population"].min(),4)
-    #delta_nrmsd = min_nrmsd_prior - min_nrmsd
-    #min_nrmsd_prior = min_nrmsd
+    #nrmsd in liste speichern
+    #nrmsd_delta = nrmsd[aktueller zeitschritt]-nrmsd[vorhergegenagener zeitschritt]
 
+
+    #test: neuen parameter wert speichern
+    #es wird testweise die erste zeile der parameter_list_full benutzt
+    #Im funktionierenden code wird einfach die zeile benutzt bei der der nrmsd am gringsten ist.
+    #die spalte "default" des "parameter_liste" DataFrame wird mit der zeile der parameter werten überschrieben.
+    #mit der parameter_liste kann jetzt wieder in die parameter_list_full gesteckt werden
+    neue_parameter_werte=parameter_list_full.iloc[[0]].transpose()
+    neue_parameter_werte.set_index([np.arange(parameter_list.shape[0])], inplace = True)
+    parameter_list["default"] = neue_parameter_werte
+    parameter_list_full = af.parameter_list_full(parameter_list)
+    
+    
+    #to do: es wird jetzt noch nicht "gezoomed". Die steps bzw der delta ist immer gleich groß, das muss noch verändert werden
 
 
     #   -   -   - Calculate smallest diviation and safe parameter value for the next simulation -   -   -
