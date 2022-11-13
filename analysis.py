@@ -14,8 +14,7 @@ if __name__ == '__main__':
     #create base list of parameter to be analysed
     parameter_list=af.init_parameter_list()
     
-    #after first initiation the value at "standard" collumn should be used, so that the new value can be used in next run
-    parameter_list["standard"] = True
+
     
     #create list of every combination of parameters
     parameter_list_full = af.parameter_list_full(parameter_list)
@@ -57,11 +56,15 @@ if __name__ == '__main__':
     neue_parameter_werte=parameter_list_full.iloc[[0]].transpose()
     neue_parameter_werte.set_index([np.arange(parameter_list.shape[0])], inplace = True)
     parameter_list["default"] = neue_parameter_werte
-    parameter_list_full = af.parameter_list_full(parameter_list)
+    parameter_list_full_second_simulation = af.parameter_list_full(parameter_list)
+    
+    
     
     
     #to do: es wird jetzt noch nicht "gezoomed". Die steps bzw der delta ist immer gleich groß, das muss noch verändert werden
-
+    #wenn wir in einer liste speichern, können wir checken ob ein parameter schoneinmal "verbessert" wurde. Falls dies der Fall ist kann dioser parameter "gezoomed" werden.
+    #mann kann auch direkt die zeile vor und nach der zeile mit dem besten NRMSD nehmen (mit safety code) aber dann ist wieder der fehler dass in die falsche richtung gezoomed wird.
+    #es kann auch erst nach x durchgängen gezoomt werden, damit alle parameter einmal verbessert wurden aber das ist unsafe
 
     #   -   -   - Calculate smallest diviation and safe parameter value for the next simulation -   -   -
     
