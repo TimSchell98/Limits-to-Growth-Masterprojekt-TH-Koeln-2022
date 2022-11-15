@@ -14,11 +14,11 @@ if __name__ == '__main__':
     #create base list of parameter to be analysed
     parameter_list=af.init_parameter_list()
     
-
-    
     #create list of every combination of parameters
     parameter_list_full = af.parameter_list_full(parameter_list)
- 
+    
+    #after first initiation the value at "standard" collumn should be used, so that the new value can be used in next run
+    parameter_list["standard"] = True
 
     #   -   -   - run_simulation for every entry of parameter_list -   -   -
    

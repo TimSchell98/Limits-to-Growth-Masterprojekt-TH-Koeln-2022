@@ -61,7 +61,6 @@ def run_simulation(i=0, **kwargs):
 def init_parameter_list():
     """
     
-
     Returns
     -------
     parameter_list_shortened : TYPE Pandas DataFrame
@@ -75,10 +74,8 @@ def init_parameter_list():
     parameter_list_shortened = parameter_list[parameter_list.use_in_analysis == True]
     #rename index 
     parameter_list_shortened.set_index([np.arange(parameter_list_shortened.shape[0])], inplace = True)
-    #after first initiation the value at "standard" collumn should be used, so that the new value can be used in next run
-    parameter_list_shortened["standard"] = True
-    return parameter_list_shortened
 
+    return parameter_list_shortened
 
 def parameter_list_full(parameter_list):
     """
@@ -126,7 +123,6 @@ def parameter_list_full(parameter_list):
         for j in range(0,s.grid_resolution):
             parameter_list_full.iloc[j+i*s.grid_resolution,i] = parameter_list_steps.iloc[j,i]
 
-    
     return parameter_list_full
     
 
