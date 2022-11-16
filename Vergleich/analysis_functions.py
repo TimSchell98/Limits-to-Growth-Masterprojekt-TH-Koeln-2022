@@ -1,7 +1,11 @@
 import numpy as np
 import pandas as pd
 import analysis_parallel_settings as s
+import analysis_parallel as p
+
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+
 
 
 def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_interval=5, calculation_period=50):
@@ -41,7 +45,7 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         results['{}'.format(parameter3_name)] = parameter3_value
     
     attribute_list_empirical = s.empirical_settings.index
-    attribute_list_model = s.empirical_settings['pyworld_name_add']
+    attribute_list_model = (s.empirical_settings['pyworld_name_complete']+"_{}")
 
     for i in np.arange(0,len(attribute_list_empirical)):
         #attribute_empirical(i)
@@ -51,11 +55,15 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         results['NRMSD_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
                                               calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
     
-    results['NRMSD_total'] = (1*results['NRMSD_Population']+
-                                 1*results['NRMSD_Arable_land']+
+    results['NRMSD_total'] = ((results['NRMSD_Population']+
                                  1*results['NRMSD_Death_rate']+
-                                 1*results['NRMSD_Birth_rate']+
-                                 1*results['NRMSD_Food_per_capita_ve']) /len(attribute_list_empirical)
+                                 1*results['NRMSD_Birth_rate'])/3+
+                                 1*results['NRMSD_Food_per_capita_ve']+
+                                 1*results['NRMSD_Pollution_proportion']+
+                                 1*results['NRMSD_Expected_years_of_schooling_proportion']+
+                                 #1*results['NRMSD_GFCF_proportion']+
+                                 1*results['NRMSD_Fossil_fuel_consumption_proportion']+
+                                 1*results['NRMSD_IPP_USA_proportion'])/6
     
     return results
 
@@ -90,12 +98,13 @@ def initialize_empirical_data():
     "Data - measured"
     measured_data = pd.read_csv('empirical_data.csv', sep=',')
     # measured_data = measured_data['data'].str.split(";", expand=True)
-    measured_data = measured_data.iloc[:,0:15]
+    measured_data = measured_data.iloc[:,0:22]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
     empirical_data = measured_data.replace(0, np.nan)
 
     return empirical_data
 
+    
 def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_list_sorted):
     """
     Find the combination at which the NRMSD is minimal.
@@ -323,7 +332,7 @@ def plot_results(df_results,empirical_data,metrics):
     #create list for plotting function
     population_list = []
     for i in range(0,metrics.shape[0]):
-        population_list.append("POP_" + str(i))
+        population_list.append("pop_" + str(i))
         
     df_results[population_list].plot(legend=0, color = ["b"], linewidth = 0.4)
     empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
@@ -332,46 +341,95 @@ def plot_results(df_results,empirical_data,metrics):
     plt.xlim([0,122])
     plt.show()
 
-if __name__ == '__main__':
-    # testing roc and d_value calculation
+def plot_empirical_data_and_pyworld_default(attribute,empirical_settings, empirical_data, df_results, i=0):
     """
-    a = np.arange(10)
-    b = np.arange(0, 20, 2)
-    print(a, b)
-    print(calculate_d_value(b, a))
-    print(calculate_roc(b, a, 1, 5))
-
-    # testing nrmsd
-    a = np.arange(100)
-    b = np.arange(0, 200, 2)
-    print(calculate_nrmsd(b + 100, b, 1, 5, 50))
-
-    empirical = initialize_empirical_data()
-    model_sliced, empirical_sliced = prepare_data_for_metric_calc(empirical, empirical, s.pop_name)
-
-    print(model_sliced, empirical_sliced)
+    Function for comparing empeerical data to pyworld data with default parameters
     """
+    years = np.arange(1900, 2023,1)
+
+    fig, f1 = plt.subplots()
+    f1.plot(years, df_results[s.empirical_settings.loc[attribute, 'pyworld_name_complete']+ "_" + str(i)], label=s.empirical_settings.loc[attribute, 'pyworld_name_complete'] + " ["+s.empirical_settings.loc[attribute, 'pyworld_unit'] + "]", color='blue')
+    f1.plot(years, empirical_data[attribute], label= attribute + " ["+s.empirical_settings.loc[attribute, 'empirical_unit'] + "]", color='red')
+    f1.set_title(s.empirical_settings.loc[attribute, 'title'])
+    f1.set_xlabel('time in years')
+    f1.legend(); 
+
+def plot_empirical_data_and_pyworld_default_multi_y(attribute,empirical_settings, empirical_data, df_results, i=0):
+    """
+    Function for comparing empeerical data to pyworld data with default parameters
+    """
+    years = np.arange(1900, 2023,1)
+
+    fig, f1 = plt.subplots()
+    f2 = f1.twinx()
+
+    f1.plot(years, df_results[s.empirical_settings.loc[attribute, 'pyworld_name_complete']+ "_" + str(i)], label=s.empirical_settings.loc[attribute, 'pyworld_name_complete'] + " ["+s.empirical_settings.loc[attribute, 'pyworld_unit'] + "]", color='blue')
+    f2.plot(years, empirical_data[attribute], label= attribute + " ["+s.empirical_settings.loc[attribute, 'empirical_unit'] + "]", color='red')
+    f1.set_title(s.empirical_settings.loc[attribute, 'title'])
+    f1.set_xlabel('time in years')
+    f1.legend(loc=2);
+    f2.legend(loc=6);
     
-    #testing improved limits function
-    s.grid_resolution = 3
 
-    parameter_var_list_val = {'parameter1':[3, 4, 5],
+ 
+def plot_all_attributes():
+    i = 0 #default values
+    df_results = p.run_simulation(i, s.df_parameter)
+    empirical_data = initialize_empirical_data()  # CSV Data to Dataframe 
+    for plot_attribute in s.empirical_settings.index:
+        if s.empirical_settings.loc[plot_attribute, '2_y_axis'] == False: 
+            plot_empirical_data_and_pyworld_default(plot_attribute, s.empirical_settings, empirical_data, df_results)
+        else:
+            plot_empirical_data_and_pyworld_default_multi_y(plot_attribute, s.empirical_settings, empirical_data, df_results)
+            
+
+if __name__ == '__main__':
+    plot_all_attributes()
+
+   
+     
+   
+"""
+   # testing roc and d_value calculation
+   a = np.arange(10)
+   b = np.arange(0, 20, 2)
+   print(a, b)
+   print(calculate_d_value(b, a))
+   print(calculate_roc(b, a, 1, 5))
+
+   # testing nrmsd
+   a = np.arange(100)
+   b = np.arange(0, 200, 2)
+   print(calculate_nrmsd(b + 100, b, 1, 5, 50))
+
+   empirical = initialize_empirical_data()
+   model_sliced, empirical_sliced = prepare_data_for_metric_calc(empirical, empirical, s.pop_name)
+
+   print(model_sliced, empirical_sliced)
+   
+    
+   
+   #testing improved limits function
+   s.grid_resolution = 3
+
+   parameter_var_list_val = {'parameter1':[3, 4, 5],
                               'parameter2':[30, 40, 50],
                               'parameter3':[300, 400, 500],}
     
-    parameter_var_list = pd.DataFrame(data=parameter_var_list_val, index = ['0', '1', '2'])
-    print("Parameter_var_list:")
-    print(parameter_var_list)
+   parameter_var_list = pd.DataFrame(data=parameter_var_list_val, index = ['0', '1', '2'])
+   print("Parameter_var_list:")
+   print(parameter_var_list)
     
-    metrics_val = {  'parameter1':[3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, ],
+   metrics_val = {  'parameter1':[3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, ],
                      'parameter2':[30, 30, 30, 40, 40, 40, 50, 50, 50,30, 30, 30, 40, 40, 40, 50, 50, 50, 30, 30, 30, 40, 40, 40, 50, 50, 50],
                      'parameter3':[300, 300, 300, 300, 300, 300, 300, 300, 300, 400, 400, 400, 400, 400, 400, 400, 400, 400, 500, 500, 500, 500, 500, 500, 500, 500, 500],
                      'NRMSD[%]':[10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10]}
 
-    metrics = pd.DataFrame(data=metrics_val, index = ['1', '2', '3', "4", "5", "6", "7", "8", "9", "10","11","12","13","14", "15","16","17", "18","19","20","21","22","23","24","25","26","27"])
-    print("Simulation Metrics:")
-    print(metrics)
-    #parameter_var_list_improved = improved_limits(metrics,parameter_var_list)
-    print("New Limits:")
+   metrics = pd.DataFrame(data=metrics_val, index = ['1', '2', '3', "4", "5", "6", "7", "8", "9", "10","11","12","13","14", "15","16","17", "18","19","20","21","22","23","24","25","26","27"])
+   print("Simulation Metrics:")
+   print(metrics)
+   #parameter_var_list_improved = improved_limits(metrics,parameter_var_list)
+   print("New Limits:")
     #print(parameter_var_list_improved)
-
+ 
+"""

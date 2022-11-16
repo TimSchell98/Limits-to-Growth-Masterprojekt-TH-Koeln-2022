@@ -52,6 +52,12 @@ parameter3_name = "pl"
 #parameter modifier for improved limits function
 parameter3_modifier = parameter3_default/(grid_resolution*2)
 
+#df_parameter = pd.DataFrame(data= np.array([[parameter1_default, parameter2_default, parameter3_default], 
+ #                                           [parameter1_name, parameter2_name, parameter3_name]]))
+df_parameter = np.array([[parameter1_default, parameter2_default, parameter3_default]])
+df_parameter = pd.DataFrame(data= df_parameter)
+
+
 def parameter_init():
     #parameter1 start+end value
     if parameter1_default-parameter1_default*parameter_divergence < 0:
@@ -136,7 +142,7 @@ def parameter_init():
 
 
 
-
+"""
 # - - - - - empirical data settings
 # population 
 pop_name = 'Population'
@@ -182,7 +188,11 @@ nrur_name = 'Fossil_fuel_consumption_TWh'
 nrur_year_min = 1965
 nrur_year_max = 2021
 
-sopc_dt_name = 'Expected_years_of_schooling'
+nrur_r_name = 'Fossil_fuel_consumption_ratio'
+nrur_r_year_min = 1966
+nrur_r_year_max = 2021
+
+sopc_dt_name = 'Expected_years_of_schooling_dt'
 sopc_dt_year_min = 1990
 sopc_dt_year_max = 2021
 
@@ -190,13 +200,23 @@ sopc_dt_year_max = 2021
 empirical_settings = pd.DataFrame(index=[pop_name, cdr_name, cbr_name, al_name, fpc_name, polco2_dt_name, nrur_name, gfcf_name, sopc_dt_name])
 empirical_settings['year_min'] = (pop_y_min, cdr_year_min, cbr_year_min, al_year_min, fpc_year_min, polco2_dt_year_min, nrur_year_min, gfcf_year_min, sopc_dt_year_min)
 empirical_settings['year_max'] = (pop_y_max, cdr_year_max, cbr_year_max, al_year_max, fpc_year_max, polco2_dt_year_max, nrur_year_max, gfcf_year_max, sopc_dt_year_max)
-empirical_settings['pyworld_name'] = ('POP', 'CRD', 'BRD', 'AL', 'FPC', 'POLC_dt', 'NRUR', 'IO_dt', 'SOPC_dt')
-empirical_settings['pyworld_name_add'] = ('POP_{}', 'CBR_{}', 'CDR_{}', 'AL_{}', 'FPC_{}', 'POLC_dt_{}', 'NRUR_{}', 'IO_dt_{}', 'SOPC_dt_{}')
+empirical_settings['pyworld_name'] = ('POP', 'CDR', 'CBR', 'AL', 'FPC', 'PPOL_dt', 'NRUR', 'IO_dt', 'SOPC_dt')
+empirical_settings['pyworld_name_add'] = ('POP_{}', 'CDR_{}', 'CBR_{}', 'AL_{}', 'FPC_{}', 'PPOL_dt_{}', 'NRUR_{}', 'IO_dt_{}', 'SOPC_dt_{}')
+empirical_settings['pyworld_unit'] = ('People', 'Deaths/(1000person*year)', 'Births/(1000person*year)', 'Hectars', 'Vegetable-equivalent kilograms/(person*year)', 'Pollution units/year', 'Resource units/year', 'dollars/year', 'Dollars/(person*year)' )
+empirical_settings['empirical_unit'] = ('People', 'Deaths/(1000person*year)', 'Births/(1000person*year)', 'Hectars', 'Vegetable-equivalent kilograms/(person*year)', 'Ppm/year', 'TWh/year', '%/GDP', 'Years/year' )
+empirical_settings['title'] = (pop_name, cdr_name, cbr_name, al_name, 'Food per capita', 'Pollution change', 'Non-renewable resources change', 'Industrial output change', 'Service per capita change' )
+empirical_settings['ratio'] = (False, False, False, False, False, False, False, False, False)
+empirical_settings['metrics'] = (True, True, True, False, False, False, False, False, False)
+#empirical_settings['Plot_Gain'] = (False, False, False, False, 'Food per capita', 'Pollution change', 'Non-renewable resources change', 'Industrial output change', 'Service per capita change' )
 
+"""
+
+empirical_settings = pd.read_excel('empirical_settings.xlsx', index_col='index', sheet_name='settings')  
 
 if __name__ == '__main__':
-    print(parameter_init())
-    #print(empirical_settings)
+    #print (df_parameter)
+    #print(parameter_init())
+    print(empirical_settings)
     #print(empirical_settings[empirical_settings['name'] == 'Population']['year_min'])
     #print(empirical_settings.loc[pop_name, 'year_min'])
     #print(setting_values)

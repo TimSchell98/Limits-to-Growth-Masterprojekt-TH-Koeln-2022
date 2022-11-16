@@ -34,25 +34,20 @@ def run_simulation(i, parameter_var_list_full):
     world3.set_world3_delay_functions()
     world3.run_world3(fast=False)
     
-    #gather simulation data
+    
+    #get simulation data
     simulation_data = pd.DataFrame()
-    simulation_data['POP_{}'.format(i)] = world3.pop
-    simulation_data['AL_{}'.format(i)] = world3.al
-    simulation_data['CDR_{}'.format(i)] = world3.cdr
-    simulation_data['CBR_{}'.format(i)] = world3.cbr
-    #simulation_data['IO_{}'.format(i)] = world3.io
-    simulation_data['IO_dt_{}'.format(i)] = np.append((diff(world3.io)/s.sim_time_step),np.nan) #Industrial Output groth rate / derivation 
-    simulation_data['FPC_{}'.format(i)] = world3.fpc
-    #simulation_data['POLC_{}'.format(i)] = world3.ppol
-    simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation 
-    simulation_data['NRUR_{}'.format(i)] = world3.nrur
-    simulation_data['SOPC_dt_{}'.format(i)] = np.append((diff(world3.sopc)/s.sim_time_step),np.nan) #Servvice output pc groth rate / derivation 
+    for attribute_name in s.empirical_settings.index:
+        if  s.empirical_settings.loc[attribute_name,'type']=='pyworld':
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name'])
+        elif s.empirical_settings.loc[attribute_name,'type']=='derivation':    
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = np.append((diff(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))/s.sim_time_step),np.nan) 
+        elif s.empirical_settings.loc[attribute_name,'type']=='proportion':
+            proportion_help1 = np.append(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']),np.NaN)
+            proportion_help2 = np.append(np.NaN,getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] =  ((proportion_help1-proportion_help2)/proportion_help1)[:-1]
+
     
-    simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
-    simulation_data['PPGR{}'.format(i)] = world3.ppgr
-    
-    #simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
-    #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
     #print('Ending Simulation {}'.format(i))
 
     return simulation_data
@@ -127,11 +122,11 @@ if __name__ == '__main__':
             metrics = pd.concat([metrics, metric_result])
         
         #print resolutions
-        print("df_results:")
-        print(df_results) 
+        #print("df_results:")
+        #print(df_results) 
 
-        print("Metrics:")
-        print(metrics)
+        #print("Metrics:")
+        #print(metrics)
         
         #print minimal NRMSD
         print("Minimal NRMSD_Population:")
