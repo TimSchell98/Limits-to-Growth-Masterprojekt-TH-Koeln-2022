@@ -58,6 +58,62 @@ def run_simulation(i=0, **kwargs):
 
     return simulation_data
 
+
+def run_simulation_combinations(i, parameter_list_full):
+    """
+    Functions for running the World3 Model with variable set of parameters.
+    Return Value is a pandas Dataframe with certain selected Model Variables.
+
+        Parameters:
+                i = Number of simulation when used in a multi-run skript, for naming the output Dataframe
+                parameter_list_full = dataframe which contains every combination of parameter value steps
+
+        Returns:
+                Pandas Dataframe that contains certain parameters of the simulation
+
+    """
+
+    # run simulation
+    world3 = World3(dt=s.sim_time_step, year_max=s.year_max)
+    world3.init_world3_constants(dcfsn = parameter_list_full.iloc[i,0], mtfn = parameter_list_full.iloc[i,1]) #usw.....keine ahnung wie das dynamisch gehen soll
+    world3.init_world3_variables()
+    world3.set_world3_table_functions()
+    world3.set_world3_delay_functions()
+    world3.run_world3(fast=False)
+
+    # gather simulation data
+    simulation_data = pd.DataFrame()
+    simulation_data['POP_{}'.format(i)] = world3.pop
+    simulation_data['AL_{}'.format(i)] = world3.al
+    simulation_data['CDR_{}'.format(i)] = world3.cdr
+    simulation_data['CBR_{}'.format(i)] = world3.cbr
+    # simulation_data['IO_{}'.format(i)] = world3.io
+    simulation_data['IO_dt_{}'.format(i)] = np.append((np.diff(world3.io) / s.sim_time_step),
+                                                      np.nan)  # Industrial Output groth rate / derivation
+    simulation_data['FPC_{}'.format(i)] = world3.fpc
+    # simulation_data['POLC_{}'.format(i)] = world3.ppol
+    # simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation
+    simulation_data['POLC_dt_{}'.format(i)] = np.append((np.diff(world3.pp) / s.sim_time_step),
+                                                        np.nan)  # Pollution groth rate / derivation
+    # im update heißt ppol nur noch pp
+    simulation_data['NRUR_{}'.format(i)] = world3.nrur
+    simulation_data['SOPC_dt_{}'.format(i)] = np.append((np.diff(world3.sopc) / s.sim_time_step),
+                                                        np.nan)  # Servvice output pc groth rate / derivation
+
+    # simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
+    simulation_data['PPAR_{}'.format(i)] = world3.ppar
+    # im update heißt ppapr nur noch ppar
+    simulation_data['PPGR{}'.format(i)] = world3.ppgr
+
+    # simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
+    # simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
+    # print('Ending Simulation {}'.format(i))
+
+    return simulation_data
+
+
+
+
 def init_parameter_list():
     """
     
@@ -74,6 +130,12 @@ def init_parameter_list():
     parameter_list_shortened = parameter_list[parameter_list.use_in_analysis == True]
     #rename index 
     parameter_list_shortened.set_index([np.arange(parameter_list_shortened.shape[0])], inplace = True)
+    
+    #if use standard == true, use parameter_divergence to calculate start and end value and write it into parameter list, to be used in parameter_list_full function
+    for i in range (0,parameter_list_shortened.shape[0]):
+        if parameter_list_shortened.iloc[i,3] == True:
+            parameter_list_shortened.iloc[i,4] = round(parameter_list_shortened.iloc[i,2]-parameter_list_shortened.iloc[i,2]*s.parameter_divergence,4)
+            parameter_list_shortened.iloc[i,5] = round(parameter_list_shortened.iloc[i,2]+parameter_list_shortened.iloc[i,2]*s.parameter_divergence,4)
 
     return parameter_list_shortened
 
@@ -83,7 +145,7 @@ def parameter_list_full(parameter_list):
 
     Parameters
     ----------
-    parameter_list : TYPE
+    parameter_list : TYPE Pandas DataFrame
         DataFrame which contains parameter names and values
 
     Returns
@@ -96,14 +158,11 @@ def parameter_list_full(parameter_list):
     parameter_list_steps= pd.DataFrame(index = np.arange(s.grid_resolution))
     #loop for filling parameter_list_full
     for i in range (0,parameter_list.shape[0]):
-        #if use standard == true, use parameter_divergence to calculate start and end value
-        if parameter_list.iloc[i,3] == True:
-            start_val = round(parameter_list.iloc[i,2]-parameter_list.iloc[i,2]*s.parameter_divergence,4)
-            end_val = round(parameter_list.iloc[i,2]+parameter_list.iloc[i,2]*s.parameter_divergence,4)
-        #if use standard == false, use predefined start and end values 
-        if parameter_list.iloc[i,3] == False:
-            start_val = parameter_list.iloc[i,4]
-            end_val = parameter_list.iloc[i,5]
+        
+        #pull start and end value out of parameter_list
+        start_val = parameter_list.iloc[i,4]
+        end_val = parameter_list.iloc[i,5]
+        
         #calculate delta from start and end value
         delta = round((end_val-start_val)/(s.grid_resolution-1),6)
         #create and write steps into parameter_list_steps
