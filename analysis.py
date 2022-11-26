@@ -7,6 +7,17 @@ import analysis_functions_working as af
 
 import matplotlib.pyplot as plt
 
+def parameter_to_simulation(i, parameter_list_full):
+
+    print(parameter_list_full)
+    no_of_parameters = len(parameter_list_full.columns)
+    parameter_dict = {}
+    #parameter_list_full.columns[column_index][0]
+    for column_index, column_name in enumerate(parameter_list_full.columns):
+        parameter_dict[column_name[0]] = parameter_list_full[column_name[0]].iloc[i].item()
+        print(parameter_dict[column_name[0]])
+    return af.run_simulation_kwargs(i, **parameter_dict)
+
 if __name__ == '__main__':
     pool = mp.Pool(mp.cpu_count())
     mp.freeze_support()
@@ -25,7 +36,7 @@ if __name__ == '__main__':
     #parameter_list["standard"] = True
 
     #   -   -   - run_simulation for every entry of parameter_list -   -   -
-   
+    no_of_simulations = len(parameter_list_full)
     analysis_number = 0
     delta_nrmsd = 0.0002
     
@@ -35,7 +46,9 @@ if __name__ == '__main__':
 
         
         df_results = pd.DataFrame()
-        results = [pool.apply_async(af.run_simulation_combinations, args=(i, parameter_list_full)) for i in range(0, parameter_list_full.shape[0])]
+        #results = [pool.apply_async(af.run_simulation_combinations, args=(i, parameter_list_full)) for i in range(0, parameter_list_full.shape[0])]
+        results = [pool.apply_async(parameter_to_simulation, args=(i, parameter_list_full)) for i in
+                   range(0, no_of_simulations)]
         
         for i in results:
             i.wait()
