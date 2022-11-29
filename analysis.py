@@ -9,13 +9,13 @@ import matplotlib.pyplot as plt
 
 def parameter_to_simulation(i, parameter_list_full):
 
-    print(parameter_list_full)
+    #print(parameter_list_full)
     no_of_parameters = len(parameter_list_full.columns)
     parameter_dict = {}
     #parameter_list_full.columns[column_index][0]
     for column_index, column_name in enumerate(parameter_list_full.columns):
         parameter_dict[column_name[0]] = parameter_list_full[column_name[0]].iloc[i].item()
-        print(parameter_dict[column_name[0]])
+        #print(parameter_dict[column_name[0]])
     return af.run_simulation_kwargs(i, **parameter_dict)
 
 if __name__ == '__main__':
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     
 
         
-        df_results = pd.DataFrame()
+        df_results2 = pd.DataFrame()
         #results = [pool.apply_async(af.run_simulation_combinations, args=(i, parameter_list_full)) for i in range(0, parameter_list_full.shape[0])]
         results = [pool.apply_async(parameter_to_simulation, args=(i, parameter_list_full)) for i in
                    range(0, no_of_simulations)]
@@ -53,9 +53,9 @@ if __name__ == '__main__':
         for i in results:
             i.wait()
         
-        for i in range(0, parameter_list_full.shape[0]):
-            df_results = pd.concat([df_results, results[i].get()], axis=1)
-        print(df_results)
+        for i in range(0, no_of_simulations):
+            df_results2 = pd.concat([df_results2, results[i].get()], axis=1)
+        #print(df_results)
         
         
      
@@ -67,11 +67,21 @@ if __name__ == '__main__':
         #   -   -   - Metrics calculation -   -   -
         
         empirical_data = af.initialize_empirical_data()
-        #sollte nicht anders sein als im ersten hauptscript
+        
+        metrics = pd.DataFrame()
+        
+        for i in range(0, no_of_simulations):
+            print(i)
+            metric_result = af.calculate_metrics(df_results2, empirical_data,i) #funktioniert noch nicht
+            metrics = pd.concat([metrics, metric_result])
         
         #nrmsd in liste speichern
-        #nrmsd_delta = nrmsd[aktueller zeitschritt]-nrmsd[vorhergegenagener zeitschritt]
-    
+        parameter_history.iloc[i,3]= metrics["NRMSD_total"].min()
+        
+        #nrmsd delta berechnen
+        if i>1:
+            nrmsd_delta = parameter_history.iloc[i,3]-parameter_history.iloc[i-1,3]
+        
     
     
         
@@ -80,7 +90,7 @@ if __name__ == '__main__':
         for i in range(0,parameter_list_full.shape[0]):
             population_list.append("POP_" + str(i))
             
-        df_results[population_list].plot(legend=0, color = ["b"], linewidth = 0.4)
+        df_results2[population_list].plot(legend=0, color = ["b"], linewidth = 0.4)
         empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
         
         plt.ylim([1e9,10e9])

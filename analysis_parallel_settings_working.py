@@ -7,7 +7,7 @@ run_parallel = True #should analysis run parallel
 single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
 grid_resolution = 5 #number of simulations per zoom
 zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
-grid_zoom = 1 #number of zooms, gerade nicht benutzt
+grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0 #accuracy, when zoom should stop
 delta_end = 0.0001 #at witch delta the simulation should stopp
 sim_time_step = 1 #pro Jahr in Simulation
@@ -24,7 +24,7 @@ x = 1
 parameter_hi = 0
 
 #how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
-parameter_divergence = 0.5
+parameter_divergence = 0.25
 
 #how much should parameter_divergence shrink for the next zoom
 parameter_divergence_shrinkage = 0.15
