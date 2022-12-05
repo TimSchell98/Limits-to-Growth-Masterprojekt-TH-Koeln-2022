@@ -57,13 +57,7 @@ if __name__ == '__main__':
             df_results2 = pd.concat([df_results2, results[i].get()], axis=1)
         #print(df_results)
         
-        
-     
-    
-        
-        
-        
-    
+
         #   -   -   - Metrics calculation -   -   -
         
         empirical_data = af.initialize_empirical_data()
@@ -71,10 +65,11 @@ if __name__ == '__main__':
         metrics = pd.DataFrame()
         
         for i in range(0, no_of_simulations):
-            print(i)
-            metric_result = af.calculate_metrics(df_results2, empirical_data,i) #funktioniert noch nicht
+            metric_result = af.calculate_metrics_multiple_attributes(df_results2, empirical_data, str(i+1),
+                                                 'parameter1',parameter_list_full.iloc[i,0],
+                                                 'parameter2',parameter_list_full.iloc[i,1],
+                                                 'parameter3',parameter_list_full.iloc[i,2])
             metrics = pd.concat([metrics, metric_result])
-        
         #nrmsd in liste speichern
         parameter_history.iloc[i,3]= metrics["NRMSD_total"].min()
         
