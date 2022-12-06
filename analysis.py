@@ -29,6 +29,9 @@ if __name__ == '__main__':
     #Temporary version of parameter_history
     parameter_history_temp = pd.DataFrame(columns = ["changed parameter", "previous value", "next value", "NRMSD_min"], index = [0])
     
+    #initialize empirical data
+    empirical_data = af.initialize_empirical_data()
+    
     #   -   -   - create dataframe of all variables with steps -   -   -
     
     #create base list of parameter to be analysed
@@ -74,7 +77,7 @@ if __name__ == '__main__':
 
         #   -   -   - Metrics calculation -   -   -
         
-        empirical_data = af.initialize_empirical_data()
+
         
         metrics = pd.DataFrame()
         
@@ -106,26 +109,35 @@ if __name__ == '__main__':
         
         
         #plot ecological footprint
+        #ef ist gar nicht in nrmsd total drin
         ef_list = []
         for i in range(0,parameter_list_full.shape[0]):
-            ef_list.append("EF_" + str(i))
+            ef_list.append("Ecological-Footprint_" + str(i))
             
         df_results[ef_list].plot(legend=0, color = ["b"], linewidth = 0.4)
-        empirical_data["Ecological Footprint"].plot(legend=0, color = ["r"], linewidth = 1.5)
+        empirical_data["Ecological_Footprint"].plot(legend=0, color = ["r"], linewidth = 1.5)
         
-        plt.ylim([1e9,10e9])
+        plt.ylim([0,5])
         plt.xlim([0,122])
-        plt.show() 
+        plt.show()
+        
+        
+        
+        #todo:
+        #andere vegleichsvariablen ploten
         
     
     
     
         #   -   -   - Calculate next parameter_list_full -   -   -
-        print("Minimal NRMSD = " + str(round(metrics["NRMSD_total"].min(),6)))
+        print("NRMSD total min = " + str(round(metrics["NRMSD_total"].min(),6)))
         
         
-        NRMSD_index = int(metrics["NRMSD_total"].idxmin())
-        new_parameter_values=parameter_list_full.iloc[[NRMSD_index-1]].transpose()
+        """
+        #Zoom methode 1: parameter_divergence wird vekleinert für jede verbesserung eines parameters. FEHLER: Die grid_resolution macht keinen unterschied!
+        #in ne funktion packen!
+        NRMSD_index = int(metrics["NRMSD_total"].idxmin())-1 #-1 weil metrics bei 1 beginnt und parameter_list_full bei 0
+        new_parameter_values=parameter_list_full.iloc[[NRMSD_index]].transpose()
         new_parameter_values.set_index([np.arange(parameter_list.shape[0])], inplace = True)
         #check if new value is equal to standard value, if no, set new default value
         for i in range (0,parameter_list.shape[0]):
@@ -143,29 +155,80 @@ if __name__ == '__main__':
             if parameter_history.iloc[i,0] == parameter_history.iloc[parameter_history.shape[0]-1,0]:
                 parameter_counter = parameter_counter+1
         
-        #shrink parameter_divegens the number of times which the parameter has been improved
+        #shrink parameter_divergence the number of times which the parameter has been improved
         for i in range (0,parameter_list.shape[0]):
             if parameter_list.iloc[i,2] != new_parameter_values.iloc[i,0]:
                 #calculate new parameter values
                 parameter_list.iloc[i,2] = new_parameter_values.iloc[i,0]
                 parameter_list.iloc[i,4] = round(new_parameter_values.iloc[i,0]-new_parameter_values.iloc[i,0]*(s.parameter_divergence*(1-s.parameter_divergence_shrinkage)**parameter_counter),4)
                 parameter_list.iloc[i,5] = round(new_parameter_values.iloc[i,0]+new_parameter_values.iloc[i,0]*(s.parameter_divergence*(1-s.parameter_divergence_shrinkage)**parameter_counter),4)
-                
+        #create new parameter_list_full with the new default values in parameter_list
+        parameter_list_full = af.parameter_list_full(parameter_list)
+        """
+        
+        
+        
+        
+        #zoom methode 2: Für den Parameter der verbessert werden soll, wird der vorherige und der nächste wert als neuer start und end wert genommenn.
+        #Falls der beste wert ein rand wert sein sollte, wird die grenze um 20% verschoben todo: 20% zu einer veränderbaren variable ändern
+        #in ne funktion packen
+        
+        #Find NRMSD index of line which has the minimal NRMSD.
+        NRMSD_index = int(metrics["NRMSD_total"].idxmin())-1 #-1 weil metrics bei 1 beginnt und parameter_list_full bei 0
+        #save parameter values of line "NRMSD_index" as new defaults
+        new_parameter_values=parameter_list_full.iloc[[NRMSD_index]].transpose()
+        new_parameter_values.set_index([np.arange(parameter_list.shape[0])], inplace = True)
+        #check if new value is equal to standard value, if no, set new default value and save improved parameter
+        for i in range (0,parameter_list.shape[0]):
+            if parameter_list.iloc[i,2] != new_parameter_values.iloc[i,0]:
+                #save improved parameter name and new+old value in parameter_list
+                parameter_history_temp.iloc[0,0] = parameter_list.iloc[i,0]
+                parameter_history_temp.iloc[0,1] = parameter_list.iloc[i,2]
+                parameter_history_temp.iloc[0,2] = new_parameter_values.iloc[i,0]
+                #save index of improved parameter in parameter_list_full    
+                parameter_index = i
+        
+        #append parameter_history_temp to parameter_history
+        parameter_history = pd.concat([parameter_history, parameter_history_temp], ignore_index = True)
+        
+        #if best parameter value is not an edge value, use previous value and next value as new start and end values
+        if parameter_list_full.iloc[NRMSD_index-1,parameter_index] < parameter_list_full.iloc[NRMSD_index, parameter_index] and parameter_list_full.iloc[NRMSD_index+1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
+            parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
+            parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
+        #check if best parameter value is edge value, if yes then calculate next value
+        #check if best parameter is first value
+        #move start value by 20%
+        if parameter_list_full.iloc[NRMSD_index-1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
+            parameter_list.iloc[parameter_index,4] = parameter_list.iloc[parameter_index,4]*(1-s.parameter_move_start_end_value) 
+            parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
+        #check if best parameter is last value
+        #move last value by 20%
+        if parameter_list_full.iloc[NRMSD_index+1,parameter_index] < parameter_list_full.iloc[NRMSD_index,parameter_index]:
+            parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
+            parameter_list.iloc[parameter_index,5] = parameter_list.iloc[parameter_index,4]*(1+s.parameter_move_start_end_value) 
+        
+        #create new parameter_list_full with the new default values in parameter_list
         parameter_list_full = af.parameter_list_full(parameter_list)
         
         
         
-
+        #calculate delta between nrmsd of current simulations and nrmsd of previous simulation
         if analysis_number > 1:
             delta_nrmsd = abs(round(parameter_history.iloc[analysis_number-1,3]-parameter_history.iloc[analysis_number-2,3],6))
-            print(delta_nrmsd)
-            
-        if delta_nrmsd < s.nrmsd_delta_end_condition or analysis_number > s.analysis_number_end_condition:
+            print("Delta NRMSD = " + str(delta_nrmsd))
+        
+        #if end condition are met set boolian "stop_condition"
+        if (delta_nrmsd < s.nrmsd_delta_end_condition and parameter_history.iloc[analysis_number-1,3] < 0.01) or analysis_number > s.analysis_number_end_condition:
             stop_condition = False
      
     #plot NRMDS history
     parameter_history["NRMSD_min"].plot()
     
+    #save parameter_list results in excel list
+    parameter_list.to_excel("Analysis parameter_list.xlsx")
+    
+    #save parameter_history results in excel list
+    parameter_history.to_excel("Analysis parameter_history.xlsx")
     
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(round(executionTime,2)))

@@ -158,8 +158,8 @@ def run_simulation_kwargs(i=0, **kwargs):
     # im update heißt ppapr nur noch ppar
     simulation_data['PPGR_{}'.format(i)] = world3.ppgr
 
-    # simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
-    # simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
+    simulation_data['Ecological-Footprint_{}'.format(i)] = world3.ef
+    simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
     # print('Ending Simulation {}'.format(i))
 
     return simulation_data
@@ -284,10 +284,10 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
                                               calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
     
     results['NRMSD_total'] = (1*results['NRMSD_Population']+
-                                 1*results['NRMSD_Arable_land']+
-                                 1*results['NRMSD_Death_rate']+
-                                 1*results['NRMSD_Birth_rate']+
-                                 1*results['NRMSD_Food_per_capita_ve']) /len(attribute_list_empirical)
+                                 0.3*results['NRMSD_Arable_land']+
+                                 0.3*results['NRMSD_Death_rate']+
+                                 0.3*results['NRMSD_Birth_rate']+
+                                 0.3*results['NRMSD_Food_per_capita_ve']) /len(attribute_list_empirical)
     
     return results
 
