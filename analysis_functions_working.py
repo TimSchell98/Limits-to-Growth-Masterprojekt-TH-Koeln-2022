@@ -218,7 +218,7 @@ def parameter_list_full(parameter_list):
         delta = round((end_val-start_val)/(s.grid_resolution-1),6)
         #create and write steps into parameter_list_steps
         for j in range (0,s.grid_resolution):
-            parameter_list_steps.loc[j,i] = start_val+delta*j
+            parameter_list_steps.loc[j,i] = round(start_val+delta*j,6)
     parameter_list_steps.rename(columns = parameter_list.name, inplace = True)
     
     #create dataframe with every possible combination
@@ -284,10 +284,10 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
                                               calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
     
     results['NRMSD_total'] = (1*results['NRMSD_Population']+
-                                 0.3*results['NRMSD_Arable_land']+
-                                 0.3*results['NRMSD_Death_rate']+
-                                 0.3*results['NRMSD_Birth_rate']+
-                                 0.3*results['NRMSD_Food_per_capita_ve']) /len(attribute_list_empirical)
+                              1*results['NRMSD_Arable_land']+
+                              1*results['NRMSD_Death_rate']+
+                              1*results['NRMSD_Birth_rate']+
+                              1*results['NRMSD_Food_per_capita_ve'])/len(attribute_list_empirical)
     
     return results
 

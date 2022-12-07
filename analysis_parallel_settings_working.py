@@ -17,8 +17,12 @@ year_min = 1900
 period  = year_max1 - year_min # wird es noch benötigt?
 
 #end conditions:
-nrmsd_delta_end_condition = 0.001
-analysis_number_end_condition = 10
+nrmsd_delta_end_condition = 0.00001
+desired_nrmsd = 0.1
+analysis_number_end_condition = 25
+
+#what variable should be improved
+variable_to_improve = "NRMSD_Population"
 
 #how much the start and end value should move if edge value is reached
 parameter_move_start_end_value = 0.1
