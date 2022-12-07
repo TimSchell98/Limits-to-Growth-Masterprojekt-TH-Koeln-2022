@@ -5,7 +5,7 @@ import numpy as np
 use_update = True #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
 single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 12 #number of simulations per zoom
+grid_resolution = 8 #number of simulations per zoom
 zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0 #accuracy, when zoom should stop
@@ -17,9 +17,9 @@ year_min = 1900
 period  = year_max1 - year_min # wird es noch benötigt?
 
 #end conditions:
-nrmsd_delta_end_condition = 0.00001
+nrmsd_delta_end_condition = 0.000001
 desired_nrmsd = 0.1
-analysis_number_end_condition = 25
+analysis_number_end_condition = 50
 
 #what variable should be improved
 variable_to_improve = "NRMSD_Population"

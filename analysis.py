@@ -43,6 +43,8 @@ if __name__ == '__main__':
     no_of_simulations = len(parameter_list_full)
     analysis_number = 0
     stop_condition = True
+    #delta_NRMSD will be calculated in the third run, so it has to be predefined
+    delta_nrmsd = 1
     
     print('Number of simulations in one zoom = ' + str(len(parameter_list_full)))
     print('Estimated time for one zoom = ' + str(round(len(parameter_list_full)*0.644)) + ' seconds')
@@ -110,6 +112,7 @@ if __name__ == '__main__':
         plt.xlim([0,122])
         plt.show()
         """
+        
         
         #todo:
         #andere vegleichsvariablen ploten
@@ -223,7 +226,7 @@ if __name__ == '__main__':
     parameter_history["NRMSD_min"].plot()
     
     # Getting the current date and time and use it as a timestamp
-    date_time = datetime.now().strftime("%y/%m/%d_%H:%M")
+    date_time = datetime.now().strftime("%y_%m_%d_%H_%M")
     
     #save parameter_list results in excel list with timestamp
     parameter_improved_value_list = parameter_list[["name", "default"]]
