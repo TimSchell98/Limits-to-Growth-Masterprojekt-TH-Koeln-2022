@@ -91,7 +91,8 @@ if __name__ == '__main__':
         for i in range(0,parameter_list_full.shape[0]):
             population_list.append("POP_" + str(i))
             
-        df_results[population_list].plot(legend=0, color = ["b"], linewidth = 0.4)
+        #df_results[population_list].plot(legend=0, color = ["b"], linewidth = 0.4)
+        df_results['pop_{}'.format(i)].plot(legend=0, color = ["b"], linewidth = 0.4)
         empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
         plt.title('Population')
         plt.ylim([1e9,10e9])

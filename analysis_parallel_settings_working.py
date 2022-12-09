@@ -19,7 +19,7 @@ period  = year_max1 - year_min # wird es noch benötigt?
 #end conditions:
 nrmsd_delta_end_condition = 0.000001
 desired_nrmsd = 0.1
-analysis_number_end_condition = 50
+analysis_number_end_condition = 3
 
 #what variable should be improved
 variable_to_improve = "NRMSD_Population"
@@ -150,7 +150,7 @@ def parameter_init():
 
 
 # - - - - - empirical data settings
-# population 
+"""# population 
 pop_name = 'Population'
 pop_y_min = 1960
 pop_y_max = 2021
@@ -204,6 +204,9 @@ empirical_settings['year_min'] = (pop_y_min, cdr_year_min, cbr_year_min, al_year
 empirical_settings['year_max'] = (pop_y_max, cdr_year_max, cbr_year_max, al_year_max, fpc_year_max, polco2_dt_year_max, nrur_year_max, gfcf_year_max, sopc_dt_year_max)
 empirical_settings['pyworld_name'] = ('POP', 'CRD', 'BRD', 'AL', 'FPC', 'POLC_dt', 'NRUR', 'IO_dt', 'SOPC_dt')
 empirical_settings['pyworld_name_add'] = ('POP_{}', 'CBR_{}', 'CDR_{}', 'AL_{}', 'FPC_{}', 'POLC_dt_{}', 'NRUR_{}', 'IO_dt_{}', 'SOPC_dt_{}')
+"""
+
+empirical_settings = pd.read_excel('empirical_settings.xlsx', index_col='index', sheet_name='settings')  
 
 
 if __name__ == '__main__':

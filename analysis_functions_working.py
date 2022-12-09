@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 import analysis_parallel_settings_working as s
+import analysis as p
+
+
 import matplotlib.pyplot as plt
 from PyWorld3_Update.pyworld3 import World3
 #from PyWorld3_Old.pyworld3 import World3
@@ -30,30 +33,16 @@ def run_simulation(i=0, **kwargs):
 
     # gather simulation data
     simulation_data = pd.DataFrame()
-    simulation_data['POP_{}'.format(i)] = world3.pop
-    simulation_data['AL_{}'.format(i)] = world3.al
-    simulation_data['CDR_{}'.format(i)] = world3.cdr
-    simulation_data['CBR_{}'.format(i)] = world3.cbr
-    # simulation_data['IO_{}'.format(i)] = world3.io
-    simulation_data['IO_dt_{}'.format(i)] = np.append((np.diff(world3.io) / s.sim_time_step),
-                                                      np.nan)  # Industrial Output groth rate / derivation
-    simulation_data['FPC_{}'.format(i)] = world3.fpc
-    # simulation_data['POLC_{}'.format(i)] = world3.ppol
-    # simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation
-    simulation_data['POLC_dt_{}'.format(i)] = np.append((np.diff(world3.pp) / s.sim_time_step),
-                                                        np.nan)  # Pollution groth rate / derivation
-    # im update heißt ppol nur noch pp
-    simulation_data['NRUR_{}'.format(i)] = world3.nrur
-    simulation_data['SOPC_dt_{}'.format(i)] = np.append((np.diff(world3.sopc) / s.sim_time_step),
-                                                        np.nan)  # Servvice output pc groth rate / derivation
+    for attribute_name in s.empirical_settings.index:
+        if  s.empirical_settings.loc[attribute_name,'type']=='pyworld':
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name'])
+        elif s.empirical_settings.loc[attribute_name,'type']=='derivation':    
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = np.append((np.diff(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))/s.sim_time_step),np.nan) 
+        elif s.empirical_settings.loc[attribute_name,'type']=='proportion':
+            proportion_help1 = np.append(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']),np.NaN)
+            proportion_help2 = np.append(np.NaN,getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] =  ((proportion_help1-proportion_help2)/proportion_help1)[:-1]
 
-    # simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
-    simulation_data['PPAR_{}'.format(i)] = world3.ppar
-    # im update heißt ppapr nur noch ppar
-    simulation_data['PPGR_{}'.format(i)] = world3.ppgr
-
-    # simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
-    # simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
     # print('Ending Simulation {}'.format(i))
 
     return simulation_data
@@ -83,30 +72,16 @@ def run_simulation_combinations(i, parameter_list_full):
 
     # gather simulation data
     simulation_data = pd.DataFrame()
-    simulation_data['POP_{}'.format(i)] = world3.pop
-    simulation_data['AL_{}'.format(i)] = world3.al
-    simulation_data['CDR_{}'.format(i)] = world3.cdr
-    simulation_data['CBR_{}'.format(i)] = world3.cbr
-    # simulation_data['IO_{}'.format(i)] = world3.io
-    simulation_data['IO_dt_{}'.format(i)] = np.append((np.diff(world3.io) / s.sim_time_step),
-                                                      np.nan)  # Industrial Output groth rate / derivation
-    simulation_data['FPC_{}'.format(i)] = world3.fpc
-    # simulation_data['POLC_{}'.format(i)] = world3.ppol
-    # simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation
-    simulation_data['POLC_dt_{}'.format(i)] = np.append((np.diff(world3.pp) / s.sim_time_step),
-                                                        np.nan)  # Pollution groth rate / derivation
-    # im update heißt ppol nur noch pp
-    simulation_data['NRUR_{}'.format(i)] = world3.nrur
-    simulation_data['SOPC_dt_{}'.format(i)] = np.append((np.diff(world3.sopc) / s.sim_time_step),
-                                                        np.nan)  # Servvice output pc groth rate / derivation
+    for attribute_name in s.empirical_settings.index:
+        if  s.empirical_settings.loc[attribute_name,'type']=='pyworld':
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name'])
+        elif s.empirical_settings.loc[attribute_name,'type']=='derivation':    
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = np.append((np.diff(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))/s.sim_time_step),np.nan) 
+        elif s.empirical_settings.loc[attribute_name,'type']=='proportion':
+            proportion_help1 = np.append(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']),np.NaN)
+            proportion_help2 = np.append(np.NaN,getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] =  ((proportion_help1-proportion_help2)/proportion_help1)[:-1]
 
-    # simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
-    simulation_data['PPAR_{}'.format(i)] = world3.ppar
-    # im update heißt ppapr nur noch ppar
-    simulation_data['PPGR_{}'.format(i)] = world3.ppgr
-
-    # simulation_data['Ecologial-Footprint_{}'.format(i)] = world3.ef
-    # simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
     # print('Ending Simulation {}'.format(i))
 
     return simulation_data
@@ -136,30 +111,19 @@ def run_simulation_kwargs(i=0, **kwargs):
 
     # gather simulation data
     simulation_data = pd.DataFrame()
-    simulation_data['POP_{}'.format(i)] = world3.pop
-    simulation_data['AL_{}'.format(i)] = world3.al
-    simulation_data['CDR_{}'.format(i)] = world3.cdr
-    simulation_data['CBR_{}'.format(i)] = world3.cbr
-    # simulation_data['IO_{}'.format(i)] = world3.io
-    simulation_data['IO_dt_{}'.format(i)] = np.append((np.diff(world3.io) / s.sim_time_step),
-                                                      np.nan)  # Industrial Output groth rate / derivation
-    simulation_data['FPC_{}'.format(i)] = world3.fpc
-    # simulation_data['POLC_{}'.format(i)] = world3.ppol
-    # simulation_data['POLC_dt_{}'.format(i)] = np.append((diff(world3.ppol)/s.sim_time_step),np.nan) #Pollution groth rate / derivation
-    simulation_data['POLC_dt_{}'.format(i)] = np.append((np.diff(world3.pp) / s.sim_time_step),
-                                                        np.nan)  # Pollution groth rate / derivation
-    # im update heißt ppol nur noch pp
-    simulation_data['NRUR_{}'.format(i)] = world3.nrur
-    simulation_data['SOPC_dt_{}'.format(i)] = np.append((np.diff(world3.sopc) / s.sim_time_step),
-                                                        np.nan)  # Servvice output pc groth rate / derivation
+    for attribute_name in s.empirical_settings.index:
+        if  s.empirical_settings.loc[attribute_name,'type']=='pyworld':
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name'])
+        elif s.empirical_settings.loc[attribute_name,'type']=='derivation':    
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = np.append((np.diff(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))/s.sim_time_step),np.nan) 
+        elif s.empirical_settings.loc[attribute_name,'type']=='proportion':
+            proportion_help1 = np.append(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']),np.NaN)
+            proportion_help2 = np.append(np.NaN,getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] =  ((proportion_help1-proportion_help2)/proportion_help1)[:-1]
 
-    # simulation_data['PPAPR_{}'.format(i)] = world3.ppapr
-    simulation_data['PPAR_{}'.format(i)] = world3.ppar
-    # im update heißt ppapr nur noch ppar
-    simulation_data['PPGR_{}'.format(i)] = world3.ppgr
 
-    simulation_data['Ecological-Footprint_{}'.format(i)] = world3.ef
-    simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
+    #simulation_data['Ecological-Footprint_{}'.format(i)] = world3.ef
+    #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
     # print('Ending Simulation {}'.format(i))
 
     return simulation_data
@@ -273,7 +237,7 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         results['{}'.format(parameter3_name)] = parameter3_value
     
     attribute_list_empirical = s.empirical_settings.index
-    attribute_list_model = s.empirical_settings['pyworld_name_add']
+    attribute_list_model = (s.empirical_settings['pyworld_name_complete']+"_{}")
 
     for i in np.arange(0,len(attribute_list_empirical)):
         #attribute_empirical(i)
@@ -283,11 +247,15 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, p
         results['NRMSD_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
                                               calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
     
-    results['NRMSD_total'] = (1*results['NRMSD_Population']+
-                              1*results['NRMSD_Arable_land']+
-                              1*results['NRMSD_Death_rate']+
-                              1*results['NRMSD_Birth_rate']+
-                              1*results['NRMSD_Food_per_capita_ve'])/len(attribute_list_empirical)
+    results['NRMSD_total'] = ((results['NRMSD_Population']+
+                                 1*results['NRMSD_Death_rate']+
+                                 1*results['NRMSD_Birth_rate'])/3+
+                                 1*results['NRMSD_Food_per_capita_ve']+
+                                 1*results['NRMSD_Pollution_proportion']+
+                                 1*results['NRMSD_Expected_years_of_schooling_proportion']+
+                                 #1*results['NRMSD_GFCF_proportion']+
+                                 1*results['NRMSD_Fossil_fuel_consumption_proportion']+
+                                 1*results['NRMSD_IPP_proportion'])/6
     
     return results
 
@@ -322,7 +290,7 @@ def initialize_empirical_data():
     "Data - measured"
     measured_data = pd.read_csv('empirical_data.csv', sep=',')
     # measured_data = measured_data['data'].str.split(";", expand=True)
-    measured_data = measured_data.iloc[:,0:15]
+    measured_data = measured_data.iloc[:,0:22]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
     empirical_data = measured_data.replace(0, np.nan)
 
@@ -555,7 +523,7 @@ def plot_results(df_results,empirical_data,metrics):
     #create list for plotting function
     population_list = []
     for i in range(0,metrics.shape[0]):
-        population_list.append("POP_" + str(i))
+        population_list.append("pop_" + str(i))
         
     df_results[population_list].plot(legend=0, color = ["b"], linewidth = 0.4)
     empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
@@ -563,22 +531,57 @@ def plot_results(df_results,empirical_data,metrics):
     plt.ylim([1e9,10e9])
     plt.xlim([0,122])
     plt.show()
-    
-def plot_result(results):
+
+def plot_empirical_data_and_pyworld_default(attribute,empirical_settings, empirical_data, df_results, i=0):
     """
-    Function for plotting the model results and the empirical data
+    Function for comparing empeerical data to pyworld data with default parameters
     """
-    results.plot(legend=1, linewidth = 0.7)
-    #empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
+    years = np.arange(1900, 2023,1)
+
+    fig, f1 = plt.subplots()
+    f1.plot(years, df_results[s.empirical_settings.loc[attribute, 'pyworld_name_complete']+ "_" + str(i)], label=s.empirical_settings.loc[attribute, 'pyworld_name_complete'] + " ["+s.empirical_settings.loc[attribute, 'pyworld_unit'] + "]", color='blue')
+    f1.plot(years, empirical_data[attribute], label= attribute + " ["+s.empirical_settings.loc[attribute, 'empirical_unit'] + "]", color='red')
+    f1.set_title(s.empirical_settings.loc[attribute, 'title'])
+    f1.set_xlabel('time in years')
+    f1.legend(); 
+
+def plot_empirical_data_and_pyworld_default_multi_y(attribute,empirical_settings, empirical_data, df_results, i=0):
+    """
+    Function for comparing empeerical data to pyworld data with default parameters
+    """
+    years = np.arange(1900, 2023,1)
+
+    fig, f1 = plt.subplots()
+    f2 = f1.twinx()
+
+    f1.plot(years, df_results[s.empirical_settings.loc[attribute, 'pyworld_name_complete']+ "_" + str(i)], label=s.empirical_settings.loc[attribute, 'pyworld_name_complete'] + " ["+s.empirical_settings.loc[attribute, 'pyworld_unit'] + "]", color='blue')
+    f2.plot(years, empirical_data[attribute], label= attribute + " ["+s.empirical_settings.loc[attribute, 'empirical_unit'] + "]", color='red')
+    f1.set_title(s.empirical_settings.loc[attribute, 'title'])
+    f1.set_xlabel('time in years')
+    f1.legend(loc=2);
+    f2.legend(loc=6);
     
-    plt.ylim([1e9,10e9])
-    plt.xlim([0,122])
-    plt.show()
+
+ 
+def plot_all_attributes():
+    i = 0 #default values
+    df_results = p.parameter_to_simulation(i, p.parameter_list_full)
+    empirical_data = initialize_empirical_data()  # CSV Data to Dataframe 
+    for plot_attribute in s.empirical_settings.index:
+        if s.empirical_settings.loc[plot_attribute, '2_y_axis'] == False: 
+            plot_empirical_data_and_pyworld_default(plot_attribute, s.empirical_settings, empirical_data, df_results)
+        else:
+            plot_empirical_data_and_pyworld_default_multi_y(plot_attribute, s.empirical_settings, empirical_data, df_results)
+            
 
 if __name__ == '__main__':
+    plot_all_attributes()
+    
+    
+    
     # testing run simulation
-    results = run_simulation(3, nri=3e12,pl=0.4, dcfsn=7)
-    print(results)
+    #results = run_simulation(3, nri=3e12,pl=0.4, dcfsn=7)
+    #print(results)
     # testing roc and d_value calculation
     """
     a = np.arange(10)
