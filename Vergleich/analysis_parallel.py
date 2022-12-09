@@ -8,6 +8,8 @@ import analysis_parallel_settings as s
 import matplotlib.pyplot as plt
 import time
 import sys
+from scipy.signal import savgol_filter
+
 startTime = time.time()
 # - - -  World 3 import and Version Switching
 
@@ -46,7 +48,6 @@ def run_simulation(i, parameter_var_list_full):
             proportion_help1 = np.append(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']),np.NaN)
             proportion_help2 = np.append(np.NaN,getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))
             simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] =  ((proportion_help1-proportion_help2)/proportion_help1)[:-1]
-
     
     #print('Ending Simulation {}'.format(i))
 
