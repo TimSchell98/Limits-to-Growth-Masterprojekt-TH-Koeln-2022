@@ -67,10 +67,7 @@ if __name__ == '__main__':
         
         for i in range(0, no_of_simulations):
             #die ersten drei parameter die analysiert werden werden in den metrics dataframe geschrieben, entweder alle oder keinen.
-            metric_result = af.calculate_metrics_multiple_attributes(df_results, empirical_data, str(i+1),
-                                                 'parameter1',parameter_list_full.iloc[i,0],
-                                                 'parameter2',parameter_list_full.iloc[i,1],
-                                                 'parameter3',parameter_list_full.iloc[i,2])
+            metric_result = af.calculate_metrics_multiple_attributes(df_results, empirical_data, str(i+1))
             metrics = pd.concat([metrics, metric_result])
             
     #   -   -   - Plot data -   -   -
