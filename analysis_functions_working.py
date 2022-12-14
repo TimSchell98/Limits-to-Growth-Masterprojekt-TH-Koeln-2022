@@ -157,7 +157,6 @@ def init_parameter_list():
 def parameter_list_full(parameter_list):
     """
     
-
     Parameters
     ----------
     parameter_list : TYPE Pandas DataFrame
@@ -225,16 +224,11 @@ def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_int
     nrmsd = (np.sqrt(nominator_single_values.sum() / 6)) / (denominator_single_values.sum() / 6)
     return nrmsd
 
-def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, parameter1_name='none', parameter1_value=np.nan, parameter2_name='none', parameter2_value=np.nan, parameter3_name='none', parameter3_value=np.nan,
-                      calculation_period=50, sim_number=0):
+def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, calculation_period=50, sim_number=0):
     """ Calculate NRSMD for selected attributes 
     - using function "prepare_data_for_metric_calc_multiple_attributes" to cut data
     - NRMSD total for weighting attributes"""
     results = pd.DataFrame(index=[index])
-    if not parameter1_name == 'none' or parameter2_name == 'none' or parameter3_name == 'none':
-        results['{}'.format(parameter1_name)] = parameter1_value
-        results['{}'.format(parameter2_name)] = parameter2_value
-        results['{}'.format(parameter3_name)] = parameter3_value
     
     attribute_list_empirical = s.empirical_settings.index
     attribute_list_model = (s.empirical_settings['pyworld_name_complete']+"_{}")
