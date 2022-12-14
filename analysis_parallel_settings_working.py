@@ -5,7 +5,7 @@ import numpy as np
 use_update = True #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
 single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 8 #number of simulations per zoom
+grid_resolution = 20 #number of simulations per zoom
 zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0 #accuracy, when zoom should stop
@@ -17,26 +17,30 @@ year_min = 1900
 period  = year_max1 - year_min # wird es noch benötigt?
 
 #end conditions:
-nrmsd_delta_end_condition = 0.000001
-desired_nrmsd = 0.1
-analysis_number_end_condition = 3
+nrmsd_delta_end_condition = 1e-6
+desired_nrmsd = 1
+analysis_number_end_condition = 250
 
 #what variable should be improved
-variable_to_improve = "NRMSD_Population"
+variable_to_improve = "NRMSD_total"
 
 #how much the start and end value should move if edge value is reached
-parameter_move_start_end_value = 0.1
+parameter_move_start_end_value = 0.2
 
+#how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
+parameter_divergence = 0.3
+
+
+
+
+#werden niicht mehr verwendet
 
 #temporäre variablen, ich muss mir noch was besseres einfallen lassen
 x = 1
 parameter_hi = 0
 
-#how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
-parameter_divergence = 0.15
-
 #how much should parameter_divergence shrink for the next zoom
-parameter_divergence_shrinkage = 0.15
+parameter_divergence_shrinkage = 0.1
 
 # - Analysis Settings
 calculation_interval = 5 # step size [years] for calculation
@@ -63,6 +67,8 @@ parameter3_name = "pl"
 
 #parameter modifier for improved limits function
 parameter3_modifier = parameter3_default/(grid_resolution*2)
+
+
 
 def parameter_init():
     #parameter1 start+end value
