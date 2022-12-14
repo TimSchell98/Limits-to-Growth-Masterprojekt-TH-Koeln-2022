@@ -537,7 +537,8 @@ def plot_empirical_data_and_pyworld_default(attribute,empirical_settings, empiri
     f1.plot(years, empirical_data[attribute], label= attribute + " ["+s.empirical_settings.loc[attribute, 'empirical_unit'] + "]", color='red')
     f1.set_title(s.empirical_settings.loc[attribute, 'title'])
     f1.set_xlabel('time in years')
-    f1.legend(); 
+    f1.legend()
+    plt.show()
 
 def plot_empirical_data_and_pyworld_default_multi_y(attribute,empirical_settings, empirical_data, df_results, i=0):
     """
@@ -559,7 +560,7 @@ def plot_empirical_data_and_pyworld_default_multi_y(attribute,empirical_settings
  
 def plot_all_attributes():
     i = 0 #default values
-    df_results = p.parameter_to_simulation(i, p.parameter_list_full)
+    df_results = run_simulation()
     empirical_data = initialize_empirical_data()  # CSV Data to Dataframe 
     for plot_attribute in s.empirical_settings.index:
         if s.empirical_settings.loc[plot_attribute, '2_y_axis'] == False: 
