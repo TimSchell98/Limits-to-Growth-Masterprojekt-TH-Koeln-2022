@@ -229,7 +229,7 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, c
     - using function "prepare_data_for_metric_calc_multiple_attributes" to cut data
     - NRMSD total for weighting attributes"""
     results = pd.DataFrame(index=[index])
-    results['NRMSD_total_new']=0
+    results['NRMSD_total']=0
     attribute_list_empirical = s.empirical_settings.index
     attribute_list_model = (s.empirical_settings['pyworld_name_complete']+"_{}")
 
