@@ -229,27 +229,35 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, c
     - using function "prepare_data_for_metric_calc_multiple_attributes" to cut data
     - NRMSD total for weighting attributes"""
     results = pd.DataFrame(index=[index])
-    
+    results['NRMSD_total_new']=0
     attribute_list_empirical = s.empirical_settings.index
     attribute_list_model = (s.empirical_settings['pyworld_name_complete']+"_{}")
 
-    for i in np.arange(0,len(attribute_list_empirical)):
+    no_of_results_in_total = 0
+
+    for i in np.arange(0, len(attribute_list_empirical)):
         #attribute_empirical(i)
         #attributemodel = (i)
         model_data_slice, empirical_data_slice = prepare_data_for_metric_calc_multiple_attributes(model_data, empirical_data, attribute_list_empirical[i], attribute_list_model[i].format(int(index)-1))
         
         results['NRMSD_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
                                               calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
-    
-    results['NRMSD_total'] = ((results['NRMSD_Population']+
+        if s.empirical_settings['total'].iloc[i]:
+            results['NRMSD_total'] += results['NRMSD_{}'.format(attribute_list_empirical[i])][0] * \
+                                      s.empirical_settings['NRMSD_total_weighting'].iloc[i]
+            no_of_results_in_total +=1
+
+    results['NRMSD_total'] = results['NRMSD_total']/no_of_results_in_total
+
+    '''results['NRMSD_total'] = ((results['NRMSD_Population']+
                                  1*results['NRMSD_Death_rate']+
-                                 1*results['NRMSD_Birth_rate'])/3+
+                                 1*results['NRMSD_Birth_rate'])+
                                  1*results['NRMSD_Food_per_capita_ve']+
                                  1*results['NRMSD_Pollution_proportion']+
                                  1*results['NRMSD_Expected_years_of_schooling_proportion']+
                                  #1*results['NRMSD_GFCF_proportion']+
                                  1*results['NRMSD_Fossil_fuel_consumption_proportion']+
-                                 1*results['NRMSD_IPP_proportion'])/6
+                                 1*results['NRMSD_IPP_proportion'])/8'''
     
     return results
 
