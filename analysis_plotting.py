@@ -62,7 +62,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     for i in range(0, parameter_list_full.shape[0]):
         model_results['pp_dtp_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
     empirical_data["Pollution_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title(output_variable)
+    plt.title('Pollution')
     plt.ylim([-1, 2])
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
