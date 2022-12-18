@@ -1,6 +1,6 @@
 import pandas as pd
 from matplotlib import pyplot as plt
-
+import analysis_parallel_settings_working as s
 xticks = [0, 30, 60, 90, 120]
 xticks_labels = [1900, 1930, 1960, 1990, 2020]
 
@@ -19,7 +19,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
     plt.xlabel('Year')
-    plt.ylabel('Population')
+    plt.ylabel(s.empirical_settings['pyworld_unit']['Population'])
     plt.show()
 
     # plot death rate
@@ -31,7 +31,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
     plt.xlabel('Year')
-    plt.ylabel('')
+    plt.ylabel(s.empirical_settings['pyworld_unit']['Death_rate'])
     plt.show()
 
     # plot birth rate
@@ -43,7 +43,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
     plt.xlabel('Year')
-    plt.ylabel('')
+    plt.ylabel(s.empirical_settings['pyworld_unit']['Birth_rate'])
     plt.show()
 
     # plot food per capita
@@ -54,21 +54,20 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     plt.ylim([0, 1000])
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
-
     plt.xlabel('Year')
-    plt.ylabel('')
+    plt.ylabel(s.empirical_settings['pyworld_unit']['Food_per_capita_ve'])
     plt.show()
 
     # plot Pollution_proportion
     for i in range(0, parameter_list_full.shape[0]):
         model_results['pp_dtp_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
     empirical_data["Pollution_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title('Pollution')
+    plt.title(output_variable)
     plt.ylim([-1, 2])
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
     plt.xlabel('Year')
-    plt.ylabel('')
+    plt.ylabel(s.empirical_settings['pyworld_unit']['-'])
     plt.show()
 
     # plot Expected_years_of_schooling_proportion
@@ -116,7 +115,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
     plt.xlabel('Year')
-    plt.ylabel('EF')
+    plt.ylabel('Hectars')
     plt.show()
 
     # plot HWI
