@@ -19,7 +19,7 @@ period  = year_max1 - year_min # wird es noch benötigt?
 #end conditions:
 nrmsd_delta_end_condition = 1e-6
 desired_nrmsd = 1
-analysis_number_end_condition = 400
+analysis_number_end_condition = 1
 
 #what variable should be improved
 variable_to_improve = "NRMSD_total"

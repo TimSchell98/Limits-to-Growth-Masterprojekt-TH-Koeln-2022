@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 import analysis_parallel_settings_working as s
 import analysis as p
+from scipy.signal import savgol_filter
+from scipy import signal
+
 
 
 import matplotlib.pyplot as plt
@@ -295,7 +298,15 @@ def initialize_empirical_data():
     measured_data = measured_data.iloc[:,0:22]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
     empirical_data = measured_data.replace(0, np.nan)
-
+    for attribute_name in s.empirical_settings.index:
+        if s.empirical_settings.loc[attribute_name,'smooth'] == False:
+            empirical_data[attribute_name] = empirical_data[attribute_name]
+        else:
+            kernel_size = s.empirical_settings.loc[attribute_name,'smooth']
+            kernel = np.ones(kernel_size) / kernel_size
+            empirical_data[attribute_name] = np.convolve(empirical_data[attribute_name], kernel, mode='same')
+            #empirical_data[attribute_name] = signal.savgol_filter(empirical_data[attribute_name], window_length=11, polyorder=3, mode="nearest")
+            #empirical_data[attribute_name] = empirical_data[attribute_name]
     return empirical_data
 
 def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_list_sorted):
