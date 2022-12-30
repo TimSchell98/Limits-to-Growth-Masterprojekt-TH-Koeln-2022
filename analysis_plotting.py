@@ -67,7 +67,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
     plt.xlabel('Year')
-    plt.ylabel(s.empirical_settings['pyworld_unit']['-'])
+    plt.ylabel('-')
     plt.show()
 
     # plot Expected_years_of_schooling_proportion
