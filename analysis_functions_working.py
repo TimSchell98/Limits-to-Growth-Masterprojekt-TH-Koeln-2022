@@ -241,11 +241,16 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, c
     for i in np.arange(0, len(attribute_list_empirical)):
         #attribute_empirical(i)
         #attributemodel = (i)
+            
         model_data_slice, empirical_data_slice = prepare_data_for_metric_calc_multiple_attributes(model_data, empirical_data, attribute_list_empirical[i], attribute_list_model[i].format(int(index)-1))
         
         results['NRMSD_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
                                               calculation_interval=s.calculation_interval, calculation_period=s.calculation_period)
-        if s.empirical_settings['total'].iloc[i]:
+
+        if s.empirical_settings['total'].iloc[i] == True:
+            
+            #print(results['NRMSD_{}'.format(attribute_list_empirical[i])][0]) #ist nan bei den proportions
+            
             results['NRMSD_total'] += results['NRMSD_{}'.format(attribute_list_empirical[i])][0] * \
                                       s.empirical_settings['NRMSD_total_weighting'].iloc[i]
             no_of_results_in_total +=1

@@ -110,7 +110,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     for i in range(0, parameter_list_full.shape[0]):
         model_results['ef_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
     empirical_data["Ecological_Footprint"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title('Ecological Footprint (not in NRMSD total!)')
+    plt.title('Ecological Footprint')
     plt.ylim([0, 5])
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
@@ -122,7 +122,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     for i in range(0, parameter_list_full.shape[0]):
         model_results['hwi_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
     empirical_data["Human_Welfare"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title('Human Welfare Index (not in NRMSD total!)')
+    plt.title('Human Welfare Index')
     plt.ylim([0, 1])
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
