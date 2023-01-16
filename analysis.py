@@ -31,7 +31,7 @@ if __name__ == '__main__':
     #initialize empirical data
     empirical_data = af.initialize_empirical_data()
     #DataFrame in which in every step the change is being saved
-    parameter_history = pd.DataFrame(columns = ["changed parameter", "previous value", "next value", "NRMSD_min", "location", "change"])
+    parameter_history = pd.DataFrame(columns = ["changed parameter", "previous value", "next value", "NRMSD_min", "location", "relative change"])
 
     #   -   -   - run analysis -   -   -
     no_of_simulations = len(parameter_list_full)
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         NRMSD_index = int(metrics[s.variable_to_improve].idxmin())-1 #-1, because metrics dataframe starts at index 1, parameter_list_starts at 0
 
         #Temporary version of parameter_history
-        parameter_history_temp = pd.DataFrame(columns = ["changed parameter", "previous value", "next value", "NRMSD_min", "location", "change"], index = [0])
+        parameter_history_temp = pd.DataFrame(columns = ["changed parameter", "previous value", "next value", "NRMSD_min", "location", "relative change"], index = [0])
         
         #save min NRMSD in dataframe
         parameter_history_temp["NRMSD_min"] = round(metrics[s.variable_to_improve].min(),10)
@@ -96,26 +96,46 @@ if __name__ == '__main__':
         parameter_history_temp.iloc[0,2] = parameter_list_full.iloc[NRMSD_index,parameter_index]
         #save improved value in parameter_list
         parameter_list.iloc[parameter_index,2] = parameter_list_full.iloc[NRMSD_index,parameter_index]
+        
+        
+
+        #check if optimal value is last value
+        if NRMSD_index != s.grid_resolution*parameter_list.shape[0] and NRMSD_index != 0:
             
-        #if best parameter value is not an edge value, use previous value and next value as new start and end values
-        if parameter_list_full.iloc[NRMSD_index-1,parameter_index] < parameter_list_full.iloc[NRMSD_index, parameter_index] and parameter_list_full.iloc[NRMSD_index+1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
-            print("Was mid value")
-            parameter_history_temp.iloc[0,4] = "mid-value"
-            parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
-            parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
-        #check if best parameter value is edge value, if yes then move start or end value by given amount
-        #check if best parameter is first value
-        if parameter_list_full.iloc[NRMSD_index-1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
-            print("Was start value")
-            parameter_history_temp.iloc[0,4] = "start-value"
-            parameter_list.iloc[parameter_index,4] = round(parameter_list.iloc[parameter_index,4]*(1-s.parameter_move_start_end_value),6) 
-            parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
-        #check if best parameter is last value
-        if parameter_list_full.iloc[NRMSD_index+1,parameter_index] < parameter_list_full.iloc[NRMSD_index,parameter_index]:
+            #if best parameter value is not an edge value, use previous value and next value as new start and end values
+            if parameter_list_full.iloc[NRMSD_index-1,parameter_index] < parameter_list_full.iloc[NRMSD_index, parameter_index] and parameter_list_full.iloc[NRMSD_index+1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
+                print("Was mid value")
+                parameter_history_temp.iloc[0,4] = "mid-value"
+                parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
+                parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
+            #check if best parameter value is edge value, if yes then move start or end value by given amount
+            #check if best parameter is first value
+            if parameter_list_full.iloc[NRMSD_index-1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
+                print("Was start value")
+                parameter_history_temp.iloc[0,4] = "start-value"
+                parameter_list.iloc[parameter_index,4] = round(parameter_list.iloc[parameter_index,4]*(1-s.parameter_move_start_end_value),6) 
+                parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
+            #check if best parameter is last value
+            if parameter_list_full.iloc[NRMSD_index+1,parameter_index] < parameter_list_full.iloc[NRMSD_index,parameter_index]:
+                print("Was end value")
+                parameter_history_temp.iloc[0,4] = "end-value"
+                parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
+                parameter_list.iloc[parameter_index,5] = round(parameter_list.iloc[parameter_index,4]*(1+s.parameter_move_start_end_value),6) 
+        
+        #check if optimal value is last value
+        if NRMSD_index == s.grid_resolution*parameter_list.shape[0]:
             print("Was end value")
             parameter_history_temp.iloc[0,4] = "end-value"
             parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
             parameter_list.iloc[parameter_index,5] = round(parameter_list.iloc[parameter_index,4]*(1+s.parameter_move_start_end_value),6) 
+        
+        #check if optimal value is first value
+        if NRMSD_index == 0:
+            print("Was start value")
+            parameter_history_temp.iloc[0,4] = "start-value"
+            parameter_list.iloc[parameter_index,4] = round(parameter_list.iloc[parameter_index,4]*(1-s.parameter_move_start_end_value),6) 
+            parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
+            
         
         #append parameter_history_temp to parameter_history
         parameter_history = pd.concat([parameter_history, parameter_history_temp], ignore_index = True)
@@ -126,7 +146,7 @@ if __name__ == '__main__':
         #create new parameter_list_full with the new default values in parameter_list
         parameter_list_full = af.parameter_list_full(parameter_list)
         change = round(abs(parameter_history.iloc[analysis_number-1,1]-parameter_history.iloc[analysis_number-1,2])/parameter_history.iloc[analysis_number-1,1],6)
-        print("Change: "+ str(change))
+        print("Relative change: "+ str(change))
         parameter_history.iloc[analysis_number-1,5] = change
         
         #calculate delta between nrmsd of current simulations and nrmsd of previous simulation
