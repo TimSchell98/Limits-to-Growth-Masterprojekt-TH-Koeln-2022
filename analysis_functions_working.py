@@ -4,7 +4,7 @@ import analysis_parallel_settings_working as s
 import analysis as p
 from scipy.signal import savgol_filter
 from scipy import signal
-
+from scipy.signal import butter, lfilter, freqz
 
 
 import matplotlib.pyplot as plt
@@ -296,6 +296,16 @@ def calculate_metrics(model_data, empirical_data, index=0, parameter_name='none'
     results['NRMSD[%]'] = calculate_nrmsd(model_data, empirical_data, timestep=s.sim_time_step, calculation_interval=s.calculation_interval, calculation_period=calculation_period)
     return results
 
+
+def butter_lowpass(cutoff, fs, order=5):
+    return butter(order, cutoff, fs=fs, btype='low', analog=False)
+
+def butter_lowpass_filter(data, cutoff, fs, order=5):
+    b, a = butter_lowpass(cutoff, fs, order=order)
+    y = lfilter(b, a, data)
+    return y
+
+
 def initialize_empirical_data():
     "Data - measured"
     measured_data = pd.read_csv('empirical_data.csv', sep=',')
@@ -303,15 +313,17 @@ def initialize_empirical_data():
     measured_data = measured_data.iloc[:,0:22]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
     empirical_data = measured_data.replace(0, np.nan)
+    empirical_data.iloc[66,9] = 0
+    # filter settings 
+    fs= 11
+    order = 6
+    
     for attribute_name in s.empirical_settings.index:
         if s.empirical_settings.loc[attribute_name,'smooth'] == False:
             empirical_data[attribute_name] = empirical_data[attribute_name]
         else:
-            kernel_size = s.empirical_settings.loc[attribute_name,'smooth']
-            kernel = np.ones(kernel_size) / kernel_size
-            empirical_data[attribute_name] = np.convolve(empirical_data[attribute_name], kernel, mode='same')
-            #empirical_data[attribute_name] = signal.savgol_filter(empirical_data[attribute_name], window_length=11, polyorder=3, mode="nearest")
-            #empirical_data[attribute_name] = empirical_data[attribute_name]
+            empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)]  = butter_lowpass_filter(empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)], s.empirical_settings.loc[attribute_name,'smooth'], fs, order)
+    
     return empirical_data
 
 def improved_limits_all_parameter(metrics, parameter_var_list, parameter_var_list_sorted):

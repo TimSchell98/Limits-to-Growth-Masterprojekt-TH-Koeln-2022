@@ -58,11 +58,26 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     plt.ylabel(s.empirical_settings['pyworld_unit']['Food_per_capita_ve'])
     plt.show()
 
+    # plot food per capita proportion
+    for i in range(0, parameter_list_full.shape[0]):
+         model_results['fpcp_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
+    empirical_data["Food_per_capita_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
+    plt.title('Food per Capita proportion')
+    #plt.ylim([-0.05, 0.05])
+    plt.xlim([0, 122])
+    plt.xticks(ticks=xticks, labels=xticks_labels)
+    plt.xlabel('Year')
+    #plt.ylabel(s.empirical_settings['pyworld_unit']['Food_per_capita_ve'])
+    plt.show()
+
     # plot Pollution_proportion
+    
+    #label=s.empirical_settings.loc[attribute, 'pyworld_name_complete'] + " ["+s.empirical_settings.loc[attribute, 'pyworld_unit'] + "]"
+    
     for i in range(0, parameter_list_full.shape[0]):
         model_results['pp_dtp_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
     empirical_data["Pollution_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title('Pollution')
+    plt.title('Pollution proportion')
     plt.ylim([-1, 2])
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
@@ -74,19 +89,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     for i in range(0, parameter_list_full.shape[0]):
         model_results['sopcp_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
     empirical_data["Expected_years_of_schooling_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title('Service Output per Capita vs. Expected years of schooling')
-    plt.ylim([-0.25, 0.25])
-    plt.xlim([0, 122])
-    plt.xticks(ticks=xticks, labels=xticks_labels)
-    plt.xlabel('Year')
-    plt.ylabel('')
-    plt.show()
-
-    # plot Fossil_fuel_consumption_proportion
-    for i in range(0, parameter_list_full.shape[0]):
-        model_results['nrurp_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
-    empirical_data["Fossil_fuel_consumption_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title('Non renewable usage rate vs. Fossil fuel consumption')
+    plt.title('Service proportion')
     plt.ylim([-0.25, 0.25])
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
@@ -97,9 +100,21 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     # plot IPP
     for i in range(0, parameter_list_full.shape[0]):
         model_results['iop_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
-    empirical_data["IPP_USA_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title('iop vs. IPP')
+    empirical_data["IPP_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
+    plt.title('Industrial Output proportion')
     plt.ylim([-0.40, 0.40])
+    plt.xlim([0, 122])
+    plt.xticks(ticks=xticks, labels=xticks_labels)
+    plt.xlabel('Year')
+    plt.ylabel('')
+    plt.show()
+    
+    # plot Fossil_fuel_consumption_proportion
+    for i in range(0, parameter_list_full.shape[0]):
+        model_results['nrurp_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
+    empirical_data["Fossil_fuel_consumption_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
+    plt.title('Resources proportion')
+    plt.ylim([-0.25, 0.25])
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
     plt.xlabel('Year')
