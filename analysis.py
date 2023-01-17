@@ -8,6 +8,7 @@ from analysis_plotting import plot_data
 import matplotlib.pyplot as plt
 import time
 from datetime import datetime
+from pyworld3 import World3
 startTime = time.time()
 
 
@@ -18,6 +19,16 @@ def parameter_to_simulation(i, parameter_list_full):
         parameter_dict[column_name[0]] = parameter_list_full[column_name[0]].iloc[i].item()
         #print(parameter_dict[column_name[0]])
     return af.run_simulation_kwargs(i, **parameter_dict)
+
+#function to simulate pyworld3 with optimized parameters
+def run_simulation(**kwargs):
+    # run simulation
+    world3 = World3(dt=s.sim_time_step, year_max=2100)
+    world3.init_world3_constants(**kwargs)
+    world3.init_world3_variables()
+    world3.set_world3_table_functions()
+    world3.set_world3_delay_functions()
+    world3.run_world3(fast=False)
 
 if __name__ == '__main__':
     pool = mp.Pool(mp.cpu_count())
@@ -104,34 +115,34 @@ if __name__ == '__main__':
             
             #if best parameter value is not an edge value, use previous value and next value as new start and end values
             if parameter_list_full.iloc[NRMSD_index-1,parameter_index] < parameter_list_full.iloc[NRMSD_index, parameter_index] and parameter_list_full.iloc[NRMSD_index+1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
-                print("Was mid value")
+                #print("Was mid value")
                 parameter_history_temp.iloc[0,4] = "mid-value"
                 parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
                 parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
             #check if best parameter value is edge value, if yes then move start or end value by given amount
             #check if best parameter is first value
             if parameter_list_full.iloc[NRMSD_index-1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
-                print("Was start value")
+                #print("Was start value")
                 parameter_history_temp.iloc[0,4] = "start-value"
                 parameter_list.iloc[parameter_index,4] = round(parameter_list.iloc[parameter_index,4]*(1-s.parameter_move_start_end_value),6) 
                 parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
             #check if best parameter is last value
             if parameter_list_full.iloc[NRMSD_index+1,parameter_index] < parameter_list_full.iloc[NRMSD_index,parameter_index]:
-                print("Was end value")
+                #print("Was end value")
                 parameter_history_temp.iloc[0,4] = "end-value"
                 parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
                 parameter_list.iloc[parameter_index,5] = round(parameter_list.iloc[parameter_index,4]*(1+s.parameter_move_start_end_value),6) 
         
         #check if optimal value is last value
         if NRMSD_index == s.grid_resolution*parameter_list.shape[0]:
-            print("Was end value")
+            #print("Was end value")
             parameter_history_temp.iloc[0,4] = "end-value"
             parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
             parameter_list.iloc[parameter_index,5] = round(parameter_list.iloc[parameter_index,4]*(1+s.parameter_move_start_end_value),6) 
         
         #check if optimal value is first value
         if NRMSD_index == 0:
-            print("Was start value")
+            #print("Was start value")
             parameter_history_temp.iloc[0,4] = "start-value"
             parameter_list.iloc[parameter_index,4] = round(parameter_list.iloc[parameter_index,4]*(1-s.parameter_move_start_end_value),6) 
             parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
@@ -152,7 +163,7 @@ if __name__ == '__main__':
         #calculate delta between nrmsd of current simulations and nrmsd of previous simulation
         if analysis_number > 1:
             delta_nrmsd = abs(parameter_history.iloc[analysis_number-1,3]-parameter_history.iloc[analysis_number-2,3])
-            print("Delta NRMSD = " + str(round(delta_nrmsd,8)))
+            #print("Delta NRMSD = " + str(round(delta_nrmsd,8)))
 
             
         #if end condition are met set boolian "stop_condition"
@@ -161,7 +172,26 @@ if __name__ == '__main__':
             
         executionTime = (time.time() - startTime)
         print('Elapsed time in seconds: ' + str(round(executionTime,2)))
-     
+    
+    print("\n")
+    
+    #Count how many times the optimal value was start, middle or end value
+    no_mid_value = 0
+    no_start_value = 0
+    no_end_value = 0
+    for i in np.arange(len(parameter_history)):  
+        if parameter_history.iloc[i,4] == "mid-value":
+            no_mid_value = no_mid_value+1
+        if parameter_history.iloc[i,4] == "start-value":
+            no_start_value = no_start_value+1
+        if parameter_history.iloc[i,4] == "end-value":
+            no_end_value = no_end_value+1
+    print("Number of mid values: " + str(no_mid_value))
+    print("Number of edge values: " + str(no_start_value + no_end_value))
+    
+    #print minimal nrmsd
+    print("NRMSD min: " + str(parameter_history.iloc[len(parameter_history)-1,3]))
+    
     #plot NRMDS history
     parameter_history["NRMSD_min"].plot()
     
@@ -174,6 +204,29 @@ if __name__ == '__main__':
     
     #save parameter_history results in excel list
     parameter_history.to_excel("Analyse Ergebnisse/Analysis parameter_history_{}.xlsx".format(date_time))
+    
+    #run pyworld3 with new standard values
+    #save new standard values in dataframe with parameter names as column name
+    new_standard_values = parameter_list_full.iloc[0]
+    new_standard_values = parameter_list_full.query("index == 0")
+    
+    parameter_dict = {}
+    for column_index, column_name in enumerate(parameter_list_full.columns):
+        parameter_dict[column_name[0]] = new_standard_values[column_name[0]].iloc[i].item()
+    run_simulation(**parameter_dict)
+    
+    
+    """
+    #world3_data = pd.DataFrame(data = world3.pop)
+    #world3_data.plot()
+    empirical_data["Population"].plot()
+    """
+        
+    
+
+
+
+
     
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(round(executionTime,2)))
