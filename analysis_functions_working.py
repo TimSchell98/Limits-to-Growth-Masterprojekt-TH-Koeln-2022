@@ -89,7 +89,7 @@ def run_simulation_combinations(i, parameter_list_full):
 
     return simulation_data
 
-def run_simulation_kwargs(i=0, **kwargs):
+def run_simulation_kwargs(year_max, i=0, **kwargs):
     """
     Functions for running the World3 Model with variable set of parameters.
     Return Value is a pandas Dataframe with certain selected Model Variables.
@@ -105,7 +105,7 @@ def run_simulation_kwargs(i=0, **kwargs):
     """
 
     # run simulation
-    world3 = World3(dt=s.sim_time_step, year_max=s.year_max)
+    world3 = World3(dt=s.sim_time_step, year_max=year_max)
     world3.init_world3_constants(**kwargs)
     world3.init_world3_variables()
     world3.set_world3_table_functions()

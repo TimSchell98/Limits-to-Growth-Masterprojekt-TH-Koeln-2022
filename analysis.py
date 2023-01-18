@@ -8,27 +8,17 @@ from analysis_plotting import plot_data
 import matplotlib.pyplot as plt
 import time
 from datetime import datetime
-from pyworld3 import World3
+from PyWorld3_Update.pyworld3 import World3
 startTime = time.time()
 
 
-def parameter_to_simulation(i, parameter_list_full):
+def parameter_to_simulation(i, parameter_list_full, year_max):
     parameter_dict = {}
     #parameter_list_full.columns[column_index][0]
     for column_index, column_name in enumerate(parameter_list_full.columns):
         parameter_dict[column_name[0]] = parameter_list_full[column_name[0]].iloc[i].item()
         #print(parameter_dict[column_name[0]])
-    return af.run_simulation_kwargs(i, **parameter_dict)
-
-#function to simulate pyworld3 with optimized parameters
-def run_simulation(**kwargs):
-    # run simulation
-    world3 = World3(dt=s.sim_time_step, year_max=2100)
-    world3.init_world3_constants(**kwargs)
-    world3.init_world3_variables()
-    world3.set_world3_table_functions()
-    world3.set_world3_delay_functions()
-    world3.run_world3(fast=False)
+    return af.run_simulation_kwargs(year_max, i, **parameter_dict)
 
 if __name__ == '__main__':
     pool = mp.Pool(mp.cpu_count())
@@ -52,7 +42,8 @@ if __name__ == '__main__':
     delta_nrmsd = 1
     
     print('Number of simulations in one zoom = ' + str(len(parameter_list_full)))
-    print('Estimated time for one zoom = ' + str(round(len(parameter_list_full)*0.644)) + ' seconds')
+    print('Estimated time for one zoom = ' + str(round(len(parameter_list_full)*0.51)) + ' seconds')
+    print('Estimated time till end conditions are met = ' + str(round(len(parameter_list_full)*0.51 * s.analysis_number_end_condition)) + ' seconds')
 
     #start of analysis loop, stops of stop conditions are reached
     while stop_condition == True:
@@ -61,9 +52,10 @@ if __name__ == '__main__':
         print('\nNumber of zooms completed = ' + str(analysis_number-1))
         print('Number of simulations completed = ' + str(len(parameter_list_full) * (analysis_number-1)))
         
+        #run simulation
         df_results = pd.DataFrame()
         #results = [pool.apply_async(af.run_simulation_combinations, args=(i, parameter_list_full)) for i in range(0, parameter_list_full.shape[0])]
-        results = [pool.apply_async(parameter_to_simulation, args=(i, parameter_list_full)) for i in
+        results = [pool.apply_async(parameter_to_simulation, args=(i, parameter_list_full, s.year_max)) for i in
                    range(0, no_of_simulations)]
         
         for i in results:
@@ -76,20 +68,23 @@ if __name__ == '__main__':
         #   -   -   - Metrics calculation -   -   -
 
         metrics = pd.DataFrame()
-        
+
         for i in range(0, no_of_simulations):
-            #die ersten drei parameter die analysiert werden werden in den metrics dataframe geschrieben, entweder alle oder keinen.
             metric_result = af.calculate_metrics_multiple_attributes(df_results, empirical_data, str(i+1))
             metrics = pd.concat([metrics, metric_result])
             
-    #   -   -   - Plot data -   -   -
-        plot_data(df_results, empirical_data, parameter_list_full)
+        #   -   -   - Plot data -   -   -
+        if s.plot_results == True:        
+            plot_data(df_results, empirical_data, parameter_list_full)
     
         #   -   -   - Calculate next parameter_list_full and save values in list -   -   -
         print(str(s.variable_to_improve) + " min = " + str(round(metrics[s.variable_to_improve].min(),8)))
         
         #ToDo: in ne funktion packen
-    
+        # bis parameter history temp
+        
+        #parameter_list, parameter_history = improved_limits(metrics, parameter_list, parameter_list_full, parameter_history)
+  
         #Find NRMSD index of line which has the minimal NRMSD.
         NRMSD_index = int(metrics[s.variable_to_improve].idxmin())-1 #-1, because metrics dataframe starts at index 1, parameter_list_starts at 0
 
@@ -108,11 +103,10 @@ if __name__ == '__main__':
         #save improved value in parameter_list
         parameter_list.iloc[parameter_index,2] = parameter_list_full.iloc[NRMSD_index,parameter_index]
         
+        #ToDO: Conditions zusammennfassen
         
-
-        #check if optimal value is last value
-        if NRMSD_index != s.grid_resolution*parameter_list.shape[0] and NRMSD_index != 0:
-            
+        #check if optimal value is last of first value
+        if NRMSD_index < s.grid_resolution*parameter_list.shape[0]-1 and NRMSD_index > 0:
             #if best parameter value is not an edge value, use previous value and next value as new start and end values
             if parameter_list_full.iloc[NRMSD_index-1,parameter_index] < parameter_list_full.iloc[NRMSD_index, parameter_index] and parameter_list_full.iloc[NRMSD_index+1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
                 #print("Was mid value")
@@ -134,14 +128,14 @@ if __name__ == '__main__':
                 parameter_list.iloc[parameter_index,5] = round(parameter_list.iloc[parameter_index,4]*(1+s.parameter_move_start_end_value),6) 
         
         #check if optimal value is last value
-        if NRMSD_index == s.grid_resolution*parameter_list.shape[0]:
+        if NRMSD_index >= s.grid_resolution*parameter_list.shape[0]-1:
             #print("Was end value")
             parameter_history_temp.iloc[0,4] = "end-value"
             parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
             parameter_list.iloc[parameter_index,5] = round(parameter_list.iloc[parameter_index,4]*(1+s.parameter_move_start_end_value),6) 
         
         #check if optimal value is first value
-        if NRMSD_index == 0:
+        if NRMSD_index <= 0:
             #print("Was start value")
             parameter_history_temp.iloc[0,4] = "start-value"
             parameter_list.iloc[parameter_index,4] = round(parameter_list.iloc[parameter_index,4]*(1-s.parameter_move_start_end_value),6) 
@@ -151,11 +145,14 @@ if __name__ == '__main__':
         #append parameter_history_temp to parameter_history
         parameter_history = pd.concat([parameter_history, parameter_history_temp], ignore_index = True)
         
+    
         print("Improved parameter = " + parameter_history.iloc[analysis_number-1,0])
         print("From value: " + str(parameter_history.iloc[analysis_number-1,1]) + " to value: " + str(parameter_history.iloc[analysis_number-1,2]))
 
         #create new parameter_list_full with the new default values in parameter_list
         parameter_list_full = af.parameter_list_full(parameter_list)
+        
+        #calculate relative change of imporoved parameter
         change = round(abs(parameter_history.iloc[analysis_number-1,1]-parameter_history.iloc[analysis_number-1,2])/parameter_history.iloc[analysis_number-1,1],6)
         print("Relative change: "+ str(change))
         parameter_history.iloc[analysis_number-1,5] = change
@@ -165,11 +162,11 @@ if __name__ == '__main__':
             delta_nrmsd = abs(parameter_history.iloc[analysis_number-1,3]-parameter_history.iloc[analysis_number-2,3])
             #print("Delta NRMSD = " + str(round(delta_nrmsd,8)))
 
-            
         #if end condition are met set boolian "stop_condition"
         if (delta_nrmsd < s.nrmsd_delta_end_condition and parameter_history.iloc[analysis_number-1,3] < s.desired_nrmsd) or analysis_number >= s.analysis_number_end_condition:
             stop_condition = False
-            
+        
+        #print runtime    
         executionTime = (time.time() - startTime)
         print('Elapsed time in seconds: ' + str(round(executionTime,2)))
     
@@ -196,37 +193,34 @@ if __name__ == '__main__':
     parameter_history["NRMSD_min"].plot()
     
     # Getting the current date and time and use it as a timestamp
-    date_time = datetime.now().strftime("%y_%m_%d_%H_%M")
-    
+    date_time = datetime.now().strftime("%y_%m_%d_%H_%M") 
     #save parameter_list results in excel list with timestamp
     parameter_improved_value_list = parameter_list[["name", "default"]]
     parameter_improved_value_list.to_excel("Analyse Ergebnisse/Analysis parameter_list_{}.xlsx".format(date_time))
-    
     #save parameter_history results in excel list
     parameter_history.to_excel("Analyse Ergebnisse/Analysis parameter_history_{}.xlsx".format(date_time))
+
+    #simulate with improved parameters
+    results = parameter_to_simulation(NRMSD_index, parameter_list_full,2100)
+    plot = "pop_" + str(NRMSD_index)
+
+    #simulate with default parameters
+    world3 = World3(dt=s.sim_time_step)
+    world3.init_world3_constants()
+    world3.init_world3_variables()
+    world3.set_world3_table_functions()
+    world3.set_world3_delay_functions()
+    world3.run_world3()   
+    pop_pyworld = pd.DataFrame(data = world3.pop)
     
-    #run pyworld3 with new standard values
-    #save new standard values in dataframe with parameter names as column name
-    new_standard_values = parameter_list_full.iloc[0]
-    new_standard_values = parameter_list_full.query("index == 0")
-    
-    parameter_dict = {}
-    for column_index, column_name in enumerate(parameter_list_full.columns):
-        parameter_dict[column_name[0]] = new_standard_values[column_name[0]].iloc[i].item()
-    run_simulation(**parameter_dict)
-    
-    
-    """
-    #world3_data = pd.DataFrame(data = world3.pop)
-    #world3_data.plot()
-    empirical_data["Population"].plot()
-    """
-        
-    
+    #plot results
+    #Farben sind noch falsch!!!!
+    ax = empirical_data["Population"].plot(color = "r")
+    results[plot].plot(ax=ax, color = "b")
+    pop_pyworld.plot(ax=ax, color = "g")
+    plt.legend(['Empirical Data', 'Improved Parameters', 'Standard Parameters'])
 
 
-
-
-    
+    #print final computing time
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(round(executionTime,2)))

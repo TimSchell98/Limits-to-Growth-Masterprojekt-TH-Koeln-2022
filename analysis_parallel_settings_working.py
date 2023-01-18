@@ -5,7 +5,7 @@ import numpy as np
 use_update = True #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
 single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 3 #number of simulations per zoom
+grid_resolution = 4 #number of simulations per zoom
 zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0 #accuracy, when zoom should stop
@@ -16,8 +16,10 @@ year_max1 = year_max +1
 year_min = 1900
 period  = year_max1 - year_min # wird es noch benötigt?
 
+plot_results = False
+
 #end conditions:
-nrmsd_delta_end_condition = 1e-8
+nrmsd_delta_end_condition = 5e-9
 desired_nrmsd = 1
 analysis_number_end_condition = 1
 
@@ -25,10 +27,10 @@ analysis_number_end_condition = 1
 variable_to_improve = "NRMSD_total"
 
 #how much the start and end value should move if edge value is reached
-parameter_move_start_end_value = 0.2
+parameter_move_start_end_value = 0.5
 
 #how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
-parameter_divergence = 0.5
+parameter_divergence = 0.75
 
 
 
