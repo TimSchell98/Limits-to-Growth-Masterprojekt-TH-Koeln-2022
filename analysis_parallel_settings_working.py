@@ -16,12 +16,13 @@ year_max1 = year_max +1
 year_min = 1900
 period  = year_max1 - year_min # wird es noch benötigt?
 
+#if true, after all sims plot every result
 plot_results = False
 
 #end conditions:
-nrmsd_delta_end_condition = 5e-9
+nrmsd_delta_end_condition = 1e-8
 desired_nrmsd = 1
-analysis_number_end_condition = 1
+analysis_number_end_condition = 4
 
 #what variable should be improved
 variable_to_improve = "NRMSD_total"

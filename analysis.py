@@ -190,7 +190,7 @@ if __name__ == '__main__':
     print("NRMSD min: " + str(parameter_history.iloc[len(parameter_history)-1,3]))
     
     #plot NRMDS history
-    parameter_history["NRMSD_min"].plot()
+    parameter_history["NRMSD_min"].plot(title = "NRMSD min")
     
     # Getting the current date and time and use it as a timestamp
     date_time = datetime.now().strftime("%y_%m_%d_%H_%M") 
@@ -202,7 +202,6 @@ if __name__ == '__main__':
 
     #simulate with improved parameters
     results = parameter_to_simulation(NRMSD_index, parameter_list_full,2100)
-    plot = "pop_" + str(NRMSD_index)
 
     #simulate with default parameters
     world3 = World3(dt=s.sim_time_step)
@@ -213,13 +212,12 @@ if __name__ == '__main__':
     world3.run_world3()   
     pop_pyworld = pd.DataFrame(data = world3.pop)
     
+    #save results in one dataframe
+    population_results = results["pop_" + str(NRMSD_index)]
+    pd.concat([population_results, empirical_data["Population"]], axis = 1)
+    pd.concat([population_results, pop_pyworld], axis = 1)
     #plot results
-    #Farben sind noch falsch!!!!
-    ax = empirical_data["Population"].plot(color = "r")
-    results[plot].plot(ax=ax, color = "b")
-    pop_pyworld.plot(ax=ax, color = "g")
-    plt.legend(['Empirical Data', 'Improved Parameters', 'Standard Parameters'])
-
+    #population_results.plot(title="Population comparison", legend = True)
 
     #print final computing time
     executionTime = (time.time() - startTime)
