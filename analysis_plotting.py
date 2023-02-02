@@ -22,29 +22,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     plt.ylabel(s.empirical_settings['pyworld_unit']['Population'])
     plt.show()
 
-    # plot death rate
-    for i in range(0, parameter_list_full.shape[0]):
-        model_results['cdr_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
-    empirical_data["Death_rate"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title('Death Rate')
-    plt.ylim([5, 25])
-    plt.xlim([0, 122])
-    plt.xticks(ticks=xticks, labels=xticks_labels)
-    plt.xlabel('Year')
-    plt.ylabel(s.empirical_settings['pyworld_unit']['Death_rate'])
-    plt.show()
-
-    # plot birth rate
-    for i in range(0, parameter_list_full.shape[0]):
-        model_results['cbr_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
-    empirical_data["Birth_rate"].plot(legend=0, color=["r"], linewidth=1.5)
-    plt.title('Birth Rate')
-    plt.ylim([5, 55])
-    plt.xlim([0, 122])
-    plt.xticks(ticks=xticks, labels=xticks_labels)
-    plt.xlabel('Year')
-    plt.ylabel(s.empirical_settings['pyworld_unit']['Birth_rate'])
-    plt.show()
+    
 
     # plot food per capita
     for i in range(0, parameter_list_full.shape[0]):
@@ -90,7 +68,7 @@ def plot_data(model_results, empirical_data, parameter_list_full):
         model_results['sopcp_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
     empirical_data["Expected_years_of_schooling_proportion"].plot(legend=0, color=["r"], linewidth=1.5)
     plt.title('Service proportion')
-    plt.ylim([-0.25, 0.25])
+    plt.ylim([-0.1, 0.1])
     plt.xlim([0, 122])
     plt.xticks(ticks=xticks, labels=xticks_labels)
     plt.xlabel('Year')
@@ -144,3 +122,29 @@ def plot_data(model_results, empirical_data, parameter_list_full):
     plt.xlabel('Year')
     plt.ylabel('HWI')
     plt.show()
+    
+    """
+    # plot death rate
+    for i in range(0, parameter_list_full.shape[0]):
+        model_results['cdr_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
+    empirical_data["Death_rate"].plot(legend=0, color=["r"], linewidth=1.5)
+    plt.title('Death Rate')
+    plt.ylim([5, 25])
+    plt.xlim([0, 122])
+    plt.xticks(ticks=xticks, labels=xticks_labels)
+    plt.xlabel('Year')
+    plt.ylabel(s.empirical_settings['pyworld_unit']['Death_rate'])
+    plt.show()
+
+    # plot birth rate
+    for i in range(0, parameter_list_full.shape[0]):
+        model_results['cbr_{}'.format(i)].plot(legend=0, color=["b"], linewidth=0.4)
+    empirical_data["Birth_rate"].plot(legend=0, color=["r"], linewidth=1.5)
+    plt.title('Birth Rate')
+    plt.ylim([5, 55])
+    plt.xlim([0, 122])
+    plt.xticks(ticks=xticks, labels=xticks_labels)
+    plt.xlabel('Year')
+    plt.ylabel(s.empirical_settings['pyworld_unit']['Birth_rate'])
+    plt.show()
+    """

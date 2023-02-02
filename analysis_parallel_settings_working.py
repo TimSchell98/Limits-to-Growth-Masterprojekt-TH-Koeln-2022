@@ -5,7 +5,7 @@ import numpy as np
 use_update = True #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
 single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 4 #number of simulations per zoom
+grid_resolution = 3 #number of simulations per zoom
 zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0 #accuracy, when zoom should stop
@@ -17,12 +17,12 @@ year_min = 1900
 period  = year_max1 - year_min # wird es noch benötigt?
 
 #if true, after all sims plot every result
-plot_results = False
+plot_results = True
 
 #end conditions:
 nrmsd_delta_end_condition = 1e-8
 desired_nrmsd = 1
-analysis_number_end_condition = 4
+analysis_number_end_condition = 1
 
 #what variable should be improved
 variable_to_improve = "NRMSD_total"
@@ -31,7 +31,7 @@ variable_to_improve = "NRMSD_total"
 parameter_move_start_end_value = 0.5
 
 #how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
-parameter_divergence = 0.75
+parameter_divergence = 0.1
 
 
 
@@ -46,7 +46,7 @@ parameter_hi = 0
 parameter_divergence_shrinkage = 0.1
 
 # - Analysis Settings
-calculation_interval = 5 # step size [years] for calculation
+calculation_interval = 1 # step size [years] for calculation
 calculation_period = 30  # period [years ]for calculation
 
 # - - - - - Parameter Settings 
@@ -216,7 +216,6 @@ empirical_settings['pyworld_name_add'] = ('POP_{}', 'CBR_{}', 'CDR_{}', 'AL_{}',
 """
 
 empirical_settings = pd.read_excel('empirical_settings.xlsx', index_col='index', sheet_name='settings')  
-
 
 if __name__ == '__main__':
     print(parameter_init())

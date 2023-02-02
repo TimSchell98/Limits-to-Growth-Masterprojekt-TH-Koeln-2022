@@ -322,7 +322,16 @@ def initialize_empirical_data():
         if s.empirical_settings.loc[attribute_name,'smooth'] == False:
             empirical_data[attribute_name] = empirical_data[attribute_name]
         else:
-            empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)]  = butter_lowpass_filter(empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)], s.empirical_settings.loc[attribute_name,'smooth'], fs, order)
+            empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)]  = smooth(empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)], s.empirical_settings.loc[attribute_name,'smooth'])
+    
+    return empirical_data
+
+def smooth(empirical_data, critical_freq):
+    b, a = signal.ellip(6, 0.01, 120, critical_freq)  # Filter to be applied
+    #good: 6, 0.1, 12, 0.3
+        # (order, rp (min allowed ripple(dB), rp (max allowed ripple(dB)), critical frequency))
+    empirical_data = signal.filtfilt(b, a, empirical_data, method="gust")
+
     
     return empirical_data
 
