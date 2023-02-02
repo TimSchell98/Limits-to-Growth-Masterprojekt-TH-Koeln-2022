@@ -5,7 +5,7 @@ import numpy as np
 use_update = True #should updated World3 be used in the analysis
 run_parallel = True #should analysis run parallel
 single_parameter_zoom = 0 #how often should the parameter with the highest influence be improved alone
-grid_resolution = 16 #number of simulations per zoom
+grid_resolution = 20 #number of simulations per zoom
 zoom_limit = False #If true, analysis runs till NRMSD is equal or lower than "result_accuracy". If false, analysis runs till it reaches the grid zoom
 grid_zoom = 0 #number of zooms, gerade nicht benutzt
 result_accuracy = 0 #accuracy, when zoom should stop
@@ -31,7 +31,7 @@ variable_to_improve = "NRMSD_total"
 parameter_move_start_end_value = 0.5
 
 #how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
-parameter_divergence = 0.1
+parameter_divergence = 0.25
 
 
 

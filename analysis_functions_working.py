@@ -172,7 +172,7 @@ def parameter_list_full(parameter_list):
 
     """
 
-    parameter_list_steps= pd.DataFrame(index = np.arange(s.grid_resolution))
+    parameter_list_steps = pd.DataFrame(index = np.arange(s.grid_resolution))
     #loop for filling parameter_list_full
     for i in range (0,parameter_list.shape[0]):
         

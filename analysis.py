@@ -55,16 +55,15 @@ if __name__ == '__main__':
         #run simulation
         df_results = pd.DataFrame()
         #results = [pool.apply_async(af.run_simulation_combinations, args=(i, parameter_list_full)) for i in range(0, parameter_list_full.shape[0])]
-        results = [pool.apply_async(parameter_to_simulation, args=(i, parameter_list_full, s.year_max)) for i in
-                   range(0, no_of_simulations)]
+        results = [pool.apply_async(parameter_to_simulation, args=(i, parameter_list_full, s.year_max)) for i in range(0, no_of_simulations)]
         
         for i in results:
             i.wait()
         
         for i in range(0, no_of_simulations):
-            df_results = pd.concat([df_results, results[i].get()], axis=1)
-        #print(df_results)
-
+            df_results = pd.concat([df_results, results[i].get()], axis=1) #hier entsteht ein error wenn eine bestimmte anzahl an zu analysierenden parameten überschritten wird.
+        print(df_results)
+        
         #   -   -   - Metrics calculation -   -   -
 
         metrics = pd.DataFrame()
