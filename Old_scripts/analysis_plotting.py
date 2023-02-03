@@ -1,6 +1,6 @@
 import pandas as pd
 from matplotlib import pyplot as plt
-import analysis_parallel_settings as s
+import analysis_parallel_settings_working as s
 xticks = [0, 30, 60, 90, 120]
 xticks_labels = [1900, 1930, 1960, 1990, 2020]
 
