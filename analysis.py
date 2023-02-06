@@ -136,33 +136,9 @@ if __name__ == '__main__':
     date_time = datetime.now().strftime("%y_%m_%d_%H_%M") 
     #save parameter_list results in excel list with timestamp
     parameter_improved_value_list = parameter_list[["name", "default"]]
-    #parameter_improved_value_list.to_excel("Analyse Ergebnisse/Analysis parameter_list_{}.xlsx".format(date_time))
+    parameter_improved_value_list.to_excel("Analyse Ergebnisse/Analysis parameter_list_{}.xlsx".format(date_time))
     #save parameter_history results in excel list
-    #parameter_history.to_excel("Analyse Ergebnisse/Analysis parameter_history_{}.xlsx".format(date_time))
-    
-    
-    
-    """
-    #simulate with improved parameters
-    results = parameter_to_simulation(NRMSD_index, parameter_list_full,2100)
-
-    #simulate with default parameters
-    world3 = World3(dt=s.sim_time_step)
-    world3.init_world3_constants()
-    world3.init_world3_variables()
-    world3.set_world3_table_functions()
-    world3.set_world3_delay_functions()
-    world3.run_world3()   
-    pop_pyworld = pd.DataFrame(data = world3.pop)
-    
-    #save results in one dataframe
-    population_results = results["pop_" + str(NRMSD_index)]
-    pd.concat([population_results, empirical_data["Population"]], axis = 1)
-    pd.concat([population_results, pop_pyworld], axis = 1)
-    #plot results
-    #population_results.plot(title="Population comparison", legend = True)
-    """
-    
+    parameter_history.to_excel("Analyse Ergebnisse/Analysis parameter_history_{}.xlsx".format(date_time))
     
     #print final computing time
     executionTime = (time.time() - startTime)
