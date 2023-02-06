@@ -136,9 +136,9 @@ if __name__ == '__main__':
     date_time = datetime.now().strftime("%y_%m_%d_%H_%M") 
     #save parameter_list results in excel list with timestamp
     parameter_improved_value_list = parameter_list[["name", "default"]]
-    parameter_improved_value_list.to_excel("Analyse Ergebnisse/Analysis parameter_list_{}.xlsx".format(date_time))
+    #parameter_improved_value_list.to_excel("Analyse Ergebnisse/Analysis parameter_list_{}.xlsx".format(date_time))
     #save parameter_history results in excel list
-    parameter_history.to_excel("Analyse Ergebnisse/Analysis parameter_history_{}.xlsx".format(date_time))
+    #parameter_history.to_excel("Analyse Ergebnisse/Analysis parameter_history_{}.xlsx".format(date_time))
     
     
     
