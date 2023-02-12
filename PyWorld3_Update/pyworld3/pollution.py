@@ -81,7 +81,8 @@ class Pollution:
     dt : float, optional
         time step of the simulation [year]. The default is 1.
     pyear : float, optional
-        implementation date of new policies [year]. The default is 1975.
+        implementation date of new pol
+        icies [year]. The default is 1975.
     pyear_pp_tech : float, optional
         implementation date of new pollution policies [year]. The default is 4000.
     verbose : bool, optional
