@@ -184,7 +184,7 @@ def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_int
         nominator_single_values[-i - 1] = np.square(model_data[-i * stepwidth - 1] - empirical_data[-i * stepwidth - 1])
         denominator_single_values[-i - 1] = empirical_data[-i * stepwidth - 1]
 
-    nrmsd = (np.sqrt(nominator_single_values.sum() / calculation_interval+1)) / (denominator_single_values.sum() / calculation_interval+1)
+    nrmsd = (np.sqrt(nominator_single_values.sum() / len(nominator_single_values))) / (denominator_single_values.sum() / len(denominator_single_values))
     return nrmsd
 
 def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, calculation_period=50, sim_number=0):

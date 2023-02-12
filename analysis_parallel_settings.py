@@ -18,11 +18,11 @@ year_min = 1900
 
 # - Analysis Settings
 
-#step size [years] for calculation
-calculation_interval = 1
+#step size [years] for NRMSD calculation
+calculation_interval = 5
 
 #period [years] for calculation
-calculation_period = 30
+calculation_period = 50
 
 #import empiriical settings from excel
 empirical_settings = pd.read_excel('empirical_settings.xlsx', index_col='index', sheet_name='settings')
