@@ -19,7 +19,7 @@ year_min = 1900
 # - Analysis Settings
 
 #step size [years] for NRMSD calculation
-calculation_interval = 5
+calculation_interval = 1
 
 #period [years] for calculation
 calculation_period = 50
