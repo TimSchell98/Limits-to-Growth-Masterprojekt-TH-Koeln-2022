@@ -266,7 +266,7 @@ def initialize_empirical_data():
         else:
             empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)]  = smooth(empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)], s.empirical_settings.loc[attribute_name,'smooth'])
     
-    empirical_data.iloc[121,17] = 0.01     
+    empirical_data.iloc[121,17] = 0.01     # smoothing one value manually 
 
     return empirical_data
     
@@ -281,102 +281,7 @@ def smooth(empirical_data, critical_freq):
     return empirical_data
 
 
-def plot_results(df_results,empirical_data,metrics):
-    """
-    Function for plotting the model results and the empirical data
-    """
-    #create list for plotting function
-    population_list = []
-    for i in range(0,metrics.shape[0]):
-        population_list.append("pop_" + str(i))
-        
-    df_results[population_list].plot(legend=0, color = ["b"], linewidth = 0.4)
-    empirical_data["Population"].plot(legend=0, color = ["r"], linewidth = 1.5)
-    
-    plt.ylim([1e9,10e9])
-    plt.xlim([0,122])
-    plt.show()
-
-def plot_empirical_data_and_pyworld_default(attribute,empirical_settings, empirical_data, df_results, i=0):
-    """
-    Function for comparing empeerical data to pyworld data with default parameters
-    """
-    years = np.arange(1900, 2023,1)
-
-    fig, f1 = plt.subplots()
-    f1.plot(years, df_results[s.empirical_settings.loc[attribute, 'pyworld_name_complete']+ "_" + str(i)], label=s.empirical_settings.loc[attribute, 'pyworld_name_complete'] + " ["+s.empirical_settings.loc[attribute, 'pyworld_unit'] + "]", color='blue')
-    f1.plot(years, empirical_data[attribute], label= attribute + " ["+s.empirical_settings.loc[attribute, 'empirical_unit'] + "]", color='red')
-    f1.set_title(s.empirical_settings.loc[attribute, 'title'])
-    f1.set_xlabel('time in years')
-    f1.legend()
-    plt.show()
-
-def plot_empirical_data_and_pyworld_default_multi_y(attribute,empirical_settings, empirical_data, df_results, i=0):
-    """
-    Function for comparing empeerical data to pyworld data with default parameters
-    """
-    years = np.arange(1900, 2023,1)
-
-    fig, f1 = plt.subplots()
-    f2 = f1.twinx()
-
-    f1.plot(years, df_results[s.empirical_settings.loc[attribute, 'pyworld_name_complete']+ "_" + str(i)], label=s.empirical_settings.loc[attribute, 'pyworld_name_complete'] + " ["+s.empirical_settings.loc[attribute, 'pyworld_unit'] + "]", color='blue')
-    f2.plot(years, empirical_data[attribute], label= attribute + " ["+s.empirical_settings.loc[attribute, 'empirical_unit'] + "]", color='red')
-    f1.set_title(s.empirical_settings.loc[attribute, 'title'])
-    f1.set_xlabel('time in years')
-    f1.legend(loc=2);
-    f2.legend(loc=6);
-    
-def plot_smooth_all():
-    i = 0 #default values
-    df_results = initialize_empirical_data_no_smooth()#run_simulation_kwargs()
-    empirical_data = initialize_empirical_data()  # CSV Data to Dataframe
-    
-    for plot_attribute in s.empirical_settings.index:
-        if s.empirical_settings.loc[plot_attribute, 'smooth'] == False: 
-            print('no')
-            #plot_empirical_data_and_pyworld_default(plot_attribute, s.empirical_settings, empirical_data, df_results)
-        else:
-            plot_smooth(plot_attribute, s.empirical_settings, empirical_data, df_results)
-   
-            
-   
-def plot_smooth(attribute,empirical_settings, empirical_data, df_results, i=0):
-    """
-    Function for comparing empeerical data to pyworld data with default parameters
-    """
-    years = np.arange(1900, 2023,1)
-
-    fig, f1 = plt.subplots()
-    #f1.plot(years, df_results[s.empirical_settings.loc[attribute, 'pyworld_name_complete']+ "_" + str(i)], label=s.empirical_settings.loc[attribute, 'pyworld_name_complete'] + " ["+s.empirical_settings.loc[attribute, 'pyworld_unit'] + "]", color='blue')
-    f1.plot(years, df_results[attribute], label= attribute + " ["+s.empirical_settings.loc[attribute, 'empirical_unit'] + "]", color='blue')
-    f1.plot(years, empirical_data[attribute], label= attribute + " ["+s.empirical_settings.loc[attribute, 'empirical_unit'] + "]", color='red')
-    f1.set_title(s.empirical_settings.loc[attribute, 'title'])
-    f1.set_xlabel('time in years')
-    f1.legend()
-    plt.show()
-
-
-def initialize_empirical_data_no_smooth():
-    "Data - measured"
-    measured_data = pd.read_csv('empirical_data.csv', sep=',')
-    # measured_data = measured_data['data'].str.split(";", expand=True)
-    measured_data = measured_data.iloc[:,0:22]
-    # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
-    empirical_data = measured_data.replace(0, np.nan)
-    empirical_data.iloc[66,9] = 0
-    # filter settings 
-
-    for attribute_name in s.empirical_settings.index:
-        if s.empirical_settings.loc[attribute_name,'smooth'] == False:
-            empirical_data[attribute_name] = empirical_data[attribute_name]
-        else:
-            empirical_data[attribute_name] = empirical_data[attribute_name]    
-    return empirical_data
-
-
 if __name__ == '__main__':
-    plot_smooth_all()
 
     """
     a = np.arange(10)
