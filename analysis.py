@@ -138,7 +138,10 @@ if __name__ == '__main__':
     parameter_improved_value_list.to_excel("Analyse Ergebnisse/Analysis parameter_list_{}.xlsx".format(date_time))
     #save parameter_history results in excel list
     parameter_history.to_excel("Analyse Ergebnisse/Analysis parameter_history_{}.xlsx".format(date_time))
-    
+    #save settings
+    settings_list=af.get_settings_list()
+    settings_list.to_excel("Analyse Ergebnisse/Settings_list_{}.xlsx".format(date_time))
+
     #print final computing time
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(round(executionTime,2)))

@@ -6,6 +6,7 @@ from scipy import signal
 from scipy.signal import butter, lfilter, freqz
 import matplotlib.pyplot as plt
 from PyWorld3_Update.pyworld3 import World3
+from datetime import datetime
 
 
 def run_simulation_kwargs(year_max, i=0, **kwargs):
@@ -279,6 +280,30 @@ def smooth(empirical_data, critical_freq):
 
     
     return empirical_data
+
+def get_settings_list():
+    date_time = datetime.now().strftime("%y_%m_%d_%H_%M")
+    settings_list={'Date': date_time,
+                   'grid_resolution': s.grid_resolution,
+                   'sim_time_step': s.sim_time_step,
+                   'calculation_interval': s.calculation_interval,
+                   'parameter_divergence': s.parameter_divergence,
+                   'parameter_move_start_end_value': s.parameter_move_start_end_value,
+                   'nrmsd_delta_end_condition': s.nrmsd_delta_end_condition,
+                   'analysis_number_end_condition': s.analysis_number_end_condition,
+                   'weight_Population':  s.empirical_settings['NRMSD_total_weighting']['Population'],
+                   'Food_per_capita_proportion':  s.empirical_settings['NRMSD_total_weighting']['Food_per_capita_proportion'],
+                   'Pollution_proportion':  s.empirical_settings['NRMSD_total_weighting']['Pollution_proportion'],
+                   'Expected_years_of_schooling_proportion':  s.empirical_settings['NRMSD_total_weighting']['Expected_years_of_schooling_proportion'],
+                   'IPP_proportion':  s.empirical_settings['NRMSD_total_weighting']['IPP_proportion'],
+                   'Fossil_fuel_consumption_proportion':  s.empirical_settings['NRMSD_total_weighting']['Fossil_fuel_consumption_proportion'],
+                   'Human_Welfare':  s.empirical_settings['NRMSD_total_weighting']['Human_Welfare'],
+                   'Ecological_Footprint':  s.empirical_settings['NRMSD_total_weighting']['Ecological_Footprint']}
+    
+    settings_list = pd.DataFrame(data=settings_list, index=[0])
+    settings_list=(settings_list.T)
+    settings_list.to_excel('settings_list.xlsx')
+    return settings_list
 
 
 if __name__ == '__main__':
