@@ -14,10 +14,60 @@ import pandas as pd
 params = {'lines.linewidth': '3','axes.labelsize' : '12', 'xtick.labelsize' : '10', 'ytick.labelsize' : '10', 'figure.autolayout' : 'True'}
 plt.rcParams.update(params)
 
+new_parameter_list = pd.read_excel('Analysis parameter_list_23_02_24_11_54.xlsx', index_col=0)  
+old_parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', index_col=0)
+print(new_parameter_list)
+
+
+
+
 world3 = World3(dt = 1, pyear = 4000, year_max = 2100)
-world3.init_world3_constants(alai1 = 4.226, ali = 922858170.939, alln = 5282.032, alsc1 = 32.23, amti = 1.226, frpm = 0.017, ici = 198947627818.434,
-                             ieat = 3.954, imef = 0.095, imti = 9.304, lferti = 570.392, lfpf = 0.753, mtfn = 11.631, nri = 1089680400241.070, nruf1 = 0.934, pali = 2910390968.145,
-                             palt = 11418513098.391, pl = 0.082, ppgf1 = 0.707, sci = 158297265160.523, sd = 0.073, uildt = 0.516, faipm = 0.001, pp19 = 381.470)
+world3.init_world3_constants(
+    
+        dcfsn = 3.800000e+00,
+        hsid = 3.068586e+01,
+        ieat = 2.792292e+00,
+        len = 2.800000e+01,
+        lpd = 2.766205e+01,
+        mtfn = 9.580780e+00,
+        rlt = 3.000000e+01, sad=2.041176e+01,
+          ici = 2.100000e+11,
+          sci = 1.440000e+11,
+        lfpf = 8.728440e-01,
+       lufdt = 1.205626e+01,
+       icor1 = 3.000000e+00,
+       scor1 = 9.410980e-01,
+       alic1 = 1.400000e+01,
+       alsc1 = 2.257800e+01,
+      fioac1 = 4.300000e-01,
+         ali = 8.912266e+08,
+        pali = 2.300000e+09,
+         lfh = 7.000000e-01,
+        palt = 4.628749e+09,
+          pl = 8.528600e-02,
+       alai1 = 2.000000e+00,
+        lyf1 = 1.000000e+00,
+          sd = 4.524500e-02,
+        uili = 5.380060e+06,
+        alln = 1.187850e+03,
+       uildt = 6.683900e-01,
+      lferti = 6.000000e+02,
+         ilf = 6.000000e+02,
+        fspd = 1.650246e+00,
+        sfpc = 2.131124e+02,
+        pp19 = 2.090517e+07,
+        imef = 1.064740e-01,
+        imti = 2.903120e+00,
+        frpm = 1.643500e-02,
+        ghup = 4.000000e-09,
+       faipm = 1.526000e-03,
+        amti = 1.734027e+00,
+        pptd = 8.898340e+01,
+       ppgf1 = 1.817604e+00,
+         nri = 9.966816e+11,
+       nruf1 = 9.598640e-01
+    
+    )
 
 #dynamisch alle variablen aus der erstellten "Analysis parameter_list_{}.xlsx" einfügen
 world3.init_world3_variables()
@@ -48,6 +98,8 @@ plot_world_variables(world3.time,
                  [[0, 4], [0,1]],
                  img_background="./img/fig 4-1-3.png",
                  figsize=(7, 5), title="World3 Referenze Run - Human Wellfare and Footprint, 2004 Szenario 1")
+
+
 
 empirical_data=af.initialize_empirical_data()
 #empirical_data["Population"]
