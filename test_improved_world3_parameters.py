@@ -24,30 +24,34 @@ print(new_parameter_list)
 world3 = World3(dt = 1, pyear = 4000, year_max = 2100)
 world3.init_world3_constants(
     
-ali =	910434007.1,
-alln=	1087.098689,
-amti=	2.074183,
-faipm=	0.001775,
-frpm=	0.021555,
-fspd=	3.027545,
-hsid=	25.606112,
-imef=	0.000012,
-imti=	9.568968,
-lferti=	750.000012,
-lpd=	15.556328,
-lufdt=	1.80842,
-mtfn=	11.482764,
-nri=	9.44862E+11,
-nruf1=	1.102015,
-pali=	2438793103,
-pp19=	145463968.1,
-ppgf1=	1.657834,
-pptd=	62.666523,
-rlt=	29.224133,
-sad=	19.649231,
-sd=	0.025952,
-uildt=	0.655913,
-uili=	7139508.077
+hsid=	37.982036,
+ieat=	2.991561,
+lpd=	19.283343,
+mtfn=	12,
+rlt=	30,
+sad=	18.061825,
+lfpf=	0.75,
+lufdt=	4.476225,
+scor1=	1,
+alic1=	14,
+alsc1=	20,
+palt=	3200000000,
+pl=	0.1,
+alai1=	2,
+sd=	0.030114,
+alln=	1000,
+uildt=	6.035368,
+fspd=	6.055554,
+sfpc=	230,
+imef=	0.088487,
+imti=	9.256841,
+frpm=	0.018553,
+faipm=	0.001146,
+amti=	2.481846,
+pptd=	94.387253,
+ppgf1=	1.4126,
+nri=	1E+12,
+nruf1=	1.086207
 
     
     )
@@ -85,4 +89,7 @@ plot_world_variables(world3.time,
 
 
 empirical_data=af.initialize_empirical_data()
-#empirical_data["Population"]
+empirical_data["Population"].plot()
+
+
+
