@@ -14,55 +14,55 @@ import pandas as pd
 params = {'lines.linewidth': '3','axes.labelsize' : '12', 'xtick.labelsize' : '10', 'ytick.labelsize' : '10', 'figure.autolayout' : 'True'}
 plt.rcParams.update(params)
 
-new_parameter_list = pd.read_excel('Analysis parameter_list_23_02_24_11_54.xlsx', index_col=0)  
+#new_parameter_list = pd.read_excel('Analysis parameter_list_23_02_24_11_54.xlsx', index_col=0)
+#new_parameter_list = pd.read_excel('Durchläufe/Neuer Ordner/Analysis parameter_list_23_03_02_01_04_Alex.xlsx', index_col=0)
+#new_parameter_list = pd.read_excel('Durchläufe/Neuer Ordner/Analysis parameter_list_23_03_01_23_34_Ruben.xlsx', index_col=0)
+new_parameter_list = pd.read_excel('Durchläufe/Neuer Ordner/Analysis parameter_list_23_03_01_23_29_Tim.xlsx', index_col=0)
+
 old_parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', index_col=0)
 print(new_parameter_list)
 
 
-
+parameter_dict = {}
+for index, name in enumerate(new_parameter_list['name']):
+    parameter_dict[name] = new_parameter_list['default'].iloc[index].item()
 
 world3 = World3(dt = 1, pyear = 4000, year_max = 2100)
+'''
 world3.init_world3_constants(
     
-alai1=	2,
-alic1=	14,
-alln=	1000,
-alsc1=	20,
-amti=	2.481846,
-dcfsn=	3.8,
-faipm=	0.001146,
-fioac1=	0.43,
-frpm=	0.018553,
-fspd=	6.055554,
-ghup=	0.000000004,
 hsid=	37.982036,
-icor1=	3,
 ieat=	2.991561,
-imef=	0.088487,
-imti=	9.256841,
-len=	28,
-lfh=	0.7,
-lfpf=	0.75,
 lpd=	19.283343,
-lufdt=	4.476225,
-lyf1=	1,
 mtfn=	12,
-nri=	1E+12,
-nruf1=	1.086207,
-palt=	3200000000,
-pl=	0.1,
-ppgf1=	1.4126,
-pptd=	94.387253,
 rlt=	30,
 sad=	18.061825,
+lfpf=	0.75,
+lufdt=	4.476225,
 scor1=	1,
+alic1=	14,
+alsc1=	20,
+palt=	3200000000,
+pl=	0.1,
+alai1=	2,
 sd=	0.030114,
+alln=	1000,
+uildt=	6.035368,
+fspd=	6.055554,
 sfpc=	230,
-uildt=	6.035368
+imef=	0.088487,
+imti=	9.256841,
+frpm=	0.018553,
+faipm=	0.001146,
+amti=	2.481846,
+pptd=	94.387253,
+ppgf1=	1.4126,
+nri=	1E+12,
+nruf1=	1.086207
+    )'''
 
+world3.init_world3_constants(**parameter_dict)
 
-    
-    )
 
 #dynamisch alle variablen aus der erstellten "Analysis parameter_list_{}.xlsx" einfügen
 world3.init_world3_variables()
@@ -98,6 +98,8 @@ plot_world_variables(world3.time,
 
 empirical_data=af.initialize_empirical_data()
 empirical_data["Population"].plot()
+plt.show()
+
 
 
 
