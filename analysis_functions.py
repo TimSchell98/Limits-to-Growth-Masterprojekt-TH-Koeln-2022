@@ -251,9 +251,12 @@ def calculate_metrics(model_data, empirical_data, index=0, parameter_name='none'
     return results
 
 
-def initialize_empirical_data():
+def initialize_empirical_data(zeros_2100 = False):
     "Data - measured"
-    measured_data = pd.read_csv('empirical_data.csv', sep=',')
+    if not zeros_2100:
+        measured_data = pd.read_csv('empirical_data.csv', sep=',')
+    else:
+        measured_data = pd.read_csv('empirical_data_filled_until2100.csv', sep=';', decimal=',')
     # measured_data = measured_data['data'].str.split(";", expand=True)
     measured_data = measured_data.iloc[:,0:22]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']

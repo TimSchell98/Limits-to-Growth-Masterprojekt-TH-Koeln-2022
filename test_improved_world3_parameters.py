@@ -7,6 +7,7 @@ Created on Wed Dec  7 16:56:16 2022
 
 from PyWorld3_Update.pyworld3 import World3
 from pyworld3.utils import plot_world_variables
+import result_plotting as rs
 import matplotlib.pyplot as plt
 import analysis_functions as af
 import pandas as pd
@@ -14,14 +15,11 @@ import pandas as pd
 params = {'lines.linewidth': '3','axes.labelsize' : '12', 'xtick.labelsize' : '10', 'ytick.labelsize' : '10', 'figure.autolayout' : 'True'}
 plt.rcParams.update(params)
 
-#new_parameter_list = pd.read_excel('Analysis parameter_list_23_02_24_11_54.xlsx', index_col=0)
-#new_parameter_list = pd.read_excel('Durchläufe/Neuer Ordner/Analysis parameter_list_23_03_02_01_04_Alex.xlsx', index_col=0)
-#new_parameter_list = pd.read_excel('Durchläufe/Neuer Ordner/Analysis parameter_list_23_03_01_23_34_Ruben.xlsx', index_col=0)
-new_parameter_list = pd.read_excel('Durchläufe/Neuer Ordner/Analysis parameter_list_23_03_01_23_29_Tim.xlsx', index_col=0)
+new_parameter_list = pd.read_excel('Analysis parameter_list_23_02_24_11_54.xlsx', index_col=0)
 
 old_parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', index_col=0)
 print(new_parameter_list)
-
+empirical_data=af.initialize_empirical_data(True)
 
 parameter_dict = {}
 for index, name in enumerate(new_parameter_list['name']):
@@ -70,16 +68,25 @@ world3.set_world3_table_functions()
 world3.set_world3_delay_functions()
 world3.run_world3(fast=False)
 
-plot_world_variables(world3.time,
-                 [world3.nrfr, world3.io, world3.f, world3.pop,
-                  world3.ppolx],
-                 ["NRFR", "IO", "F", "POP", "PPOLX"],
-                 [[0, 1.975], [0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40]],
+'''plot_world_variables(world3.time,
+                 [empirical_data["Population"], world3.io, world3.f, world3.pop,
+                  world3.ppolx, world3.nrfr],
+                 ["POPEMP", "IO", "F", "POP", "PPOLX", "NRFR"],
+                 [[0, 12e9], [0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40], [0, 1.975]],
                  img_background="./img/fig 4-1-1.png",
                  figsize=(7, 5),
-                 title="World3 Referenze Run, 2004 Szenario 1")
+                 title="World3 Referenze Run, 2004 Szenario 1")'''
 
-plot_world_variables(world3.time,
+rs.plot_world_variables(world3.time,
+                 [empirical_data["Population"], world3.io, world3.f, world3.pop,
+                  world3.ppolx, world3.nrfr],
+                 ["POPEMP", "IO", "F", "POP", "PPOLX", "NRFR"],
+                 [[0, 12e9], [0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40], [0, 1.975]],
+                 img_background="./img/fig 4-1-1.png",
+                 figsize=(7, 5),
+                 title="World3 Referenze Run, 2004 Szenario 1", alpha = 1)
+
+'''plot_world_variables(world3.time,
                  [world3.le, world3.fpc, world3.sopc, world3.ciopc],
                  ["LE", "FPC", "SOPC", "CIOPC"],
                  [[0, 90], [0,1000],[0,970], [0, 250]],
@@ -93,11 +100,10 @@ plot_world_variables(world3.time,
                  [[0, 4], [0,1]],
                  img_background="./img/fig 4-1-3.png",
                  figsize=(7, 5), title="World3 Referenze Run - Human Wellfare and Footprint, 2004 Szenario 1")
+'''
 
 
 
-empirical_data=af.initialize_empirical_data()
-empirical_data["Population"].plot()
 plt.show()
 
 
