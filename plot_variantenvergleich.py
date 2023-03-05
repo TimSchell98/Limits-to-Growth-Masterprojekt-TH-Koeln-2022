@@ -16,9 +16,9 @@ plt.rcParams.update(params)
 
 empirical_data = af.initialize_empirical_data(True)
 
-parameter_set_1 = pd.read_excel('Analysis parameter_list_23_02_24_11_54.xlsx', index_col=0)
-parameter_set_2 = pd.read_excel('Analysis parameter_list_23_02_24_11_54.xlsx', index_col=0)
-parameter_set_3 = pd.read_excel('Analysis parameter_list_23_02_24_11_54.xlsx', index_col=0)
+parameter_set_1 = pd.read_excel('Durchläufe/Gewichtung/23_03_01_14_59_erste_Gewichtung/Analysis parameter_list_23_03_01_14_59.xlsx', index_col=0)
+parameter_set_2 = pd.read_excel('Durchläufe/NRI/Doppelte NRI/Analysis parameter_list_23_03_02_20_24.xlsx', index_col=0)
+parameter_set_3 = pd.read_excel('Durchläufe/NRI/Doppelte NRI/Analysis parameter_list_23_03_02_20_24.xlsx', index_col=0)
 
 parameter_dict_1 = {}
 for index, name in enumerate(parameter_set_1['name']):
@@ -33,6 +33,7 @@ for index, name in enumerate(parameter_set_3['name']):
     parameter_dict_3[name] = parameter_set_3['default'].iloc[index].item()
 
 # standard run
+
 w3_sr = World3(dt=1, pyear=4000, year_max=2100)
 w3_sr.init_world3_constants()
 w3_sr.init_world3_variables()
@@ -62,11 +63,22 @@ w3_3.set_world3_table_functions()
 w3_3.set_world3_delay_functions()
 w3_3.run_world3(fast=False)
 
-rs.plot_world_variables(w3_1.time,
+rs.plot_world_variables_vc(w3_1.time,
                         [empirical_data["Population"], w3_1.pop, w3_2.pop, w3_3.pop, w3_sr.pop],
                         ["POPEMP", "POP V1", "POP V2", "POP V3", "POP V0"],
                         [[0, 12e9], [0, 12e9], [0, 12e9], [0, 12e9], [0, 12e9]],
+                        [1, 0.7, 0.7, 0.7, 0.7],
                         img_background="./img/fig 4-1-1.png",
                         figsize=(7, 5),
-                        title="World3 Referenze Run, 2004 Szenario 1", alpha=1)
+                        title="Version Comparison Population")
+plt.show()
+
+rs.plot_world_variables_vc(w3_1.time,
+                        [empirical_data["Human_Welfare"], w3_1.hwi, w3_2.hwi, w3_3.hwi, w3_sr.hwi],
+                        ["EMP", "V1", "V2", "V3", "V0"],
+                        [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]],
+                        [1, 0.7, 0.7, 0.7, 0.7],
+                        img_background="./img/fig 4-1-3.png",
+                        figsize=(7, 5),
+                        title="Version Comparison HWI")
 plt.show()

@@ -6,18 +6,18 @@ from numpy import isnan
 
 
 '''
-Copied plotting fucntion from the original PyWorld3 Package to make Changes in the Function
+Copied plotting function from the original PyWorld3 Package to make Changes in the Function
 
 '''
 
 
-def plot_world_variables(time, var_data, var_names, var_lims,
+
+def plot_world_variables(time, var_data, var_names, var_lims, alpha,
                          img_background=None,
                          title=None,
                          figsize=None,
                          dist_spines=0.09,
-                         grid=False,
-                         alpha=1):
+                         grid=False):
     """
     Plots world state from an instance of World3 or any single sector.
 
@@ -46,7 +46,7 @@ def plot_world_variables(time, var_data, var_names, var_lims,
                               var_lims[0][0], var_lims[0][1]], cmap="gray")
 
     ps = []
-    for ax, label, ydata, color in zip(axs, var_names, var_data, colors):
+    for ax, label, ydata, color, alpha in zip(axs, var_names, var_data, colors, alpha):
         ps.append(ax.plot(time, ydata, label=label, color=color, alpha=alpha)[0])
     axs[0].grid(grid)
     axs[0].set_xlim(time[0], time[-1])
@@ -64,7 +64,7 @@ def plot_world_variables(time, var_data, var_names, var_lims,
     axs[0].set_xlabel("time [years]")
     axs[0].tick_params(axis='x', **tkw)
     for i, (ax, p) in enumerate(zip(axs, ps)):
-        ax.set_ylabel(p.get_label(), rotation="horizontal")
+        ax.set_ylabel(p.get_label(), rotation="vertical")
         ax.yaxis.label.set_color(p.get_color())
         ax.tick_params(axis='y', colors=p.get_color(), **tkw)
         ax.yaxis.set_label_coords(-i*dist_spines, 1.01)
@@ -74,3 +74,48 @@ def plot_world_variables(time, var_data, var_names, var_lims,
         fig.suptitle(title, x=0.95, ha="right", fontsize=10)
 
     plt.tight_layout()
+
+
+def plot_world_variables_vc(time, var_data, var_names, var_lims, alpha,
+                         img_background=None,
+                         title=None,
+                         figsize=None,
+                         dist_spines=0.09,
+                         grid=False):
+    """
+    Plots world state from an instance of World3 or any single sector.
+
+    """
+    prop_cycle = plt.rcParams['axes.prop_cycle']
+    colors = prop_cycle.by_key()['color']
+
+    var_number = len(var_data)
+
+    fig, host = plt.subplots(figsize=figsize)
+    axs = [host, ]
+    for i in range(var_number-1):
+        axs.append(host.twinx())
+
+
+    if img_background is not None:
+        im = imread(img_background)
+        axs[0].imshow(im, aspect="auto",
+                      extent=[time[0], time[-1],
+                              var_lims[0][0], var_lims[0][1]], cmap="gray")
+
+    ps = []
+    for ax, label, ydata, color, alpha in zip(axs, var_names, var_data, colors, alpha):
+        ps.append(ax.plot(time, ydata, label=label, color=color, alpha=alpha)[0])
+    axs[0].grid(grid)
+    axs[0].set_xlim(time[0], time[-1])
+
+    for ax, lim in zip(axs, var_lims):
+        ax.set_ylim(lim[0], lim[1])
+
+    tkw = dict(size=4, width=1.5)
+    axs[0].set_xlabel("time [years]")
+    axs[0].tick_params(axis='x', **tkw)
+    fig.legend()
+
+    if title is not None:
+        fig.suptitle(title, fontsize=14)
