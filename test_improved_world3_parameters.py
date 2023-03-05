@@ -15,7 +15,7 @@ import pandas as pd
 params = {'lines.linewidth': '3','axes.labelsize' : '12', 'xtick.labelsize' : '10', 'ytick.labelsize' : '10', 'figure.autolayout' : 'True'}
 plt.rcParams.update(params)
 
-new_parameter_list = pd.read_excel('Analysis parameter_list_23_02_24_11_54.xlsx', index_col=0)
+new_parameter_list = pd.read_excel('Neue Parameter Liste/Analysis parameter_list_23_03_02_20_24.xlsx', index_col=0)
 
 old_parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', index_col=0)
 print(new_parameter_list)
@@ -79,9 +79,9 @@ world3.run_world3(fast=False)
 
 rs.plot_world_variables(world3.time,
                  [empirical_data["Population"], world3.io, world3.f, world3.pop,
-                  world3.ppolx, world3.nrfr],
-                 ["POPEMP", "IO", "F", "POP", "PPOLX", "NRFR"],
-                 [[0, 12e9], [0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40], [0, 1.975]],
+                  world3.ppolx, world3.nr],
+                 ["POPEMP", "IO", "F", "POP", "PPOLX", "NR"],
+                 [[0, 12e9], [0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40], [0, 2e12]],
                  img_background="./img/fig 4-1-1.png",
                  figsize=(7, 5),
                  title="World3 Referenze Run, 2004 Szenario 1", alpha = 1)
