@@ -15,7 +15,7 @@ import pandas as pd
 params = {'lines.linewidth': '3','axes.labelsize' : '12', 'xtick.labelsize' : '10', 'ytick.labelsize' : '10', 'figure.autolayout' : 'True'}
 plt.rcParams.update(params)
 
-new_parameter_list = pd.read_excel('Neue Parameter Liste/Analysis parameter_list_23_03_02_20_24.xlsx', index_col=0)
+new_parameter_list = pd.read_excel('Neue Parameter Liste/Analysis parameter_list_23_03_04_17_10.xlsx', index_col=0)
 
 old_parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', index_col=0)
 print(new_parameter_list)
