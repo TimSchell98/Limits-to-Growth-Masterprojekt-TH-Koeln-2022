@@ -12,9 +12,9 @@ plt.rcParams.update(params)
 Choose Szenario:
     1: A Referenz Point
     2: More Abundant Nonrenewable Resources
-    Mehr hinzufügen
+    3: More Abundant Nonrenewable Resources and pollution control
 """
-szenario = 1
+szenario = 3
 
 if szenario == 1:
 
