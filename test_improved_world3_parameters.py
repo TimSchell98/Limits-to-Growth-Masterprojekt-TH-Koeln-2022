@@ -25,22 +25,38 @@ parameter_dict = {}
 for index, name in enumerate(new_parameter_list['name']):
     parameter_dict[name] = new_parameter_list['default'].iloc[index].item()
 
-world3 = World3(dt = 1, pyear = 4000, year_max = 2100)
+world3 = World3(dt = 0.5, pyear = 4000, year_max = 2100)
 world3.init_world3_constants(**parameter_dict)
 world3.init_world3_variables()
 world3.set_world3_table_functions()
 world3.set_world3_delay_functions()
 world3.run_world3(fast=False)
 
-'''plot_world_variables(world3.time,
+plt.figure(dpi=300)
+
+"""
+plot_world_variables(world3.time,
                  [empirical_data["Population"], world3.io, world3.f, world3.pop,
                   world3.ppolx, world3.nrfr],
                  ["POPEMP", "IO", "F", "POP", "PPOLX", "NRFR"],
                  [[0, 12e9], [0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40], [0, 1.975]],
                  img_background="./img/fig 4-1-1.png",
                  figsize=(7, 5),
-                 title="World3 Referenze Run, 2004 Szenario 1")'''
+                 title="World3 Referenze Run, 2004 Szenario 1")
+"""
 
+plot_world_variables(world3.time,
+                 [world3.io, world3.f, world3.pop,
+                  world3.ppolx, world3.nrfr],
+                 ["IO", "F", "POP", "PPOLX", "NRFR"],
+                 [[0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40], [0, 1.975]],
+                 img_background="./img/fig 4-1-1.png",
+                 figsize=(7, 5),
+                 title="Variation A, PyWorld3-05 run with improved parameters")
+plt.savefig("PyWorld3-05 run with improved parameters.pdf")
+
+
+"""
 rs.plot_world_variables(world3.time,
                  [empirical_data["Population"], world3.io, world3.f, world3.pop,
                   world3.ppolx, world3.nr],
@@ -49,22 +65,22 @@ rs.plot_world_variables(world3.time,
                  img_background="./img/fig 4-1-1.png",
                  figsize=(7, 5),
                  title="World3 Referenze Run, 2004 Szenario 1", alpha = 1)
-
-'''plot_world_variables(world3.time,
+"""
+plot_world_variables(world3.time,
                  [world3.le, world3.fpc, world3.sopc, world3.ciopc],
                  ["LE", "FPC", "SOPC", "CIOPC"],
-                 [[0, 90], [0,1000],[0,970], [0, 250]],
+                 [[0, 89], [0,999],[0,970], [0, 250]],
                  img_background="./img/fig 4-1-2.png",
                  figsize=(7, 5),
-                 title="World3 Referenze Run - Material standard of living, 2004 Szenario 1")
+                 title="PyWorld3-05 run with improved parameters")
 
 plot_world_variables(world3.time,
                  [world3.ef, world3.hwi],
                  ["EF", "HWI"],
-                 [[0, 4], [0,1]],
+                 [[0, 4], [0,0.99]],
                  img_background="./img/fig 4-1-3.png",
-                 figsize=(7, 5), title="World3 Referenze Run - Human Wellfare and Footprint, 2004 Szenario 1")
-'''
+                 figsize=(7, 5), title="Variation A, PyWorld3-05 run with improved parameters")
+plt.savefig("PyWorld3-05 run with improved parameters_ef hwi.pdf")
 
 
 
