@@ -16,9 +16,12 @@ plt.rcParams.update(params)
 
 empirical_data = af.initialize_empirical_data(True)
 
-parameter_set_1 = pd.read_excel('Durchläufe/Gewichtung/23_03_01_14_59_erste_Gewichtung/Analysis parameter_list_23_03_01_14_59.xlsx', index_col=0)
+parameter_set_1 = pd.read_excel('Durchläufe/Größere Grid resolution/60/Analysis parameter_list_23_03_04_17_10.xlsx', index_col=0)
+label1 = 'V1_main result'
 parameter_set_2 = pd.read_excel('Durchläufe/NRI/Doppelte NRI/Analysis parameter_list_23_03_02_20_24.xlsx', index_col=0)
-parameter_set_3 = pd.read_excel('Durchläufe/NRI/Doppelte NRI/Analysis parameter_list_23_03_02_20_24.xlsx', index_col=0)
+label2 = 'V2_doubled NRI'
+parameter_set_3 = pd.read_excel('Durchläufe/Gewichtung/Alex_Gewichtung/Analysis parameter_list_23_03_03_01_10.xlsx', index_col=0)
+label3 = 'V3_inverse weighting '
 
 parameter_dict_1 = {}
 for index, name in enumerate(parameter_set_1['name']):
@@ -65,20 +68,34 @@ w3_3.run_world3(fast=False)
 
 rs.plot_world_variables_vc(w3_1.time,
                         [empirical_data["Population"], w3_1.pop, w3_2.pop, w3_3.pop, w3_sr.pop],
-                        ["POPEMP", "POP V1", "POP V2", "POP V3", "POP V0"],
+                        ["Empirical Data", label1, label2, label3, "2004 standard run"],
                         [[0, 12e9], [0, 12e9], [0, 12e9], [0, 12e9], [0, 12e9]],
                         [1, 0.7, 0.7, 0.7, 0.7],
-                        img_background="./img/fig 4-1-1.png",
+                        grid=True,
                         figsize=(7, 5),
                         title="Version Comparison Population")
-plt.show()
+plt.savefig('exports/Variantenvergleich_Population.png')
 
-rs.plot_world_variables_vc(w3_1.time,
+#plt.show()
+
+
+'''rs.plot_world_variables_vc(w3_1.time,
                         [empirical_data["Human_Welfare"], w3_1.hwi, w3_2.hwi, w3_3.hwi, w3_sr.hwi],
                         ["EMP", "V1", "V2", "V3", "V0"],
                         [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]],
                         [1, 0.7, 0.7, 0.7, 0.7],
                         img_background="./img/fig 4-1-3.png",
                         figsize=(7, 5),
+                        title="Version Comparison HWI")'''
+
+rs.plot_world_variables_vc(w3_1.time,
+                        [empirical_data["Human_Welfare"], w3_1.hwi, w3_2.hwi, w3_3.hwi, w3_sr.hwi],
+                        ["Empirical data", label1, label2, label3, "2004 standard run"],
+                        [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]],
+                        [1, 0.7, 0.7, 0.7, 0.7],
+                        grid=True,
+                        figsize=(7, 5),
                         title="Version Comparison HWI")
-plt.show()
+
+plt.savefig('exports/Variantenvergleich_HWI_ohne Hintergrund.png')
+#plt.show()

@@ -93,8 +93,7 @@ def plot_world_variables_vc(time, var_data, var_names, var_lims, alpha,
 
     fig, host = plt.subplots(figsize=figsize)
     axs = [host, ]
-    for i in range(var_number-1):
-        axs.append(host.twinx())
+
 
 
     if img_background is not None:
@@ -104,8 +103,10 @@ def plot_world_variables_vc(time, var_data, var_names, var_lims, alpha,
                               var_lims[0][0], var_lims[0][1]], cmap="gray")
 
     ps = []
-    for ax, label, ydata, color, alpha in zip(axs, var_names, var_data, colors, alpha):
-        ps.append(ax.plot(time, ydata, label=label, color=color, alpha=alpha)[0])
+
+    for label, ydata, color, alpha in zip(var_names, var_data, colors, alpha):
+        ps.append(host.plot(time, ydata, label=label, color=color, alpha=alpha)[0])
+
     axs[0].grid(grid)
     axs[0].set_xlim(time[0], time[-1])
 
@@ -115,7 +116,9 @@ def plot_world_variables_vc(time, var_data, var_names, var_lims, alpha,
     tkw = dict(size=4, width=1.5)
     axs[0].set_xlabel("time [years]")
     axs[0].tick_params(axis='x', **tkw)
-    fig.legend()
+    fig.legend(loc='upper right')
 
     if title is not None:
         fig.suptitle(title, fontsize=14)
+
+    return fig, host
