@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="da94e042-4e3a-4526-9f3d-6bd1485ce66f" name="Changes" comment="Ein Skript welches aktuell 2 Funktionen enthält um den standard run und den mit verdoppelten Ressourcen nachzubilden.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vergleich/Parameter Liste.xls" beforeDir="false" afterPath="$PROJECT_DIR$/Vergleich/Parameter Liste.xls" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vergleich/analysis_pre-solve.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vergleich/analysis_pre_solve.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vergleich/analysis_pre-solve_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vergleich/analysis_pre_solve_settings.py" afterDir="false" />
-    </list>
+    <list default="true" id="da94e042-4e3a-4526-9f3d-6bd1485ce66f" name="Changes" comment="Ein Skript welches aktuell 2 Funktionen enthält um den standard run und den mit verdoppelten Ressourcen nachzubilden." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,29 +41,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
   </component>
-  <component name="RunManager" selected="Python.analysis_pre_solve">
+  <component name="RunManager" selected="Python tests.test_improved_world3_parameters.py">
     <configuration name="LtG_MP" type="PythonConfigurationType" factoryName="Python">
-      <module name="Limits-to-Growth-Masterprojekt-TH-Koeln-2022" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="/usr/bin/python3" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/first_python_file.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="S01_stable_pop" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Limits-to-Growth-Masterprojekt-TH-Koeln-2022" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -77,7 +54,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/S01_stable_pop.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/first_python_file.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -191,13 +168,36 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test_improved_world3_parameters.py" type="tests" factoryName="Autodetect" temporary="true">
+      <module name="Limits-to-Growth-Masterprojekt-TH-Koeln-2022" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/test_improved_world3_parameters.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.LtG_MP" />
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.analysis_functions" />
+      <item itemvalue="Python.analysis_parallel" />
+      <item itemvalue="Python.analysis_pre_solve" />
+      <item itemvalue="Python.run_different_standard_configurations" />
+      <item itemvalue="Python tests.test_improved_world3_parameters.py" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.test_improved_world3_parameters.py" />
         <item itemvalue="Python.analysis_pre_solve" />
         <item itemvalue="Python.analysis_parallel" />
         <item itemvalue="Python.analysis_functions" />
         <item itemvalue="Python.run_different_standard_configurations" />
-        <item itemvalue="Python.S01_stable_pop" />
       </list>
     </recent_temporary>
   </component>
@@ -272,6 +272,11 @@
           <url>file://$PROJECT_DIR$/Vergleich/analysis_pre_solve.py</url>
           <line>63</line>
           <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/result_plotting.py</url>
+          <line>69</line>
+          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
