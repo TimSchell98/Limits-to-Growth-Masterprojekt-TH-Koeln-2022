@@ -75,7 +75,7 @@ rs.plot_world_variables(world3.time,
                  figsize=(7, 5),
                  title="PyWorld3-05 run with improved parameters")'''
 
-rs.plot_world_variables(world3.time,
+'''rs.plot_world_variables(world3.time,
                  [empirical_data['Ecological_Footprint'], world3.ef, empirical_data['Human_Welfare'], world3.hwi],
                  ["EF empirical", "EF model", "HWI empirical", "HWI model"],
                  [[0, 4], [0, 4], [0, 1], [0, 1]],
@@ -83,17 +83,34 @@ rs.plot_world_variables(world3.time,
                  img_background="exports/BAU_HWI-EF_Background-Picture.png",
                  figsize=(7, 5), title="Variation A, PyWorld3-03 run with improved parameters")
 plt.savefig("exports/PyWorld3-03 run with improved parameters_ef hwi-own background.png")
-#plt.show()
-'''rs.plot_world_variables_black_linestyle(world3.time,
+#plt.show()'''
+
+'''rs.plot_world_variables_color_linestyle(world3.time,
                                         [world3.io, world3.f, world3.pop,
                                          world3.ppolx, world3.nrfr],
                                         ["IO", "F", "POP", "PPOLX", "NRFR"],
                                         [[0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40], [0, 1.975]],
-                        [1,1,1,1],
-                        ['solid', 'dotted', 'dashed', 'dashdot'],
+                        [1, 1, 1, 1, 1],
+                        #['#ff0000', '#00ff6e', '#ff6300', '#0047ff', '#f52791'],
+                        ['#ff4646', '#43ff94', '#ff8235', '#4b7eff', '#ff6fb5'],
+                        ['solid', 'solid', 'solid', 'solid', 'solid'],
                         figsize = (7, 5),
-                        title = "PyWorld3-03 BAU - State of the World")
-plt.savefig('exports/BAU_State_of_the_world.png')'''
+                        title = "PyWorld3-03 BAU - State of the World",
+                                        legend=False)
+plt.savefig('exports/BAU_State_of_the_world_color.png')
+plt.show()'''
+
+rs.plot_world_variables_color(world3.time,
+                 [world3.io, world3.f, world3.pop,
+                  world3.ppolx, world3.nr],
+                 ["IO", "F", "POP", "PPOLX", "NR"],
+                 [[0, 4e12], [0, 5.8e12], [0, 12e9], [0, 40], [0, 2e12]],
+                 [1, 1, 1, 1, 1],
+                 ['#ff0000', '#00ff6e', '#ff6300', '#0047ff', '#f52791'],
+                 img_background="exports/BAU_State_of_the_world_colorbrighter.png",
+                 figsize=(7, 5),
+                 title="World3 Referenze Run, 2004 Szenario 1", grid=True)
+plt.show()
 
 '''rs.plot_world_variables_black_linestyle(world3.time,
                         [world3.le, world3.fpc, world3.sopc, world3.ciopc],

@@ -41,7 +41,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
   </component>
-  <component name="RunManager" selected="Python tests.test_improved_world3_parameters.py">
+  <component name="RunManager" selected="Python.plot_variantenvergleich">
     <configuration name="LtG_MP" type="PythonConfigurationType" factoryName="Python">
       <module name="Limits-to-Growth-Masterprojekt-TH-Koeln-2022" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -147,7 +147,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="run_different_standard_configurations" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="plot_variantenvergleich" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Limits-to-Growth-Masterprojekt-TH-Koeln-2022" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -159,7 +159,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/run_different_standard_configurations.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plot_variantenvergleich.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -185,19 +185,19 @@
     <list>
       <item itemvalue="Python.LtG_MP" />
       <item itemvalue="Python.main" />
+      <item itemvalue="Python.plot_variantenvergleich" />
       <item itemvalue="Python.analysis_functions" />
       <item itemvalue="Python.analysis_parallel" />
       <item itemvalue="Python.analysis_pre_solve" />
-      <item itemvalue="Python.run_different_standard_configurations" />
       <item itemvalue="Python tests.test_improved_world3_parameters.py" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.plot_variantenvergleich" />
         <item itemvalue="Python tests.test_improved_world3_parameters.py" />
         <item itemvalue="Python.analysis_pre_solve" />
         <item itemvalue="Python.analysis_parallel" />
         <item itemvalue="Python.analysis_functions" />
-        <item itemvalue="Python.run_different_standard_configurations" />
       </list>
     </recent_temporary>
   </component>
@@ -275,7 +275,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/result_plotting.py</url>
-          <line>69</line>
+          <line>70</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>

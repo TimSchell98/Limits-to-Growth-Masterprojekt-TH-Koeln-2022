@@ -4,7 +4,7 @@ Skript zum Erstellen des Vergleichsplots zwischen 3 Parametrierungen und den emp
 """
 
 from PyWorld3_Update.pyworld3 import World3
-from pyworld3.utils import plot_world_variables
+#from pyworld3.utils import plot_world_variables
 import result_plotting as rs
 import matplotlib.pyplot as plt
 import analysis_functions as af
@@ -21,7 +21,7 @@ label1 = 'V1_main result'
 parameter_set_2 = pd.read_excel('Durchläufe/NRI/Doppelte NRI/Analysis parameter_list_23_03_02_20_24.xlsx', index_col=0)
 label2 = 'V2_doubled NRI'
 parameter_set_3 = pd.read_excel('Durchläufe/Gewichtung/Alex_Gewichtung/Analysis parameter_list_23_03_03_01_10.xlsx', index_col=0)
-label3 = 'V3_inverse weighting '
+label3 = 'V3_alternative weighting '
 
 parameter_dict_1 = {}
 for index, name in enumerate(parameter_set_1['name']):
@@ -68,9 +68,9 @@ w3_3.run_world3(fast=False)
 
 rs.plot_world_variables_vc(w3_1.time,
                         [empirical_data["Population"], w3_1.pop, w3_2.pop, w3_3.pop, w3_sr.pop],
-                        ["Empirical Data", label1, label2, label3, "2004 standard run"],
+                        ["Empirical Data", label1, label2, label3, "BAU 1"],
                         [[0, 12e9], [0, 12e9], [0, 12e9], [0, 12e9], [0, 12e9]],
-                        [1, 0.7, 0.7, 0.7, 0.7],
+                        [1, 0.6, 0.6, 0.6, 0.6],
                         grid=True,
                         figsize=(7, 5),
                         title="Version Comparison Population")
@@ -90,9 +90,9 @@ plt.savefig('exports/Variantenvergleich_Population.png')
 
 rs.plot_world_variables_vc(w3_1.time,
                         [empirical_data["Human_Welfare"], w3_1.hwi, w3_2.hwi, w3_3.hwi, w3_sr.hwi],
-                        ["Empirical data", label1, label2, label3, "2004 standard run"],
+                        ["Empirical data", label1, label2, label3, "BAU 1"],
                         [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]],
-                        [1, 0.7, 0.7, 0.7, 0.7],
+                        [1, 0.6, 0.6, 0.6, 0.6],
                         grid=True,
                         figsize=(7, 5),
                         title="Version Comparison HWI")
