@@ -3,7 +3,7 @@ import pandas as pd
 # - - - - - Global  Settings
 
 #number of simulations per zoom
-grid_resolution = 4
+grid_resolution = 3
 
 #pro Jahr in Simulation
 sim_time_step = 1 
@@ -36,14 +36,14 @@ plot_nrmsd = False
 variable_to_improve = "NRMSD_total"
 
 #how much should the start/end limits be from the default. 0.5 = 50%, 1 = 100%, 2 = 200%
-parameter_divergence = 0.25
+parameter_divergence = 0.5
 
 #how much the start and end value should move if edge value is reached
 parameter_move_start_end_value = 0.5
 
 #end conditions:
 nrmsd_delta_end_condition = 1e-9
-analysis_number_end_condition = 2
+analysis_number_end_condition = 1
 
 
 

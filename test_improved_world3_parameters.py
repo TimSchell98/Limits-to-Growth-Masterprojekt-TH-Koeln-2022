@@ -6,7 +6,7 @@ Created on Wed Dec  7 16:56:16 2022
 """
 
 from PyWorld3_Update.pyworld3 import World3
-#from pyworld3.utils import plot_world_variables
+from pyworld3.utils import plot_world_variables
 import result_plotting as rs
 import matplotlib.pyplot as plt
 import analysis_functions as af
@@ -15,7 +15,7 @@ import pandas as pd
 params = {'lines.linewidth': '3','axes.labelsize' : '12', 'xtick.labelsize' : '10', 'ytick.labelsize' : '10', 'figure.autolayout' : 'True'}
 plt.rcParams.update(params)
 
-new_parameter_list = pd.read_excel('Neue Parameter Liste/Analysis parameter_list_23_03_04_17_10.xlsx', index_col=0)
+new_parameter_list = pd.read_excel('Neue Parameter Liste/Analysis parameter_list_23_03_03_01_10.xlsx', index_col=0)
 
 old_parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', index_col=0)
 print(new_parameter_list)
@@ -46,7 +46,7 @@ plot_world_variables(world3.time,
                  title="World3 Referenze Run, 2004 Szenario 1")
 """
 
-'''plot_world_variables(world3.time,
+plot_world_variables(world3.time,
                  [world3.io, world3.f, world3.pop,
                   world3.ppolx, world3.nrfr],
                  ["IO", "F", "POP", "PPOLX", "NRFR"],
@@ -54,7 +54,15 @@ plot_world_variables(world3.time,
                  img_background="./img/fig 4-1-1.png",
                  figsize=(7, 5),
                  title="Variation A, PyWorld3-05 run with improved parameters")
-plt.savefig("PyWorld3-05 run with improved parameters.pdf")'''
+#plt.savefig("PyWorld3-05 run with improved parameters.pdf")
+plot_world_variables(world3.time,
+                     [world3.hwi, world3.ef],
+                     ["HWI", "EF"],
+                     [[0, 1], [0, 4]],
+                     img_background="./img/fig 4-1-3.png",
+                     figsize=(7, 5),
+                     title="HWI + EF")
+
 
 
 """
