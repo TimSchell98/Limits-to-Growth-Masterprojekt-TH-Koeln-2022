@@ -215,7 +215,7 @@ class Population:
     tf : numpy.ndarray
         total fertility [].
 
-    2004 update, added:
+    2004 update, added HWI:
     lei : numpy.ndarray
         Life Expectancy Index [].
     gdpc : numpy.ndarray
@@ -264,8 +264,6 @@ class Population:
         self.rlt = rlt
         self.sad = sad
         self.zpgt = zpgt
-        
-        #print("using updated version of population sector, 05.11.2022")
 
     def init_population_variables(self):
         """
@@ -326,7 +324,7 @@ class Population:
         self.fcfpc = np.full((self.n,), np.nan)
         self.fsafc = np.full((self.n,), np.nan)
         
-        #2004 update, added EI and HWI
+        #2004 update, added HWI
         self.lei = np.full((self.n,), np.nan)
         self.gdpc = np.full((self.n,), np.nan)
         self.gdpi = np.full((self.n,), np.nan)
@@ -549,7 +547,7 @@ class Population:
         # recompute supplementary initial conditions
         self._update_frsn(0)
         
-        #neu hinzugefügt
+        #2004 update added:
         self._update_lei(0)
         self._update_gdpc(0)
         self._update_gdpi(0)
@@ -624,7 +622,7 @@ class Population:
         self._update_cbr(k, jk)
         self._update_b(k, kl)
         
-        #neu hinzugefügt
+        #2004 update added:
         self._update_lei(k)
         self._update_gdpc(k)
         self._update_gdpi(k)

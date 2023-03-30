@@ -3,7 +3,7 @@ import pandas as pd
 # - - - - - Global  Settings
 
 #number of simulations per zoom
-grid_resolution = 40
+grid_resolution = 3
 
 #pro Jahr in Simulation
 sim_time_step = 1 

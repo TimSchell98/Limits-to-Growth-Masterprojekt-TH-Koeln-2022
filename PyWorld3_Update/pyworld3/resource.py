@@ -138,8 +138,6 @@ class Resource:
         #2004 update, added res tech
         self.drur = drur
         self.tdt = tdt
-        
-        #print("using updated version of resources sector, 05.11.2022")
 
     def init_resource_variables(self):
         """

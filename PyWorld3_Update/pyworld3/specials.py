@@ -132,6 +132,8 @@ class Smooth:
     Call parameters) at a given step k.
 
     Computes the smoothed vector out_arr from the input in_arr, at the step k.
+    
+    2004 update: added init value
 
     Parameters
     ----------
@@ -157,7 +159,6 @@ class Smooth:
 
     """
 
-    #smooth funktion ist falsch!!!
 
     def __init__(self, in_arr, dt, t, method="euler"):
         self.dt = dt

@@ -3,6 +3,7 @@
 Created on Fri Jun 24 16:35:01 2022
 
 PyWorld3 2004 update
+Completety renewed with the original STELLA version of World3
 
 @author: Tim Schell
 """
@@ -116,7 +117,6 @@ class Pollution:
         Desired persistent pollution index. Default is 1.2
     tdt : float [years]
         Technology development time. Default is 20 
-        
     apfay : numpy.ndarray
         Air pollution factor on agricultural yield.
     ymap1 : numpy.ndarray
@@ -142,7 +142,7 @@ class Pollution:
     ppgr : numpy.ndarray
         Persistent pollution generation rate
     ppar : numpy.ndarray
-        Persistent Pollution appear rate. #in insidemaker sind das 2 blöcke
+        Persistent Pollution appear rate.
     ppasr : numpy.ndarray
         Persistent Pollution assimilation rate
     pp : numpy.ndarray
@@ -213,7 +213,6 @@ class Pollution:
         self.dppolx = dppolx
         self.tdt= tdt
         self.ppgf1 = ppgf1
-        #print("using updated version of pollution sector, 05.11.2022")
  
     def init_pollution_variables(self):
         """

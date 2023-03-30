@@ -13,6 +13,8 @@ Choose Szenario:
     1: A Referenz Point
     2: More Abundant Nonrenewable Resources
     3: More Abundant Nonrenewable Resources and pollution control
+    
+Disclaimer: Szenario 2 and 3 do not match the szenarios of "Limits to Growth: The 30-year update", because some parameters were changed wich are not descriped.  
 """
 szenario = 3
 

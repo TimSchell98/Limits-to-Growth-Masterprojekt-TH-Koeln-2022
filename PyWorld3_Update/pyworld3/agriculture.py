@@ -118,7 +118,7 @@ class Agriculture:
     
     2004 update, added:
     dfr: float, optional
-        desired food ratio. The default is 2
+        desired food ratio. Default is 2
     tdt : float [years]
         Technology development time. Default is 20
 
@@ -302,9 +302,6 @@ class Agriculture:
         #update 2004, added
         self.dfr = dfr
         self.tdt = tdt
-        
-        #print("using updated version of agricultur sector, 05.11.2022")
-
 
     def init_agriculture_variables(self):
         """

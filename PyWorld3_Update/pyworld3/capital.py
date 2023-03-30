@@ -218,8 +218,6 @@ class Capital:
         self.alsc2 = alsc2
         self.fioac1 = fioac1
         self.fioac2 = fioac2
-        
-        #print("using updated version of capital sector, 05.11.2022")
 
     def init_capital_variables(self):
         """
@@ -510,7 +508,7 @@ class Capital:
         From step k=0 requires: LUF, else nothing
         """
 
-        self.lufd[k] = self.smooth_luf(k, self.lufdt, 1) #2004 update, added init Val
+        self.lufd[k] = self.smooth_luf(k, self.lufdt, 1) #2004 update, added init Val in smooth function
 
     @requires(["cuf"], ["lufd"])
     def _update_cuf(self, k):

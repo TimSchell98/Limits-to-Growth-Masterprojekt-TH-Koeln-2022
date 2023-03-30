@@ -2,7 +2,7 @@ import pyworld3.resource as re
 from pyworld3.utils import plot_world_variables
 
 
-rsc = re.Resource(pyear_res_tech=1975, dt = 1)
+rsc = re.Resource()
 rsc.set_resource_table_functions()
 rsc.init_resource_variables()
 rsc.init_resource_constants()

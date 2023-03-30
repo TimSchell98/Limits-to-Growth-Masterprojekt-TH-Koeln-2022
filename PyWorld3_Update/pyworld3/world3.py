@@ -103,7 +103,6 @@ class World3(Population, Capital, Agriculture, Pollution, Resource):
 
     def __init__(self, year_min=1900, year_max=2100, dt=0.5, pyear=1975, pyear_res_tech = 4000, pyear_pp_tech = 4000,pyear_fcaor = 4000, pyear_y_tech = 4000,
                  iphst=1940, verbose=False):
-        #print("using updated version of world3, 05.11.2022")
         self.iphst = iphst
         self.pyear = pyear
         self.pyear_res_tech = pyear_res_tech
@@ -277,7 +276,7 @@ class World3(Population, Capital, Agriculture, Pollution, Resource):
                 print("go loop", k_)
             self._loopk_world3_fast(k_-1, k_, k_-1, k_)
 
-    def _loopk_world3_fast(self, j, k, jk, kl): #function calls have to be reworked
+    def _loopk_world3_fast(self, j, k, jk, kl): #2004 update: function calls have to be reworked
         """
         Run a sorted sequence to update one loop of World3 with
         no checking and no rescheduling [unsafe].
