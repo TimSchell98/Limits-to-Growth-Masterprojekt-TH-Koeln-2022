@@ -42,7 +42,7 @@ parameter_divergence = 0.5
 parameter_move_start_end_value = 0.5
 
 #end conditions:
-nrmsd_delta_end_condition = 1e-9
+nrmsd_delta_end_condition = 1e-11
 analysis_number_end_condition = 120
 
 

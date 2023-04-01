@@ -42,7 +42,7 @@ def run_simulation_kwargs(year_max, i=0, **kwargs):
         elif s.empirical_settings.loc[attribute_name,'type']=='proportion':
             proportion_help1 = np.append(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']),np.NaN)
             proportion_help2 = np.append(np.NaN,getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))
-            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] =  ((proportion_help1-proportion_help2)/proportion_help1)[:-1]
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] =  ((proportion_help1-proportion_help2)/proportion_help2)[:-1]
 
 
     #simulation_data['Ecological-Footprint_{}'.format(i)] = world3.ef
