@@ -3,7 +3,7 @@ import pandas as pd
 # - - - - - Global  Settings
 
 #number of simulations per zoom
-grid_resolution = 40
+grid_resolution = 3
 
 #pro Jahr in Simulation
 sim_time_step = 1 
@@ -28,7 +28,7 @@ calculation_period = 50
 empirical_settings = pd.read_excel('empirical_settings.xlsx', index_col='index', sheet_name='settings')
 
 #if true, after all sims plot every result
-plot_results = False
+plot_results = True
 #if true, plot nrmsd curve
 plot_nrmsd = False
 
