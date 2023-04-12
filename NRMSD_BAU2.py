@@ -170,10 +170,14 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, c
 def prepare_data_for_metric_calc_multiple_attributes(model_data: pd.DataFrame, empirical_data: pd.DataFrame, variable_empirical, variable_model):
     """used in function "calculate_metrics_multiple_attributes" to cut big data for NRMSD calculation with fitting period
     - start and stop years can be selected in settings """
-    start_row = s.empirical_settings.loc[variable_empirical, 'year_min'] * s.sim_time_step - 1900
-    stop_row = s.empirical_settings.loc[variable_empirical, 'year_max'] * s.sim_time_step - 1900
+    start_row = int((s.empirical_settings.loc[variable_empirical, 'year_min'] - 1900)/5)
+    stop_row = int((s.empirical_settings.loc[variable_empirical, 'year_max']- 1900)/5)
+    
     result_model = model_data[variable_model][start_row:stop_row]
     result_empirical = empirical_data[variable_empirical][start_row:stop_row]
+    
+    print(result_model)
+    print(result_empirical)
     
     return result_model, result_empirical
 
