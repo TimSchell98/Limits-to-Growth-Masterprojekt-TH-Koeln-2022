@@ -26,6 +26,7 @@ calculation_period = 50
 
 #import empiriical settings from excel
 empirical_settings = pd.read_excel('empirical_settings.xlsx', index_col='index', sheet_name='settings')
+empirical_settings_bau2 = pd.read_excel('empirical_settings_BAU2.xlsx', index_col='index', sheet_name='settings')
 
 #if true, after all sims plot every result
 plot_results = True

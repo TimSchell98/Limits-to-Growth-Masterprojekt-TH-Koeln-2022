@@ -89,10 +89,10 @@ def load_model_data():
     results_names['Year'] = results['Year']
     results_names['pop_0'] = results['POP']
     results_names['fpcp_0'] = results['FPC_p']
-    results_names['ppdt_p_0'] = results['POL_p']
+    results_names['pp_dtp_0'] = results['POL_p']
     results_names['iop_0'] = results['IO_p']
     results_names['spc_0'] = results['SPC_p']
-    results_names['nrup_p'] = results['NR_p']
+    results_names['nrurp_0'] = results['NR_p']
     results_names['hwi_0'] = results['HWI']
     results_names['ef_0'] = results['EF']
 
@@ -131,15 +131,15 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, c
     - NRMSD total for weighting attributes'''
     results = pd.DataFrame(index=[index])
     results['NRMSD_total']=0
-    attribute_list_empirical = s.empirical_settings.index
-    attribute_list_model = (s.empirical_settings['pyworld_name_complete']+"_{}")
+    attribute_list_empirical = s.empirical_settings_bau2.index
+    attribute_list_model = (s.empirical_settings_bau2['pyworld_name_complete']+"_{}".format(0))
 
     no_of_results_in_total = 0
 
     for i in np.arange(0, len(attribute_list_empirical)):
         #attribute_empirical(i)
         #attributemodel = (i)
-            
+        print("Processing \nempirical: {} \nmodel: {}".format(attribute_list_empirical[i],attribute_list_model[i]))
         model_data_slice, empirical_data_slice = prepare_data_for_metric_calc_multiple_attributes(model_data, empirical_data, attribute_list_empirical[i], attribute_list_model[i].format(int(index)-1))
         
         results['NRMSD_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
@@ -149,7 +149,7 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, c
             
             #print(results['NRMSD_{}'.format(attribute_list_empirical[i])][0]) #ist nan bei den proportions
             
-            results['NRMSD_total'] += results['NRMSD_{}'.format(attribute_list_empirical[i])][0] * \
+            results['NRMSD_total'] += results['NRMSD_{}'.format(attribute_list_empirical[i])].iloc[0] * \
                                       s.empirical_settings['NRMSD_total_weighting'].iloc[i]
             no_of_results_in_total +=1
 
@@ -170,8 +170,8 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, c
 def prepare_data_for_metric_calc_multiple_attributes(model_data: pd.DataFrame, empirical_data: pd.DataFrame, variable_empirical, variable_model):
     """used in function "calculate_metrics_multiple_attributes" to cut big data for NRMSD calculation with fitting period
     - start and stop years can be selected in settings """
-    start_row = int((s.empirical_settings.loc[variable_empirical, 'year_min'] - 1900)/5)
-    stop_row = int((s.empirical_settings.loc[variable_empirical, 'year_max']- 1900)/5)
+    start_row = int((s.empirical_settings_bau2.loc[variable_empirical, 'year_min'] - 1900)/5)
+    stop_row = int((s.empirical_settings_bau2.loc[variable_empirical, 'year_max']- 1900)/5)
     
     result_model = model_data[variable_model][start_row:stop_row]
     result_empirical = empirical_data[variable_empirical][start_row:stop_row]
