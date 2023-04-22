@@ -3,7 +3,7 @@ import pandas as pd
 # - - - - - Global  Settings
 
 #number of simulations per zoom
-grid_resolution = 40
+grid_resolution = 3
 
 #pro Jahr in Simulation
 sim_time_step = 1 
@@ -43,7 +43,7 @@ parameter_move_start_end_value = 0.5
 
 #end conditions:
 nrmsd_delta_end_condition = 1e-11
-analysis_number_end_condition = 120
+analysis_number_end_condition = 1
 
 
 
