@@ -35,15 +35,19 @@ def run_simulation_kwargs(year_max, i=0, **kwargs):
     # gather simulation data
     simulation_data = pd.DataFrame()
     for attribute_name in s.empirical_settings.index:
-        if  s.empirical_settings.loc[attribute_name,'type']=='pyworld':
-            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name'])
-        elif s.empirical_settings.loc[attribute_name,'type']=='derivation':    
-            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] = np.append((np.diff(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))/s.sim_time_step),np.nan) 
-        elif s.empirical_settings.loc[attribute_name,'type']=='proportion':
-            proportion_help1 = np.append(getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']),np.NaN)
-            proportion_help2 = np.append(np.NaN,getattr(world3,s.empirical_settings.loc[attribute_name,'pyworld_name']))
-            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name,'pyworld_name_complete'], i)] =  ((proportion_help1-proportion_help2)/proportion_help2)[:-1]
-
+        if s.empirical_settings.loc[attribute_name, 'type'] == 'pyworld':
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name, 'pyworld_name_complete'], i)] = getattr(
+                world3, s.empirical_settings.loc[attribute_name, 'pyworld_name'])
+        elif s.empirical_settings.loc[attribute_name, 'type'] == 'derivation':
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name, 'pyworld_name_complete'], i)] = np.append(
+                (np.diff(getattr(world3, s.empirical_settings.loc[attribute_name, 'pyworld_name']))/s.sim_time_step), np.nan)
+        elif s.empirical_settings.loc[attribute_name, 'type'] == 'proportion':
+            proportion_help1 = np.append(getattr(
+                world3, s.empirical_settings.loc[attribute_name, 'pyworld_name']), np.NaN)
+            proportion_help2 = np.append(np.NaN, getattr(
+                world3, s.empirical_settings.loc[attribute_name, 'pyworld_name']))
+            simulation_data['{0}_{1}'.format(s.empirical_settings.loc[attribute_name, 'pyworld_name_complete'], i)] = (
+                (proportion_help1-proportion_help2)/proportion_help2)[:-1]
 
     #simulation_data['Ecological-Footprint_{}'.format(i)] = world3.ef
     #simulation_data['Human-Welfare-Index_{}'.format(i)] = world3.hwi
@@ -51,34 +55,39 @@ def run_simulation_kwargs(year_max, i=0, **kwargs):
 
     return simulation_data
 
+
 def init_parameter_list():
     """
-    
+
     Returns
     -------
     parameter_list_shortened : TYPE Pandas DataFrame
         Returns DataFrame of all parameters which will be analysed. Set in excel "Parameter"
 
     """
-    #read excel with to be analysed parameters
+    # read excel with to be analysed parameters
     parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx')
-    #shortened = parameter list if collumn "use_in_analysis" == True
+    # shortened = parameter list if collumn "use_in_analysis" == True
     parameter_list_shortened = parameter_list
     parameter_list_shortened = parameter_list[parameter_list.use_in_analysis == True]
-    #rename index 
-    parameter_list_shortened.set_index([np.arange(parameter_list_shortened.shape[0])], inplace = True)
-    
-    #if use standard == true, use parameter_divergence to calculate start and end value and write it into parameter list, to be used in parameter_list_full function
-    for i in range (0,parameter_list_shortened.shape[0]):
-        if parameter_list_shortened.iloc[i,3] == True:
-            parameter_list_shortened.iloc[i,4] = round(parameter_list_shortened.iloc[i,2]-parameter_list_shortened.iloc[i,2]*s.parameter_divergence,4)
-            parameter_list_shortened.iloc[i,5] = round(parameter_list_shortened.iloc[i,2]+parameter_list_shortened.iloc[i,2]*s.parameter_divergence,4)
+    # rename index
+    parameter_list_shortened.set_index(
+        [np.arange(parameter_list_shortened.shape[0])], inplace=True)
+
+    # if use standard == true, use parameter_divergence to calculate start and end value and write it into parameter list, to be used in parameter_list_full function
+    for i in range(0, parameter_list_shortened.shape[0]):
+        if parameter_list_shortened.iloc[i, 3] == True:
+            parameter_list_shortened.iloc[i, 4] = round(
+                parameter_list_shortened.iloc[i, 2]-parameter_list_shortened.iloc[i, 2]*s.parameter_divergence, 4)
+            parameter_list_shortened.iloc[i, 5] = round(
+                parameter_list_shortened.iloc[i, 2]+parameter_list_shortened.iloc[i, 2]*s.parameter_divergence, 4)
 
     return parameter_list_shortened
 
+
 def parameter_list_full(parameter_list):
     """
-    
+
     Parameters
     ----------
     parameter_list : TYPE Pandas DataFrame
@@ -91,77 +100,94 @@ def parameter_list_full(parameter_list):
 
     """
 
-    parameter_list_steps = pd.DataFrame(index = np.arange(s.grid_resolution))
-    #loop for filling parameter_list_full
-    for i in range (0,parameter_list.shape[0]):
-        
-        #pull start and end value out of parameter_list
-        start_val = parameter_list.iloc[i,4]
-        end_val = parameter_list.iloc[i,5]
-        
-        #calculate delta from start and end value
-        delta = round((end_val-start_val)/(s.grid_resolution-1),6)
-        #create and write steps into parameter_list_steps
-        for j in range (0,s.grid_resolution):
-            parameter_list_steps.loc[j,i] = round(start_val+delta*j,6)
-    parameter_list_steps.rename(columns = parameter_list.name, inplace = True)
-    
-    #create dataframe with every possible combination
-    #create base
-    parameter_list_full = pd.DataFrame(columns = [parameter_list.name],index = np.arange(s.grid_resolution*parameter_list.shape[0]))
-    #fill parameter_list_full with standard values
-    for i in range(0,parameter_list.shape[0]*s.grid_resolution):
-        for j in range(0,parameter_list.shape[0]):
-            parameter_list_full.iloc[i,j] = parameter_list.iloc[j,2]
-    #fill parameter_list_full with steps     
-    for i in range(0,parameter_list.shape[0]):
-        for j in range(0,s.grid_resolution):
-            parameter_list_full.iloc[j+i*s.grid_resolution,i] = parameter_list_steps.iloc[j,i]
+    parameter_list_steps = pd.DataFrame(index=np.arange(s.grid_resolution))
+    # loop for filling parameter_list_full
+    for i in range(0, parameter_list.shape[0]):
+
+        # calculate start and end value
+        start_val = round(
+            parameter_list.iloc[i, 2]-parameter_list.iloc[i, 2]*s.parameter_divergence, 4)
+        end_val = round(
+            parameter_list.iloc[i, 2]+parameter_list.iloc[i, 2]*s.parameter_divergence, 4)
+
+        # calculate delta from start and end value
+        delta = round((end_val-start_val)/(s.grid_resolution-1), 6)
+        # create and write steps into parameter_list_steps
+        for j in range(0, s.grid_resolution):
+            parameter_list_steps.loc[j, i] = round(start_val+delta*j, 6)
+    parameter_list_steps.rename(columns=parameter_list.name, inplace=True)
+
+    # create dataframe with every possible combination
+    # create base
+    parameter_list_full = pd.DataFrame(columns=[parameter_list.name], index=np.arange(
+        s.grid_resolution*parameter_list.shape[0]))
+    # fill parameter_list_full with standard values
+    for i in range(0, parameter_list.shape[0]*s.grid_resolution):
+        for j in range(0, parameter_list.shape[0]):
+            parameter_list_full.iloc[i, j] = parameter_list.iloc[j, 2]
+    # fill parameter_list_full with steps
+    for i in range(0, parameter_list.shape[0]):
+        for j in range(0, s.grid_resolution):
+            parameter_list_full.iloc[j+i*s.grid_resolution,
+                                     i] = parameter_list_steps.iloc[j, i]
 
     return parameter_list_full
-    
-def improved_limits(metrics, parameter_list, parameter_list_full):
-    #Find NRMSD index of line which has the minimal NRMSD.
-    NRMSD_index = int(metrics[s.variable_to_improve].idxmin())-1 #-1, because metrics dataframe starts at index 1, parameter_list_starts at 0
 
-    #Temporary version of parameter_history
-    parameter_history_temp = pd.DataFrame(columns = ["changed parameter", "previous value", "next value", "NRMSD_min", "location", "relative change"], index = [0])
-    
-    #save min NRMSD in dataframe
-    parameter_history_temp["NRMSD_min"] = round(metrics[s.variable_to_improve].min(),10)
-            
-    #calculate index of parameter which is to be improved       
+
+def improved_limits(metrics, parameter_list, parameter_list_full):
+    # Find NRMSD index of line which has the minimal NRMSD.
+    # -1, because metrics dataframe starts at index 1, parameter_list_starts at 0
+    NRMSD_index = int(metrics[s.variable_to_improve].idxmin())-1
+
+    # Temporary version of parameter_history
+    parameter_history_temp = pd.DataFrame(
+        columns=["changed parameter", "previous value", "next value", "NRMSD_min", "location", "relative change"], index=[0])
+
+    # save min NRMSD in dataframe
+    parameter_history_temp["NRMSD_min"] = round(
+        metrics[s.variable_to_improve].min(), 10)
+
+    # calculate index of parameter which is to be improved
     parameter_index = int(NRMSD_index/s.grid_resolution)
-    #save improved parameter name, new and old value
-    parameter_history_temp.iloc[0,0] = parameter_list.iloc[parameter_index,0]
-    parameter_history_temp.iloc[0,1] = parameter_list.iloc[parameter_index,2]
-    parameter_history_temp.iloc[0,2] = parameter_list_full.iloc[NRMSD_index,parameter_index]
-    #save improved value in parameter_list
-    parameter_list.iloc[parameter_index,2] = parameter_list_full.iloc[NRMSD_index,parameter_index]
-    
-    #check if optimal value is last of first value
+    # save improved parameter name, new and old value
+    parameter_history_temp.iloc[0, 0] = parameter_list.iloc[parameter_index, 0]
+    parameter_history_temp.iloc[0, 1] = parameter_list.iloc[parameter_index, 2]
+    parameter_history_temp.iloc[0,
+                                2] = parameter_list_full.iloc[NRMSD_index, parameter_index]
+    # save improved value in parameter_list
+    parameter_list.iloc[parameter_index,
+                        2] = parameter_list_full.iloc[NRMSD_index, parameter_index]
+
+    # check if optimal value is last of first value
     if NRMSD_index < s.grid_resolution*parameter_list.shape[0]-1 and NRMSD_index > 0:
-        #if best parameter value is not an edge value, use previous value and next value as new start and end values
-        if parameter_list_full.iloc[NRMSD_index-1,parameter_index] < parameter_list_full.iloc[NRMSD_index, parameter_index] and parameter_list_full.iloc[NRMSD_index+1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index]:
+        # if best parameter value is not an edge value, use previous value and next value as new start and end values
+        if parameter_list_full.iloc[NRMSD_index-1, parameter_index] < parameter_list_full.iloc[NRMSD_index, parameter_index] and parameter_list_full.iloc[NRMSD_index+1, parameter_index] > parameter_list_full.iloc[NRMSD_index, parameter_index]:
             #print("Was mid value")
-            parameter_history_temp.iloc[0,4] = "mid-value"
-            parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
-            parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
-        #check if best parameter value is edge value, if yes then move start or end value by given amount
-        #check if best parameter is first value
-        if parameter_list_full.iloc[NRMSD_index-1,parameter_index] > parameter_list_full.iloc[NRMSD_index,parameter_index] or NRMSD_index <= 0:
+            parameter_history_temp.iloc[0, 4] = "mid-value"
+            parameter_list.iloc[parameter_index,
+                                4] = parameter_list_full.iloc[NRMSD_index-1, parameter_index]
+            parameter_list.iloc[parameter_index,
+                                5] = parameter_list_full.iloc[NRMSD_index+1, parameter_index]
+        # check if best parameter value is edge value, if yes then move start or end value by given amount
+        # check if best parameter is first value
+        if parameter_list_full.iloc[NRMSD_index-1, parameter_index] > parameter_list_full.iloc[NRMSD_index, parameter_index] or NRMSD_index <= 0:
             #print("Was start value")
-            parameter_history_temp.iloc[0,4] = "start-value"
-            parameter_list.iloc[parameter_index,4] = round(parameter_list.iloc[parameter_index,4]*(1-s.parameter_move_start_end_value),6) 
-            parameter_list.iloc[parameter_index,5] = parameter_list_full.iloc[NRMSD_index+1,parameter_index]
-        #check if best parameter is last value
-        if parameter_list_full.iloc[NRMSD_index+1,parameter_index] < parameter_list_full.iloc[NRMSD_index,parameter_index] or NRMSD_index >= s.grid_resolution*parameter_list.shape[0]-1:
+            parameter_history_temp.iloc[0, 4] = "start-value"
+            parameter_list.iloc[parameter_index, 4] = round(
+                parameter_list.iloc[parameter_index, 4]*(1-s.parameter_move_start_end_value), 6)
+            parameter_list.iloc[parameter_index,
+                                5] = parameter_list_full.iloc[NRMSD_index+1, parameter_index]
+        # check if best parameter is last value
+        if parameter_list_full.iloc[NRMSD_index+1, parameter_index] < parameter_list_full.iloc[NRMSD_index, parameter_index] or NRMSD_index >= s.grid_resolution*parameter_list.shape[0]-1:
             #print("Was end value")
-            parameter_history_temp.iloc[0,4] = "end-value"
-            parameter_list.iloc[parameter_index,4] = parameter_list_full.iloc[NRMSD_index-1,parameter_index]
-            parameter_list.iloc[parameter_index,5] = round(parameter_list.iloc[parameter_index,4]*(1+s.parameter_move_start_end_value),6) 
-    
+            parameter_history_temp.iloc[0, 4] = "end-value"
+            parameter_list.iloc[parameter_index,
+                                4] = parameter_list_full.iloc[NRMSD_index-1, parameter_index]
+            parameter_list.iloc[parameter_index, 5] = round(
+                parameter_list.iloc[parameter_index, 4]*(1+s.parameter_move_start_end_value), 6)
+
     return parameter_list, parameter_history_temp
+
 
 def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_interval=5, calculation_period=50):
     ''' Function for the formula for normalized root mean squre difference (NRMSD)
@@ -182,39 +208,45 @@ def calculate_nrmsd(model_data, empirical_data, timestep: float, calculation_int
     denominator_single_values = np.zeros(no_of_calculations)
 
     for i in range(no_of_calculations):
-        nominator_single_values[-i - 1] = np.square(model_data[-i * stepwidth - 1] - empirical_data[-i * stepwidth - 1])
+        nominator_single_values[-i - 1] = np.square(
+            model_data[-i * stepwidth - 1] - empirical_data[-i * stepwidth - 1])
         denominator_single_values[-i - 1] = empirical_data[-i * stepwidth - 1]
 
-    nrmsd = (np.sqrt(nominator_single_values.sum() / len(nominator_single_values))) / (denominator_single_values.sum() / len(denominator_single_values))
+    nrmsd = (np.sqrt(nominator_single_values.sum() / len(nominator_single_values))
+             ) / (denominator_single_values.sum() / len(denominator_single_values))
     return nrmsd
+
 
 def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, calculation_period=50, sim_number=0):
     """ Calculate NRSMD for selected attributes 
     - using function "prepare_data_for_metric_calc_multiple_attributes" to cut data
     - NRMSD total for weighting attributes"""
+
     results = pd.DataFrame(index=[index])
-    results['NRMSD_total']=0
+    results['NRMSD_total'] = 0
     attribute_list_empirical = s.empirical_settings.index
-    attribute_list_model = (s.empirical_settings['pyworld_name_complete']+"_{}")
+    attribute_list_model = (
+        s.empirical_settings['pyworld_name_complete']+"_{}")
 
     no_of_results_in_total = 0
 
     for i in np.arange(0, len(attribute_list_empirical)):
-        #attribute_empirical(i)
+        # attribute_empirical(i)
         #attributemodel = (i)
-            
-        model_data_slice, empirical_data_slice = prepare_data_for_metric_calc_multiple_attributes(model_data, empirical_data, attribute_list_empirical[i], attribute_list_model[i].format(int(index)-1))
-        
+
+        model_data_slice, empirical_data_slice = prepare_data_for_metric_calc_multiple_attributes(
+            model_data, empirical_data, attribute_list_empirical[i], attribute_list_model[i].format(int(index)-1))
+
         results['NRMSD_{}'.format(attribute_list_empirical[i])] = calculate_nrmsd(model_data_slice, empirical_data_slice, timestep=s.sim_time_step,
-                                              calculation_interval=s.calculation_interval, calculation_period=s.empirical_settings['period'].iloc[i])
+                                                                                  calculation_interval=s.calculation_interval, calculation_period=s.empirical_settings['period'].iloc[i])
 
         if s.empirical_settings['total'].iloc[i] == True:
-            
-            #print(results['NRMSD_{}'.format(attribute_list_empirical[i])][0]) #ist nan bei den proportions
-            
+
+            # print(results['NRMSD_{}'.format(attribute_list_empirical[i])][0]) #ist nan bei den proportions
+
             results['NRMSD_total'] += results['NRMSD_{}'.format(attribute_list_empirical[i])][0] * \
-                                      s.empirical_settings['NRMSD_total_weighting'].iloc[i]
-            no_of_results_in_total +=1
+                s.empirical_settings['NRMSD_total_weighting'].iloc[i]
+            no_of_results_in_total += 1
 
     results['NRMSD_total'] = results['NRMSD_total']/no_of_results_in_total
 
@@ -227,18 +259,22 @@ def calculate_metrics_multiple_attributes(model_data, empirical_data, index=0, c
                                  #1*results['NRMSD_GFCF_proportion']+
                                  1*results['NRMSD_Fossil_fuel_consumption_proportion']+
                                  1*results['NRMSD_IPP_proportion'])/8'''
-    
+
     return results
 
 
 def prepare_data_for_metric_calc_multiple_attributes(model_data: pd.DataFrame, empirical_data: pd.DataFrame, variable_empirical, variable_model):
     """used in function "calculate_metrics_multiple_attributes" to cut big data for NRMSD calculation with fitting period
     - start and stop years can be selected in settings """
-    start_row = s.empirical_settings.loc[variable_empirical, 'year_min'] * s.sim_time_step - 1900
-    stop_row = s.empirical_settings.loc[variable_empirical, 'year_max'] * s.sim_time_step - 1900
+    start_row = s.empirical_settings.loc[variable_empirical,
+                                         'year_min'] * s.sim_time_step - 1900
+
+    stop_row = s.empirical_settings.loc[variable_empirical,
+                                        'year_max'] * s.sim_time_step - 1900
+
     result_model = model_data[variable_model][start_row:stop_row]
     result_empirical = empirical_data[variable_empirical][start_row:stop_row]
-    
+
     return result_model, result_empirical
 
 
@@ -247,64 +283,67 @@ def calculate_metrics(model_data, empirical_data, index=0, parameter_name='none'
     results = pd.DataFrame(index=[index])
     if not parameter_name == 'none':
         results['{}'.format(parameter_name)] = parameter_value
-    results['NRMSD[%]'] = calculate_nrmsd(model_data, empirical_data, timestep=s.sim_time_step, calculation_interval=s.calculation_interval, calculation_period=calculation_period)
+    results['NRMSD[%]'] = calculate_nrmsd(model_data, empirical_data, timestep=s.sim_time_step,
+                                          calculation_interval=s.calculation_interval, calculation_period=calculation_period)
     return results
 
 
-def initialize_empirical_data(zeros_2100 = False):
+def initialize_empirical_data(zeros_2100=False):
     "Data - measured"
     if not zeros_2100:
         measured_data = pd.read_csv('empirical_data.csv', sep=',')
     else:
-        measured_data = pd.read_csv('empirical_data_filled_until2100.csv', sep=';', decimal=',')
+        measured_data = pd.read_csv(
+            'empirical_data_filled_until2100.csv', sep=';', decimal=',')
     # measured_data = measured_data['data'].str.split(";", expand=True)
-    measured_data = measured_data.iloc[:,0:22]
+    measured_data = measured_data.iloc[:, 0:22]
     # measured_data.columns=['Year', 'Population', 'Arable_Land', 'GFCF']
     empirical_data = measured_data.replace(0, np.nan)
-    empirical_data.iloc[66,9] = 0
-    # filter settings 
+    empirical_data.iloc[66, 9] = 0
+    # filter settings
 
     for attribute_name in s.empirical_settings.index:
-        if s.empirical_settings.loc[attribute_name,'smooth'] == False:
+        if s.empirical_settings.loc[attribute_name, 'smooth'] == False:
             empirical_data[attribute_name] = empirical_data[attribute_name]
         else:
-            empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)]  = smooth(empirical_data.iloc[s.empirical_settings.loc[attribute_name,'year_min']-1900:s.empirical_settings.loc[attribute_name,'year_max']-1900,empirical_data.columns.get_loc(attribute_name)], s.empirical_settings.loc[attribute_name,'smooth'])
-    
-    empirical_data.iloc[121,17] = 0.01     # smoothing one value manually 
+            empirical_data.iloc[s.empirical_settings.loc[attribute_name, 'year_min']-1900:s.empirical_settings.loc[attribute_name, 'year_max']-1900, empirical_data.columns.get_loc(attribute_name)] = smooth(
+                empirical_data.iloc[s.empirical_settings.loc[attribute_name, 'year_min']-1900:s.empirical_settings.loc[attribute_name, 'year_max']-1900, empirical_data.columns.get_loc(attribute_name)], s.empirical_settings.loc[attribute_name, 'smooth'])
+
+    empirical_data.iloc[121, 17] = 0.01     # smoothing one value manually
 
     return empirical_data
-    
+
 
 def smooth(empirical_data, critical_freq):
     b, a = signal.ellip(4, 0.01, 100, critical_freq)  # Filter to be applied
-    #good: 6, 0.1, 12, 0.3
-        # (order, rp (min allowed ripple(dB), rp (max allowed ripple(dB)), critical frequency))
-    empirical_data = signal.filtfilt(b, a, empirical_data, method = 'gust')
+    # good: 6, 0.1, 12, 0.3
+    # (order, rp (min allowed ripple(dB), rp (max allowed ripple(dB)), critical frequency))
+    empirical_data = signal.filtfilt(b, a, empirical_data, method='gust')
 
-    
     return empirical_data
+
 
 def get_settings_list():
     date_time = datetime.now().strftime("%y_%m_%d_%H_%M")
-    settings_list={'Date': date_time,
-                   'grid_resolution': s.grid_resolution,
-                   'sim_time_step': s.sim_time_step,
-                   'calculation_interval': s.calculation_interval,
-                   'parameter_divergence': s.parameter_divergence,
-                   'parameter_move_start_end_value': s.parameter_move_start_end_value,
-                   'nrmsd_delta_end_condition': s.nrmsd_delta_end_condition,
-                   'analysis_number_end_condition': s.analysis_number_end_condition,
-                   'weight_Population':  s.empirical_settings['NRMSD_total_weighting']['Population'],
-                   'Food_per_capita_proportion':  s.empirical_settings['NRMSD_total_weighting']['Food_per_capita_proportion'],
-                   'Pollution_proportion':  s.empirical_settings['NRMSD_total_weighting']['Pollution_proportion'],
-                   'Expected_years_of_schooling_proportion':  s.empirical_settings['NRMSD_total_weighting']['Expected_years_of_schooling_proportion'],
-                   'IPP_proportion':  s.empirical_settings['NRMSD_total_weighting']['IPP_proportion'],
-                   'Fossil_fuel_consumption_proportion':  s.empirical_settings['NRMSD_total_weighting']['Fossil_fuel_consumption_proportion'],
-                   'Human_Welfare':  s.empirical_settings['NRMSD_total_weighting']['Human_Welfare'],
-                   'Ecological_Footprint':  s.empirical_settings['NRMSD_total_weighting']['Ecological_Footprint']}
-    
+    settings_list = {'Date': date_time,
+                     'grid_resolution': s.grid_resolution,
+                     'sim_time_step': s.sim_time_step,
+                     'calculation_interval': s.calculation_interval,
+                     'parameter_divergence': s.parameter_divergence,
+                     'parameter_move_start_end_value': s.parameter_move_start_end_value,
+                     'nrmsd_delta_end_condition': s.nrmsd_delta_end_condition,
+                     'analysis_number_end_condition': s.analysis_number_end_condition,
+                     'weight_Population':  s.empirical_settings['NRMSD_total_weighting']['Population'],
+                     'Food_per_capita_proportion':  s.empirical_settings['NRMSD_total_weighting']['Food_per_capita_proportion'],
+                     'Pollution_proportion':  s.empirical_settings['NRMSD_total_weighting']['Pollution_proportion'],
+                     'Expected_years_of_schooling_proportion':  s.empirical_settings['NRMSD_total_weighting']['Expected_years_of_schooling_proportion'],
+                     'IPP_proportion':  s.empirical_settings['NRMSD_total_weighting']['IPP_proportion'],
+                     'Fossil_fuel_consumption_proportion':  s.empirical_settings['NRMSD_total_weighting']['Fossil_fuel_consumption_proportion'],
+                     'Human_Welfare':  s.empirical_settings['NRMSD_total_weighting']['Human_Welfare'],
+                     'Ecological_Footprint':  s.empirical_settings['NRMSD_total_weighting']['Ecological_Footprint']}
+
     settings_list = pd.DataFrame(data=settings_list, index=[0])
-    settings_list=(settings_list.T)
+    settings_list = (settings_list.T)
     settings_list.to_excel('settings_list.xlsx')
     return settings_list
 
@@ -328,4 +367,3 @@ if __name__ == '__main__':
 
     print(model_sliced, empirical_sliced)
     """
-
